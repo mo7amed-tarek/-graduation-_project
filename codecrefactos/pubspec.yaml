@@ -25,6 +25,7 @@ flutter:
 
   assets:
     - assets/
+    - assets/bottomNavigationBar/
   
   # - assets/images/a_dot_burr.jpeg
   # - assets/images/a_dot_ham.jpeg

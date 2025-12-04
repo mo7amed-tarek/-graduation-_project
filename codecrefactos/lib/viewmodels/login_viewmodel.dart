@@ -15,8 +15,9 @@ class LoginViewModel with ChangeNotifier {
     if (value.length < 6) return "Password must be 6+ chars";
     return null;
   }
-
   void login() {
     // call API
   }
 }
+
+
