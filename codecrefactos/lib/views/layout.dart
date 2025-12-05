@@ -1,3 +1,4 @@
+import 'package:codecrefactos/resources/color_manager.dart';
 import 'package:codecrefactos/views/home.dart';
 import 'package:codecrefactos/views/profile.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,7 @@ class _LayoutState extends State<Layout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: ColorManager.primary,
 
       body: pages[selectedIndex],
 
