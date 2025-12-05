@@ -37,18 +37,18 @@ class Home extends StatelessWidget {
             ////////////////////////////////////////////////
             Row(
           children: [
-            Expanded(child: CustomCard(toptext:' Total Employees', number: "48", imagepath: 'assets/home/employee.png', bottomtext: "+12% from last month")),
+            Expanded(child: CustomCard(toptext:' Total Employees', number: "48", imagepath: 'assets/employee.png', bottomtext: "+12% from last month")),
             Gap(10.w),
-            Expanded(child: CustomCard(toptext:' Total Employees', number: "48", imagepath: 'assets/home/employee.png', bottomtext: "+12% from last month"))
+            Expanded(child: CustomCard(toptext:' Total Employees', number: "48", imagepath: 'assets/employee.png', bottomtext: "+12% from last month"))
           ],
               ),
             Gap(10.h),
 
             Row(
           children: [
-            Expanded(child: CustomCard(toptext:' Total Employees', number: "48", imagepath: 'assets/home/employee.png', bottomtext: "+12% from last month")),
+            Expanded(child: CustomCard(toptext:' Total Employees', number: "48", imagepath: 'assets/employee.png', bottomtext: "+12% from last month")),
             Gap(10.w),
-            Expanded(child: CustomCard(toptext:' Total Employees', number: "48", imagepath: 'assets/home/employee.png', bottomtext: "+12% from last month"))
+            Expanded(child: CustomCard(toptext:' Total Employees', number: "48", imagepath: 'assets/employee.png', bottomtext: "+12% from last month"))
           ],
               ),
              ] )),
