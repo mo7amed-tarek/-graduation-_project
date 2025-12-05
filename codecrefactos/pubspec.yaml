@@ -28,8 +28,7 @@ flutter:
 
   assets:
     - assets/
-    - assets/bottomNavigationBar/
-    - assets/home/
+
   
   # - assets/images/a_dot_burr.jpeg
   # - assets/images/a_dot_ham.jpeg

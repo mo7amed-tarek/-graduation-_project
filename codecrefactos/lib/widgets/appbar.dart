@@ -34,7 +34,7 @@ class Appbar extends StatelessWidget {
             height: 48.h,
             width: 48.w,
             decoration: BoxDecoration(shape: BoxShape.circle),
-            child: Image.asset('assets/home/avatar.png'),
+            child: Image.asset('assets/avatar.png'),
           ),
           Gap(10.w),
           Column(

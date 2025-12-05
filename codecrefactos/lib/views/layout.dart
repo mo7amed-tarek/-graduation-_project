@@ -24,21 +24,21 @@ class _LayoutState extends State<Layout> {
   ];
 
   List<String> icons = [
-    "assets/bottomNavigationBar/home1.png",
-    "assets/bottomNavigationBar/person1.png",
-    "assets/bottomNavigationBar/bick1.png",
-    "assets/bottomNavigationBar/Icon1.png",
-    "assets/bottomNavigationBar/Group.png",
-    "assets/bottomNavigationBar/setting1.png"
+    "assets/home1.png",
+    "assets/person1.png",
+    "assets/bick1.png",
+    "assets/Icon1.png",
+    "assets/Group.png",
+    "assets/setting1.png"
   ];
 
   List<String> selectedIcons = [
-    "assets/bottomNavigationBar/Untitled.png",
-    "assets/bottomNavigationBar/Untitled2.png",
-    "assets/bottomNavigationBar/bick1.png",
-    "assets/bottomNavigationBar/Icon1.png",
-    "assets/bottomNavigationBar/Group.png",
-    "assets/bottomNavigationBar/setting1.png"
+    "assets/Untitled.png",
+    "assets/Untitled2.png",
+    "assets/bick1.png",
+    "assets/Icon1.png",
+    "assets/Group.png",
+    "assets/setting1.png"
   ];
   @override
   Widget build(BuildContext context) {
