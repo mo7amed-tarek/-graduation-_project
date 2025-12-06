@@ -1,3 +1,4 @@
+import 'package:codecrefactos/viewmodels/employee_viewmodel.dart';
 import 'package:codecrefactos/viewmodels/forgot_password_viewmodel.dart';
 import 'package:codecrefactos/viewmodels/login_viewmodel.dart';
 import 'package:codecrefactos/viewmodels/register_viewmodel.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
         ChangeNotifierProvider(create: (_) => RegisterViewModel()),
         ChangeNotifierProvider(create: (_) => ForgotPasswordViewModel()),
+        ChangeNotifierProvider(create: (_) => EmployeesViewModel()),
       ],
       child: ScreenUtilInit(
         designSize: Size(390, 844),

@@ -14,7 +14,7 @@ class Home extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
-        child: Appbar(),
+        child: Appbar(showAddButton: false),
       ),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 10.w),

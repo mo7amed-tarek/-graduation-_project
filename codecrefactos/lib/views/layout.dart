@@ -1,4 +1,5 @@
 import 'package:codecrefactos/resources/color_manager.dart';
+import 'package:codecrefactos/views/employee_screen.dart';
 import 'package:codecrefactos/views/home.dart';
 import 'package:codecrefactos/views/profile.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class _LayoutState extends State<Layout> {
 
   final List<Widget> pages = [
     Home(),
-    Profile(),
+    EmployeesScreen(),
     Home(),
     Profile(),
     Home(),
