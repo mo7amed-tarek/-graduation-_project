@@ -1,4 +1,5 @@
 import 'package:codecrefactos/resources/color_manager.dart';
+import 'package:codecrefactos/views/employee_screen.dart';
 import 'package:codecrefactos/views/home.dart';
 import 'package:codecrefactos/views/profile.dart';
 import 'package:flutter/material.dart';
@@ -15,8 +16,8 @@ class _LayoutState extends State<Layout> {
   int selectedIndex = 0;
 
   final List<Widget> pages = [
-   Home(),
-    Profile(),
+    Home(),
+    EmployeesScreen(),
     Home(),
     Profile(),
     Home(),
@@ -24,21 +25,22 @@ class _LayoutState extends State<Layout> {
   ];
 
   List<String> icons = [
-    "assets/home1.png",
-    "assets/person1.png",
-    "assets/bick1.png",
-    "assets/Icon1.png",
-    "assets/Group.png",
-    "assets/setting1.png"
+    "assets/dashboard.png",
+    "assets/employ.png",
+    "assets/Icon.png",
+    "assets/Icon (1).png",
+    "assets/Group 427320746.png",
+    "assets/settting.png",
   ];
 
   List<String> selectedIcons = [
-    "assets/Untitled.png",
-    "assets/Untitled2.png",
-    "assets/bick1.png",
-    "assets/Icon1.png",
-    "assets/Group.png",
-    "assets/setting1.png"
+    "assets/dashboard.png",
+
+    "assets/employ.png",
+    "assets/Icon.png",
+    "assets/Icon (1).png",
+    "assets/Group 427320746.png",
+    "assets/settting.png",
   ];
   @override
   Widget build(BuildContext context) {
@@ -48,88 +50,75 @@ class _LayoutState extends State<Layout> {
       body: pages[selectedIndex],
 
       bottomNavigationBar: BottomNavigationBar(
-
-
-        onTap: (index){
-            setState(() {
-              selectedIndex = index;
-            });
-
-
+        onTap: (index) {
+          setState(() {
+            selectedIndex = index;
+          });
         },
         currentIndex: selectedIndex,
 
-          items: [
-
-        BottomNavigationBarItem(
-          activeIcon: Image.asset(selectedIcons[0], fit: BoxFit.contain,
-            height: 25.h,),
-          icon: Image.asset(
-            icons[0],
-            fit: BoxFit.contain,
-            height: 20.h,
+        items: [
+          BottomNavigationBarItem(
+            activeIcon: Image.asset(
+              selectedIcons[0],
+              fit: BoxFit.contain,
+              height: 25.h,
+            ),
+            icon: Image.asset(icons[0], fit: BoxFit.contain, height: 20.h),
+            label: '',
           ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          activeIcon: Image.asset(selectedIcons[1], fit: BoxFit.contain,
-            height:25.h,),
+          BottomNavigationBarItem(
+            activeIcon: Image.asset(
+              selectedIcons[1],
+              fit: BoxFit.contain,
+              height: 25.h,
+            ),
 
-          icon: Image.asset(
-            icons[1],
-
-            fit: BoxFit.contain,
-            height: 20.h,
+            icon: Image.asset(icons[1], fit: BoxFit.contain, height: 20.h),
+            label: '',
           ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          activeIcon: Image.asset(selectedIcons[2], fit: BoxFit.contain,
-            height: 25.h,),
+          BottomNavigationBarItem(
+            activeIcon: Image.asset(
+              selectedIcons[2],
+              fit: BoxFit.contain,
+              height: 25.h,
+            ),
 
-          icon: Image.asset(
-            icons[2],
-            fit: BoxFit.contain,
-            height: 20.h,
+            icon: Image.asset(icons[2], fit: BoxFit.contain, height: 20.h),
+            label: '',
           ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          activeIcon: Image.asset(selectedIcons[3], fit: BoxFit.contain,
-            height: 25.h,),
+          BottomNavigationBarItem(
+            activeIcon: Image.asset(
+              selectedIcons[3],
+              fit: BoxFit.contain,
+              height: 25.h,
+            ),
 
-          icon: Image.asset(
-            icons[3],
-            fit: BoxFit.contain,
-            height: 20.h,
+            icon: Image.asset(icons[3], fit: BoxFit.contain, height: 20.h),
+            label: '',
           ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          activeIcon: Image.asset(selectedIcons[4], fit: BoxFit.contain,
-            height: 25.h,),
+          BottomNavigationBarItem(
+            activeIcon: Image.asset(
+              selectedIcons[4],
+              fit: BoxFit.contain,
+              height: 25.h,
+            ),
 
-          icon: Image.asset(
-            icons[4],
-            fit: BoxFit.contain,
-            height: 20.h,
+            icon: Image.asset(icons[4], fit: BoxFit.contain, height: 20.h),
+            label: '',
           ),
-          label: '',
-        ),
-        BottomNavigationBarItem(
-          activeIcon: Image.asset(selectedIcons[5], fit: BoxFit.contain,
-            height: 25.h,),
+          BottomNavigationBarItem(
+            activeIcon: Image.asset(
+              selectedIcons[5],
+              fit: BoxFit.contain,
+              height: 25.h,
+            ),
 
-          icon: Image.asset(
-            icons[5],
-            fit: BoxFit.contain,
-            height: 20.h,
+            icon: Image.asset(icons[5], fit: BoxFit.contain, height: 20.h),
+            label: '',
           ),
-          label: '',
-        ),
-      ]),
-
+        ],
+      ),
     );
   }
-
 }

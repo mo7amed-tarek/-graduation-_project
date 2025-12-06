@@ -19,7 +19,6 @@ class CustomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 106.h,
       width: 192.w,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -37,6 +36,7 @@ class CustomCard extends StatelessWidget {
         padding: EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               toptext,
@@ -46,6 +46,7 @@ class CustomCard extends StatelessWidget {
                 color: Color(0xff717182),
               ),
             ),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -57,6 +58,7 @@ class CustomCard extends StatelessWidget {
                     color: Color(0xff0A0A0A),
                   ),
                 ),
+
                 Container(
                   height: 48.h,
                   width: 48.w,
@@ -67,6 +69,7 @@ class CustomCard extends StatelessWidget {
                 ),
               ],
             ),
+
             Text(
               bottomtext,
               style: TextStyle(

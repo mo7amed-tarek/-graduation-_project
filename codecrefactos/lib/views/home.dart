@@ -56,7 +56,7 @@ class _HomeState extends State<Home> {
                     child: CustomCard(
                       toptext: ' Total Employees',
                       number: "48",
-                      imagepath: 'assets/employee.png',
+                      imagepath: 'assets/employyy.png',
                       bottomtext: "+12% from last month",
                     ),
                   ),
@@ -65,14 +65,14 @@ class _HomeState extends State<Home> {
                     child: CustomCard(
                       toptext: ' Total Employees',
                       number: "48",
-                      imagepath: 'assets/employee.png',
+                      imagepath: 'assets/sales.png',
                       bottomtext: "+12% from last month",
                     ),
                   ),
                 ],
               ),
               Gap(10.h),
-        
+
               Row(
                 children: [
                   Expanded(
@@ -158,7 +158,7 @@ class _HomeState extends State<Home> {
                               yValueMapper: (data, _) => data.value,
                               color: Color(0xFF4285F4),
                             ),
-        
+
                             ColumnSeries<SalesData, String>(
                               name: 'Purchases',
                               width: 0.5.w,
@@ -237,6 +237,76 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 10.w),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Gap(10.h),
+            Text(
+              'Dashboard',
+              style: TextStyle(
+                fontSize: 30.sp,
+                fontWeight: FontWeight.bold,
+                color: Color(0xff0A0A0A),
+              ),
+            ),
+            Text(
+              'Welcome to the Company Management System',
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.bold,
+                color: Color(0xff717182),
+              ),
+            ),
+            Gap(10.h),
+            ////////////////////////////////////////////////
+            Row(
+              children: [
+                Expanded(
+                  child: CustomCard(
+                    toptext: ' Total Employees',
+                    number: "48",
+                    imagepath: 'assets/employyy.png',
+                    bottomtext: "+12% from last month",
+                  ),
+                ),
+                Gap(10.w),
+                Expanded(
+                  child: CustomCard(
+                    toptext: ' Total Employees',
+                    number: "48",
+                    imagepath: 'assets/sales.png',
+                    bottomtext: "+12% from last month",
+                  ),
+                ),
+              ],
+            ),
+            Gap(10.h),
+
+            Row(
+              children: [
+                Expanded(
+                  child: CustomCard(
+                    toptext: ' Total Employees',
+                    number: "48",
+                    imagepath: 'assets/purchases.png',
+                    bottomtext: "+12% from last month",
+                  ),
+                ),
+                Gap(10.w),
+                Expanded(
+                  child: CustomCard(
+                    toptext: ' Total Employees',
+                    number: "48",
+                    imagepath: 'assets/inventory.png',
+                    bottomtext: "+12% from last month",
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
     );
-  }
-}
+  }}
