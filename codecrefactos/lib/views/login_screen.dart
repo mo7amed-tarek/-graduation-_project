@@ -2,7 +2,6 @@ import 'package:codecrefactos/resources/color_manager.dart';
 import 'package:codecrefactos/resources/text_manager.dart';
 import 'package:codecrefactos/viewmodels/login_viewmodel.dart';
 import 'package:codecrefactos/views/layout.dart';
-
 import 'package:codecrefactos/views/register_screen.dart';
 import 'package:codecrefactos/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
@@ -89,6 +88,7 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               ElevatedButton(
+
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorManager.primary,
                   minimumSize: const Size(double.infinity, 45),
