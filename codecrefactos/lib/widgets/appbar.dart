@@ -9,7 +9,6 @@ class Appbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-
       actions: [
         TextButton.icon(
           onPressed: () {
@@ -28,7 +27,6 @@ class Appbar extends StatelessWidget {
       ],
 
       title: Row(
-
         children: [
           Container(
             height: 48.h,
@@ -43,10 +41,7 @@ class Appbar extends StatelessWidget {
             children: [
               Text(
                 'Admin Panel',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.bold),
               ),
               Text(
                 'John Doe',
@@ -61,5 +56,5 @@ class Appbar extends StatelessWidget {
         ],
       ),
     );
-  }}
-
+  }
+}
