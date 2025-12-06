@@ -79,7 +79,7 @@ class _HomeState extends State<Home> {
                     child: CustomCard(
                       toptext: ' Total Employees',
                       number: "48",
-                      imagepath: 'ssets/purchases.png',
+                      imagepath: 'assets/purchases.png',
                       bottomtext: "+12% from last month",
                     ),
                   ),
@@ -88,7 +88,7 @@ class _HomeState extends State<Home> {
                     child: CustomCard(
                       toptext: ' Total Employees',
                       number: "48",
-                      imagepath: 'ssets/inventory.png',
+                      imagepath: 'assets/inventory.png',
                       bottomtext: "+12% from last month",
                     ),
                   ),

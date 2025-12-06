@@ -69,47 +69,49 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
 
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (showAddButton)
-                ElevatedButton.icon(
-                  onPressed: onAdd,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.r),
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (showAddButton)
+                  ElevatedButton.icon(
+                    onPressed: onAdd,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20.r),
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 12.w,
+                        vertical: 8.h,
+                      ),
                     ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 12.w,
-                      vertical: 8.h,
+                    icon: Icon(
+                      Icons.person_add,
+                      size: 18.sp,
+                      color: Colors.white,
+                    ),
+                    label: Text(
+                      'Add Employee',
+                      style: TextStyle(fontSize: 14.sp, color: Colors.white),
                     ),
                   ),
-                  icon: Icon(
-                    Icons.person_add,
-                    size: 18.sp,
-                    color: Colors.white,
-                  ),
+            
+                if (showAddButton) Gap(5.h),
+            
+                TextButton.icon(
+                  onPressed: onLogout,
+                  icon: Icon(Icons.logout, color: Colors.black, size: 18.sp),
                   label: Text(
-                    'Add Employee',
-                    style: TextStyle(fontSize: 14.sp, color: Colors.white),
+                    'Logout',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-
-              if (showAddButton) Gap(5.h),
-
-              TextButton.icon(
-                onPressed: onLogout,
-                icon: Icon(Icons.logout, color: Colors.black, size: 18.sp),
-                label: Text(
-                  'Logout',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),
