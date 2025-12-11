@@ -96,9 +96,9 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
                       style: TextStyle(fontSize: 14.sp, color: Colors.white),
                     ),
                   ),
-            
+
                 if (showAddButton) Gap(5.h),
-            
+
                 TextButton.icon(
                   onPressed: onLogout,
                   icon: Icon(Icons.logout, color: Colors.black, size: 18.sp),

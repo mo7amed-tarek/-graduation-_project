@@ -6,6 +6,12 @@ class Employee {
   final String email;
   final String salary;
   final bool isActive;
+  final String department;
+
+  // Optional values 👇
+  final String? phone;
+  final String? joinDate;
+  final List<String>? permissions;
 
   Employee({
     required this.name,
@@ -13,6 +19,10 @@ class Employee {
     required this.email,
     required this.salary,
     required this.isActive,
+    required this.department,
+    this.phone,
+    this.joinDate,
+    this.permissions,
   });
 
   Employee copyWith({
@@ -21,6 +31,10 @@ class Employee {
     String? email,
     String? salary,
     bool? isActive,
+    String? department,
+    String? phone,
+    String? joinDate,
+    List<String>? permissions,
   }) {
     return Employee(
       name: name ?? this.name,
@@ -28,39 +42,20 @@ class Employee {
       email: email ?? this.email,
       salary: salary ?? this.salary,
       isActive: isActive ?? this.isActive,
+      department: department ?? this.department,
+      phone: phone ?? this.phone,
+      joinDate: joinDate ?? this.joinDate,
+      permissions: permissions ?? this.permissions,
     );
   }
 }
 
 class EmployeesViewModel extends ChangeNotifier {
-  List<Employee> employeesList = [
-    Employee(
-      name: "John Smith",
-      role: "Sales",
-      email: "john.smith@company.com",
-      salary: "\$5,000",
-      isActive: true,
-    ),
-    Employee(
-      name: "Emily Davis",
-      role: "Sales",
-      email: "emily.d@company.com",
-      salary: "\$5,000",
-      isActive: false,
-    ),
-    Employee(
-      name: "Michael Brown",
-      role: "Purchasing",
-      email: "michael.b@company.com",
-      salary: "\$5,000",
-      isActive: true,
-    ),
-  ];
-
+  List<Employee> employeesList = [];
   List<Employee> filteredEmployees = [];
 
   EmployeesViewModel() {
-    filteredEmployees = employeesList;
+    filteredEmployees = List.from(employeesList);
   }
 
   void searchEmployees(String query) {
@@ -72,15 +67,29 @@ class EmployeesViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addEmployee(Employee employee) {
+    employeesList.add(employee);
+    filteredEmployees = List.from(employeesList);
+    notifyListeners();
+  }
+
+  void updateEmployee(int index, Employee employee) {
+    employeesList[index] = employee;
+    filteredEmployees = List.from(employeesList);
+    notifyListeners();
+  }
+
   void deleteEmployee(int index) {
-    filteredEmployees.removeAt(index);
+    employeesList.removeAt(index);
+    filteredEmployees = List.from(employeesList);
     notifyListeners();
   }
 
   void toggleStatus(int index) {
-    filteredEmployees[index] = filteredEmployees[index].copyWith(
-      isActive: !filteredEmployees[index].isActive,
+    employeesList[index] = employeesList[index].copyWith(
+      isActive: !employeesList[index].isActive,
     );
+    filteredEmployees = List.from(employeesList);
     notifyListeners();
   }
 }
