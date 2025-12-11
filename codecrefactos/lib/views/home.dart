@@ -23,7 +23,7 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
-        child: Appbar(),
+        child: Appbar(showAddButton: false),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -180,7 +180,6 @@ class _HomeState extends State<Home> {
                     ],
                   ),
                 ),
-
               ),
               Gap(10),
               Container(
@@ -199,16 +198,18 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 child: Padding(
-                  padding:  EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-
-                      Text('Top Performing Employees',style: TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xff0A0A0A),
-                      ),),
+                      Text(
+                        'Top Performing Employees',
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xff0A0A0A),
+                        ),
+                      ),
                       Gap(6.h),
                       EmployeeItem(
                         employee: EmployeeModel(
@@ -238,4 +239,5 @@ class _HomeState extends State<Home> {
         ),
       ),
     );
-  }}
+  }
+}
