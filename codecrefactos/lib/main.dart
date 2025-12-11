@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RegisterViewModel()),
         ChangeNotifierProvider(create: (_) => ForgotPasswordViewModel()),
         ChangeNotifierProvider(create: (_) => EmployeesViewModel()),
+        ChangeNotifierProvider(create: (_) => EmployeesViewModel()),
       ],
       child: ScreenUtilInit(
         designSize: Size(390, 844),
