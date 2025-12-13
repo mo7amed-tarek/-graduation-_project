@@ -1,3 +1,4 @@
+import 'package:codecrefactos/forgot_password/screens/forgot_password_screen.dart';
 import 'package:codecrefactos/resources/color_manager.dart';
 import 'package:codecrefactos/resources/text_manager.dart';
 import 'package:codecrefactos/viewmodels/login_viewmodel.dart';
@@ -6,8 +7,6 @@ import 'package:codecrefactos/views/register_screen.dart';
 import 'package:codecrefactos/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'forgot_password_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   LoginScreen({super.key});
@@ -88,7 +87,6 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               ElevatedButton(
-
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorManager.primary,
                   minimumSize: const Size(double.infinity, 45),

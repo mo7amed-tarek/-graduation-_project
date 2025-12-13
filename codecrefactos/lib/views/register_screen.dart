@@ -1,3 +1,4 @@
+import 'package:codecrefactos/forgot_password/screens/forgot_password_screen.dart';
 import 'package:codecrefactos/resources/color_manager.dart';
 import 'package:codecrefactos/resources/text_manager.dart';
 import 'package:codecrefactos/viewmodels/register_viewmodel.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'login_screen.dart';
-import 'forgot_password_screen.dart';
 
 class RegisterScreen extends StatelessWidget {
   RegisterScreen({super.key});
