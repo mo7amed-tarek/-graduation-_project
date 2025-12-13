@@ -1,4 +1,4 @@
-// lib/widgets/employee_card.dart
+// lib/widget/employee_card.dart
 import 'package:flutter/material.dart';
 import '../viewmodels/employee_viewmodel.dart';
 import 'confirm_delete_sheet.dart';
