@@ -28,7 +28,7 @@ class EmployeesScreen extends StatelessWidget {
         },
         onLogout: () {
           print("Logout Pressed");
-        },
+        }, bottonTitle: 'Add Employee',
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

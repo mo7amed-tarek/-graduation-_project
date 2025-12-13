@@ -6,6 +6,8 @@ import 'package:codecrefactos/views/sales/screens/sales_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import 'Purchase/screens/Purchase_screen.dart';
+
 class Layout extends StatefulWidget {
   const Layout({super.key});
 
@@ -20,7 +22,7 @@ class _LayoutState extends State<Layout> {
     Home(),
     EmployeesScreen(),
     SalesScreen(),
-    Profile(),
+    PurchaseScreen(),
     Home(),
     Profile(),
   ];
