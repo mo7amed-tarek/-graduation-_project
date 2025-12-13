@@ -8,16 +8,19 @@ class CustomTotalCart extends StatelessWidget {
     super.key,
     required this.total,
     required this.price,
-    required this.imagePath,
+    required this.imagePath, required this.cardColor,
   });
 
   final String total;
   final String price;
   final String imagePath;
+  final Color cardColor ;
+
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      color:cardColor ,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 3,
       child: Padding(

@@ -23,7 +23,7 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
-        child: Appbar(showAddButton: false),
+        child: Appbar(showAddButton: false, bottonTitle: '', ),
       ),
       body: SingleChildScrollView(
         child: Padding(
