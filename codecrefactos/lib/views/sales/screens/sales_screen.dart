@@ -70,19 +70,13 @@ class SalesScreen extends StatelessWidget {
               Gap(16.h),
               SearchFilter(),
               Gap(16.h),
-              CustomSalescard(date: "2025/10/1",
+              CustomSalescard(
+                date: "2025/10/1",
                 name: "John Smith",
                 company: "Tech Corp",
                 price: "\$12,000",
-                status: "Completed",)
-              
-
-
-
-
-
-
-
+                status: "Completed",
+              ),
             ],
           ),
         ),
