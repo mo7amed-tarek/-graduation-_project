@@ -1,3 +1,4 @@
+import 'package:codecrefactos/viewmodels/sale_model.dart';
 import 'package:codecrefactos/views/sales/widget/Custom_SalesCard.dart';
 import 'package:codecrefactos/views/sales/widget/search_filter.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,21 +8,46 @@ import 'package:gap/gap.dart';
 
 import '../../../widgets/appbar.dart';
 import '../widget/Custom_Total_cart.dart';
+import '../widget/add_sales_sheet.dart';
 import '../widget/custom_SummaryCard.dart';
 
-class SalesScreen extends StatelessWidget {
-  const SalesScreen({super.key});
+// provider import
+import '../../../viewmodels/sales_provider.dart';
+import 'package:provider/provider.dart';
+
+class SalesScreen extends StatefulWidget {
+   SalesScreen({super.key});
 
   @override
+  State<SalesScreen> createState() => _SalesScreenState();
+}
+
+class _SalesScreenState extends State<SalesScreen> {
+  @override
   Widget build(BuildContext context) {
+    // obtain the current sales list from provider
+    final sales = context.watch<SalesProvider>().sales;
+
     return Scaffold(
       appBar: Appbar(
-        onAdd: () {
-          // Handle add action
+        onAdd: () async {
+          final salesData = await showModalBottomSheet(
+            context: context,
+            isScrollControlled: true,
+            backgroundColor: Colors.white,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            builder: (_) => AddSalesSheet(),
+          );
+          if (salesData != null && salesData is SaleModel) {
+            // add via provider
+            context.read<SalesProvider>().addSale(salesData);
+          }
         },
         onLogout: () {
           // Handle logout action
-        },
+        }, bottonTitle: 'Add Sales',
       ),
       body: SafeArea(
         child: Padding(
@@ -46,12 +72,13 @@ class SalesScreen extends StatelessWidget {
                 total: "Total Sales",
                 price: "\$48,900",
                 imagePath: 'assets/mark.png',
+                cardColor: Colors.white,
               ),
               Gap(16.h),
               Row(
                 children: [
                   Expanded(
-                    child: CustomSummarycard(
+                    child: CustomSummaryCard(
                       title: 'Completed Sales',
                       value: '4',
                       valueColor: Color(0xff00A63E),
@@ -59,10 +86,11 @@ class SalesScreen extends StatelessWidget {
                   ),
                   Gap(12.w),
                   Expanded(
-                    child: CustomSummarycard(
+                    child: CustomSummaryCard(
                       title: 'Pending Sales',
                       value: '1',
                       valueColor: Color(0xffF54900),
+
                     ),
                   ),
                 ],
@@ -70,19 +98,39 @@ class SalesScreen extends StatelessWidget {
               Gap(16.h),
               SearchFilter(),
               Gap(16.h),
-              CustomSalescard(date: "2025/10/1",
-                name: "John Smith",
-                company: "Tech Corp",
-                price: "\$12,000",
-                status: "Completed",)
-              
-
-
-
-
-
-
-
+              Expanded(
+                child: ListView.builder(
+                  itemCount: sales.length,
+                  itemBuilder: (context, index) {
+                    final sale = sales[index];
+                    return CustomSalescard(
+                      saleModel: sale,
+                      delete: () {
+                        // remove via provider
+                        context.read<SalesProvider>().removeSaleAt(index);
+                      },
+                      edit: () async {
+                        final updatedSaleData = await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.vertical(top: Radius.circular(20)),
+                          ),
+                          builder: (_) => AddSalesSheet(
+                            isEdit: true,
+                            sale: sale,
+                          ),
+                        );
+                        if (updatedSaleData != null && updatedSaleData is SaleModel) {
+                          context.read<SalesProvider>().updateSale(index, updatedSaleData);
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),

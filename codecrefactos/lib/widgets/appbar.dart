@@ -6,12 +6,14 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onAdd;
   final VoidCallback? onLogout;
   final bool showAddButton;
+  final String bottonTitle;
 
   const Appbar({
     super.key,
     this.onAdd,
     this.onLogout,
     this.showAddButton = true,
+     required this.bottonTitle,
   });
 
   @override
@@ -91,8 +93,8 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
                       size: 18.sp,
                       color: Colors.white,
                     ),
-                    label: Text(
-                      'Add Employee',
+                    label: Text(bottonTitle
+                      ,
                       style: TextStyle(fontSize: 14.sp, color: Colors.white),
                     ),
                   ),
