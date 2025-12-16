@@ -2,8 +2,8 @@ class Purchase {
   final String id;
   final String supplierName;
   final String category;
-  final int quantity;
-  final double amount;
+  final String quantity;
+  final String amount;
   final String employee;
   final DateTime date;
   final String status;
@@ -22,8 +22,8 @@ class Purchase {
   Purchase copyWith({
     String? supplierName,
     String? category,
-    int? quantity,
-    double? amount,
+    String? quantity,
+    String? amount,
     String? employee,
     DateTime? date,
     String? status,
@@ -38,4 +38,6 @@ class Purchase {
       date: date ?? this.date,
       status: status ?? this.status,
     );
-  }}
+  }
+}
+

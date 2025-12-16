@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
+import '../../../viewmodels/purchase_model.dart';
+
 class AddPurchaseSheet extends StatefulWidget {
-
-
   const AddPurchaseSheet({
     super.key,
-
+    this.isEdit = false,
+    this.purchase,
   });
+
+  final bool isEdit;
+  final Purchase? purchase;
 
   @override
   State<AddPurchaseSheet> createState() => _AddPurchaseSheetState();
@@ -21,17 +25,15 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
   final EmployeeNameController = TextEditingController();
 
   @override
-  // void initState() {
-  //   super.initState();
-  //   if (widget.employee != null) {
-  //     nameController.text = widget.employee!.name;
-  //     emailController.text = widget.employee!.email;
-  //     phoneController.text = widget.employee!.phone ?? '';
-  //     positionController.text = widget.employee!.role;
-  //     salaryController.text = widget.employee!.salary;
-  //     selectedDepartment = widget.employee!.department;
-  //   }
-  // }
+  void initState() {
+    super.initState();
+    if (widget.purchase != null) {
+      CustomerNameController.text = widget.purchase!.supplierName;
+      CategoryController.text = widget.purchase!.category;
+      AmountController.text = widget.purchase!.quantity;
+      EmployeeNameController.text = widget.purchase!.amount;
+    }
+  }
 
   @override
   void dispose() {
@@ -60,7 +62,7 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Add New Purchase Order",
+                  widget.isEdit == true ? "Edit Purchase Order" : "Add New Purchase Order",
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
@@ -100,13 +102,19 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
                     if (CustomerNameController.text.isEmpty ||
                         CategoryController.text.isEmpty ||
                         AmountController.text.isEmpty ||
-                        EmployeeNameController.text.isEmpty)
-                      return;
+                        EmployeeNameController.text.isEmpty) return;
 
+                    final purchase = Purchase(
+                      id: widget.purchase?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+                      supplierName: CustomerNameController.text,
+                      category: CategoryController.text,
+                      quantity: AmountController.text,
+                      amount: EmployeeNameController.text,
+                      employee: widget.purchase?.employee ?? '',
+                      date: widget.purchase?.date ?? DateTime.now(),
+                    );
 
-
-
-                    Navigator.pop(context);
+                    Navigator.pop(context, purchase);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
@@ -119,7 +127,7 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
                     ),
                   ),
                   child: Text(
-                    "Add Sales",
+                    widget.isEdit == true ? "Save Changes" : "Add Purchase",
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,

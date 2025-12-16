@@ -2,25 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
+import '../../../viewmodels/purchase_model.dart';
+
 class PurchaseCart extends StatelessWidget {
   const PurchaseCart({
     super.key,
-    required this.category,
-    required this.quantity,
-    required this.amount,
-    required this.supplierName,
+    required this.purchase,
+    required this.edit,
+    required this.delete,
   });
 
-  final String category;
-  final String quantity;
-  final String amount;
-  final String supplierName;
+  final Purchase purchase;
+  final VoidCallback edit;
+  final VoidCallback delete;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      shadowColor: Colors.black.withOpacity(0.98),
+      shadowColor: Color.fromRGBO(0, 0, 0, 0.98),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -31,11 +31,11 @@ class PurchaseCart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '2025/9/28',
+                  '${purchase.date.year}/${purchase.date.month}/${purchase.date.day}',
                   style: TextStyle(fontSize: 14.sp, color: Colors.grey),
                 ),
                 Text(
-                  category,
+                  purchase.category,
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w600,
@@ -50,14 +50,14 @@ class PurchaseCart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  quantity,
+                  purchase.quantity,
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 Text(
-                  amount,
+                  purchase.amount,
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
@@ -69,7 +69,7 @@ class PurchaseCart extends StatelessWidget {
             Gap(12.h),
 
             Text(
-              supplierName,
+              purchase.supplierName,
               style: TextStyle(fontSize: 14.sp, color: Colors.grey),
             ),
 
@@ -86,7 +86,7 @@ class PurchaseCart extends StatelessWidget {
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Text(
-                      'Received',
+                      purchase.status,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 12.sp,
@@ -99,12 +99,12 @@ class PurchaseCart extends StatelessWidget {
                 Row(
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: edit,
                       icon: Icon(Icons.edit),
                       color: Colors.grey,
                     ),
                     IconButton(
-                      onPressed: () {},
+                      onPressed: delete,
                       icon: Icon(Icons.delete),
                       color: Colors.red,
                     ),
@@ -116,6 +116,5 @@ class PurchaseCart extends StatelessWidget {
         ),
       ),
     );
-    ;
   }
 }
