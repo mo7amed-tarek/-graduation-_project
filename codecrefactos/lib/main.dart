@@ -1,3 +1,4 @@
+import 'package:codecrefactos/Inventory%20Management/viewmodels/inventory_viewmodel.dart';
 import 'package:codecrefactos/forgot_password/view_model/forgotpassword_view_model.dart';
 import 'package:codecrefactos/viewmodels/employee_viewmodel.dart';
 import 'package:codecrefactos/viewmodels/login_viewmodel.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RegisterViewModel()),
         ChangeNotifierProvider(create: (_) => ForgotPasswordViewModel()),
         ChangeNotifierProvider(create: (_) => EmployeesViewModel()),
-        ChangeNotifierProvider(create: (_) => SalesProvider()),
+        ChangeNotifierProvider(create: (_) => InventoryViewModel()),
       ],
       child: ScreenUtilInit(
         designSize: Size(390, 844),

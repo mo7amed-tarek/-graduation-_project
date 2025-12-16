@@ -3,7 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
 class SearchFilter extends StatelessWidget {
-  const SearchFilter({super.key});
+  final bool showDropdown;
+
+  const SearchFilter({super.key, this.showDropdown = true});
 
   @override
   Widget build(BuildContext context) {
@@ -12,7 +14,7 @@ class SearchFilter extends StatelessWidget {
         Expanded(
           child: TextField(
             decoration: InputDecoration(
-              hintText: "Search sales...",
+              hintText: "Search ...",
               prefixIcon: const Icon(Icons.search),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10),
@@ -21,29 +23,35 @@ class SearchFilter extends StatelessWidget {
           ),
         ),
         Gap(10.w),
-        Container(
-          padding:  EdgeInsets.symmetric(horizontal: 12.w),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: DropdownButton(
-            value: "All Categories",
-            underline: const SizedBox(),
-            items: const [
-              DropdownMenuItem(
+        Visibility(
+          visible: showDropdown,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: DropdownButton(
+              value: "All Categories",
+              underline: const SizedBox(),
+              items: const [
+                DropdownMenuItem(
                   value: "All Categories",
-                  child: Text("All Categories")),
-              DropdownMenuItem(
+                  child: Text("All Categories"),
+                ),
+                DropdownMenuItem(
                   value: "Electronics",
-                  child: Text("Electronics")),
-              DropdownMenuItem(
+                  child: Text("Electronics"),
+                ),
+                DropdownMenuItem(
                   value: "Office Supplies",
-                  child: Text("Office Supplies")),
-            ],
-            onChanged: (value) {},
+                  child: Text("Office Supplies"),
+                ),
+              ],
+              onChanged: (value) {},
+            ),
           ),
-        )
+        ),
       ],
     );
   }

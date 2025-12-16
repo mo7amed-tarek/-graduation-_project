@@ -1,3 +1,4 @@
+import 'package:codecrefactos/Inventory%20Management/screens/inventory_management_screen.dart';
 import 'package:codecrefactos/resources/color_manager.dart';
 import 'package:codecrefactos/views/employee_screen.dart';
 import 'package:codecrefactos/views/home.dart';
@@ -22,8 +23,8 @@ class _LayoutState extends State<Layout> {
     Home(),
     EmployeesScreen(),
     SalesScreen(),
-    PurchaseScreen(),
-    Home(),
+    Profile(),
+    InventoryManagementScreen(),
     Profile(),
   ];
 
