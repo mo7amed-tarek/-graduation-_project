@@ -25,10 +25,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ForgotPasswordViewModel()),
         ChangeNotifierProvider(create: (_) => EmployeesViewModel()),
         ChangeNotifierProvider(create: (_) => InventoryViewModel()),
-<<<<<<< HEAD
         ChangeNotifierProvider(create: (_) => SalesProvider()),
-=======
->>>>>>> 32949468a9dedf1a01873acd229e10175aa5bb40
       ],
       child: ScreenUtilInit(
         designSize: const Size(390, 844),

@@ -23,12 +23,8 @@ class _LayoutState extends State<Layout> {
     Home(),
     EmployeesScreen(),
     SalesScreen(),
-<<<<<<< HEAD
 
     PurchaseScreen(),
-=======
-    Profile(),
->>>>>>> 32949468a9dedf1a01873acd229e10175aa5bb40
     InventoryManagementScreen(),
     Profile(),
   ];
