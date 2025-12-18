@@ -4,6 +4,7 @@ import 'package:codecrefactos/views/sales/widget/custom_SummaryCard.dart';
 import 'package:codecrefactos/views/sales/widget/search_filter.dart';
 import 'package:codecrefactos/widgets/appbar.dart';
 import 'package:codecrefactos/widgets/confirm_delete_sheet.dart';
+import 'package:codecrefactos/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +23,7 @@ class InventoryManagementScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: Appbar(
+        showLogoutButton: false,
         bottonTitle: 'Add',
         onAdd: () {
           showModalBottomSheet(
@@ -33,8 +35,7 @@ class InventoryManagementScreen extends StatelessWidget {
         },
         onLogout: () {},
       ),
-
-      body: SingleChildScrollView(
+      body: Padding(
         padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -48,18 +49,14 @@ class InventoryManagementScreen extends StatelessWidget {
               "View and manage warehouse products",
               style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
             ),
-
             Gap(20.h),
-
             CustomTotalCart(
               total: "Total Items",
               price: vm.totalItems.toString(),
               imagePath: "assets/total_item.png",
               cardColor: const Color(0xFFE6FDEE),
             ),
-
-            Gap(16.h),
-
+            Gap(10.h),
             Row(
               children: [
                 Expanded(
@@ -69,7 +66,7 @@ class InventoryManagementScreen extends StatelessWidget {
                     valueColor: Colors.red,
                   ),
                 ),
-                Gap(12.w),
+                Gap(10.w),
                 Expanded(
                   child: CustomSummaryCard(
                     title: "Categories",
@@ -79,9 +76,7 @@ class InventoryManagementScreen extends StatelessWidget {
                 ),
               ],
             ),
-
-            Gap(16.h),
-
+            Gap(10.h),
             if (vm.lowStockCount > 0)
               Container(
                 padding: EdgeInsets.all(14.w),
@@ -109,51 +104,44 @@ class InventoryManagementScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
             Gap(16.h),
-
             const SearchFilter(showDropdown: false),
-
             Gap(20.h),
 
-            if (vm.items.isEmpty)
-              Padding(
-                padding: EdgeInsets.only(top: 40.h),
-                child: Center(
-                  child: Text(
-                    "No products found",
-                    style: TextStyle(fontSize: 14.sp, color: Colors.grey),
-                  ),
-                ),
-              )
-            else
-              Column(
-                children: List.generate(
-                  vm.items.length,
-                  (index) => InventoryItemCard(
-                    item: vm.items[index],
-                    onEdit: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.transparent,
-                        builder: (_) => AddProductSheet(
-                          item: vm.items[index],
-                          index: index,
-                        ),
-                      );
-                    },
-                    onDelete: () {
-                      _showConfirmDelete(
-                        context,
-                        onConfirm: () {
-                          vm.deleteItem(index);
+            Flexible(
+              child: vm.items.isEmpty
+                  ? const AppEmptyState(
+                      icon: Icons.inventory_2_outlined,
+                      title: "No Products Found",
+                      subtitle:
+                          "Start adding products by tapping the button above.",
+                    )
+                  : ListView.builder(
+                      itemCount: vm.items.length,
+                      itemBuilder: (context, index) => InventoryItemCard(
+                        item: vm.items[index],
+                        onEdit: () {
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
+                            builder: (_) => AddProductSheet(
+                              item: vm.items[index],
+                              index: index,
+                            ),
+                          );
                         },
-                      );
-                    },
-                  ),
-                ),
-              ),
+                        onDelete: () {
+                          _showConfirmDelete(
+                            context,
+                            onConfirm: () {
+                              vm.deleteItem(index);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+            ),
           ],
         ),
       ),

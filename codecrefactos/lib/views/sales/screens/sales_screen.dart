@@ -1,6 +1,7 @@
 import 'package:codecrefactos/viewmodels/sale_model.dart';
 import 'package:codecrefactos/views/sales/widget/Custom_SalesCard.dart';
 import 'package:codecrefactos/views/sales/widget/search_filter.dart';
+import 'package:codecrefactos/widgets/empty_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,7 +12,6 @@ import '../widget/Custom_Total_cart.dart';
 import '../widget/add_sales_sheet.dart';
 import '../widget/custom_SummaryCard.dart';
 
-// provider import
 import '../../../viewmodels/sales_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -30,6 +30,7 @@ class _SalesScreenState extends State<SalesScreen> {
 
     return Scaffold(
       appBar: Appbar(
+        showLogoutButton: false,
         onAdd: () async {
           final salesData = await showModalBottomSheet(
             context: context,
@@ -99,40 +100,48 @@ class _SalesScreenState extends State<SalesScreen> {
               SearchFilter(),
               Gap(16.h),
               Expanded(
-                child: ListView.builder(
-                  itemCount: sales.length,
-                  itemBuilder: (context, index) {
-                    final sale = sales[index];
-                    return CustomSalescard(
-                      saleModel: sale,
-                      delete: () {
-                        // remove via provider
-                        context.read<SalesProvider>().removeSaleAt(index);
-                      },
-                      edit: () async {
-                        final updatedSaleData = await showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(
-                              top: Radius.circular(20),
-                            ),
-                          ),
-                          builder: (_) =>
-                              AddSalesSheet(isEdit: true, sale: sale),
-                        );
-                        if (updatedSaleData != null &&
-                            updatedSaleData is SaleModel) {
-                          context.read<SalesProvider>().updateSale(
-                            index,
-                            updatedSaleData,
+                child: sales.isEmpty
+                    ? const AppEmptyState(
+                        icon: Icons.sell_outlined,
+                        title: "No Sales Found",
+                        subtitle:
+                            "Start adding sales by tapping the button above.",
+                      )
+                    : ListView.builder(
+                        itemCount: sales.length,
+                        itemBuilder: (context, index) {
+                          final sale = sales[index];
+                          return CustomSalescard(
+                            saleModel: sale,
+                            delete: () {
+                              // remove via provider
+                              context.read<SalesProvider>().removeSaleAt(index);
+                            },
+                            edit: () async {
+                              final updatedSaleData =
+                                  await showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.white,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20),
+                                      ),
+                                    ),
+                                    builder: (_) =>
+                                        AddSalesSheet(isEdit: true, sale: sale),
+                                  );
+                              if (updatedSaleData != null &&
+                                  updatedSaleData is SaleModel) {
+                                context.read<SalesProvider>().updateSale(
+                                  index,
+                                  updatedSaleData,
+                                );
+                              }
+                            },
                           );
-                        }
-                      },
-                    );
-                  },
-                ),
+                        },
+                      ),
               ),
             ],
           ),

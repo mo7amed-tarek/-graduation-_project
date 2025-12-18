@@ -6,6 +6,7 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback? onAdd;
   final VoidCallback? onLogout;
   final bool showAddButton;
+  final bool showLogoutButton;
   final String bottonTitle;
 
   const Appbar({
@@ -13,11 +14,12 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
     this.onAdd,
     this.onLogout,
     this.showAddButton = true,
-     required this.bottonTitle,
+    this.showLogoutButton = true,
+    required this.bottonTitle,
   });
 
   @override
-  Size get preferredSize => Size.fromHeight(100.h);
+  Size get preferredSize => Size.fromHeight(80.h);
 
   @override
   Widget build(BuildContext context) {
@@ -93,25 +95,26 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
                       size: 18.sp,
                       color: Colors.white,
                     ),
-                    label: Text(bottonTitle
-                      ,
+                    label: Text(
+                      bottonTitle,
                       style: TextStyle(fontSize: 14.sp, color: Colors.white),
                     ),
                   ),
 
                 if (showAddButton) Gap(5.h),
 
-                TextButton.icon(
-                  onPressed: onLogout,
-                  icon: Icon(Icons.logout, color: Colors.black, size: 18.sp),
-                  label: Text(
-                    'Logout',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w600,
+                if (showLogoutButton)
+                  TextButton.icon(
+                    onPressed: onLogout,
+                    icon: Icon(Icons.logout, color: Colors.black, size: 18.sp),
+                    label: Text(
+                      'Logout',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ),

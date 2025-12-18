@@ -1,3 +1,4 @@
+import 'package:codecrefactos/widgets/empty_state.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,7 +11,6 @@ import '../../sales/widget/custom_SummaryCard.dart';
 import '../witget/Purchase_cart.dart';
 import '../witget/add_purchase_sheet.dart';
 
-// provider imports
 import '../../../viewmodels/sales_provider.dart';
 import '../../../viewmodels/purchase_model.dart';
 import 'package:provider/provider.dart';
@@ -40,6 +40,9 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
 
     return Scaffold(
       appBar: Appbar(
+        showAddButton: true,
+        showLogoutButton: false,
+        bottonTitle: 'Add Purchase Order',
         onAdd: () async {
           final purchaseData = await showModalBottomSheet(
             context: context,
@@ -54,22 +57,16 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
             context.read<SalesProvider>().addPurchase(purchaseData);
           }
         },
-        onLogout: () {
-          // Handle logout action
-        }, bottonTitle: 'Add Purchase Order',
       ),
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(16.w),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 "Purchase Management",
-                style: TextStyle(
-                  fontSize: 30.sp,
-                  fontWeight: FontWeight.w400,
-                ),
+                style: TextStyle(fontSize: 30.sp, fontWeight: FontWeight.w400),
               ),
               Text(
                 "View and manage all purchases",
@@ -79,14 +76,14 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                   fontWeight: FontWeight.w400,
                 ),
               ),
-              Gap(10.h),
+              Gap(9.h),
               CustomTotalCart(
                 total: "Total Purchases",
                 price: "\$75,500",
                 imagePath: 'assets/Purchase.png',
                 cardColor: Color(0xffFFF2E1),
               ),
-              Gap(16.h),
+              Gap(10.h),
               Row(
                 children: [
                   Expanded(
@@ -105,16 +102,14 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                       trailingImage: Container(
                         width: 28.w,
                         height: 28.h,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                        ),
+                        decoration: const BoxDecoration(shape: BoxShape.circle),
                         child: Image.asset('assets/Icon (1).png'),
                       ),
                     ),
                   ),
                 ],
               ),
-              Gap(10.h),
+              Gap(9.h),
               SizedBox(
                 height: 30.h,
                 child: ListView.separated(
@@ -131,8 +126,8 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                       },
                       child: AnimatedContainer(
                         duration: Duration(milliseconds: 200),
-                        height: 36,
-                        width: 150,
+                        height: 36.h,
+                        width: 150.w,
                         decoration: BoxDecoration(
                           boxShadow: [
                             BoxShadow(
@@ -141,7 +136,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                               offset: Offset(0, 6),
                             ),
                           ],
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(20.r),
                           color: isSelect ? Colors.black : Colors.white54,
                         ),
                         child: Center(
@@ -154,9 +149,9 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                             ),
                           ),
                         ),
-                          ) );
-                    }
-
+                      ),
+                    );
+                  },
                 ),
               ),
               Gap(10.h),
@@ -168,55 +163,84 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                   fillColor: Colors.grey.shade200,
                   contentPadding: EdgeInsets.symmetric(vertical: 14.h),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     borderSide: BorderSide.none,
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                     borderSide: BorderSide.none,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                 ),
               ),
               Gap(15.h),
-              // purchases list
               Expanded(
-                child: ListView.builder(
-                  itemCount: purchases.length,
-                  itemBuilder: (context, index) {
-                    final p = purchases[index];
-                    return PurchaseCart(
-                      purchase: p,
-                      edit: () async {
-                        final updatedPurchase = await showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                          ),
-                          builder: (_) => AddPurchaseSheet(isEdit: true, purchase: p),
-                        );
-                        if (updatedPurchase != null && updatedPurchase is Purchase) {
-                          context.read<SalesProvider>().updatePurchase(index, updatedPurchase);
-                        }
-                      },
-                      delete: () {
-                        showModalBottomSheet(context: context, builder: (_)=>ConfirmDeleteSheet(
-                          title: 'Delete Purchase',
-                          message: 'Are you sure you want to delete this purchase?',
-                          onConfirm: () {
-                            context.read<SalesProvider>().removePurchaseAt(index);
-                          },)
-                        );
-                      },
-                    );
-                  },
-                ),
+                child: purchases.isEmpty
+                    ? LayoutBuilder(
+                        builder: (context, constraints) {
+                          return SizedBox(
+                            height: constraints.maxHeight,
+                            width: double.infinity,
+                            child: const AppEmptyState(
+                              icon: Icons.shopping_cart_outlined,
+                              title: "No Purchases Found",
+                              subtitle:
+                                  "Start adding purchases by tapping the button above.",
+                            ),
+                          );
+                        },
+                      )
+                    : ListView.builder(
+                        itemCount: purchases.length,
+                        itemBuilder: (context, index) {
+                          final p = purchases[index];
+                          return PurchaseCart(
+                            purchase: p,
+                            edit: () async {
+                              final updatedPurchase =
+                                  await showModalBottomSheet(
+                                    context: context,
+                                    isScrollControlled: true,
+                                    backgroundColor: Colors.white,
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.vertical(
+                                        top: Radius.circular(20),
+                                      ),
+                                    ),
+                                    builder: (_) => AddPurchaseSheet(
+                                      isEdit: true,
+                                      purchase: p,
+                                    ),
+                                  );
+                              if (updatedPurchase != null &&
+                                  updatedPurchase is Purchase) {
+                                context.read<SalesProvider>().updatePurchase(
+                                  index,
+                                  updatedPurchase,
+                                );
+                              }
+                            },
+                            delete: () {
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (_) => ConfirmDeleteSheet(
+                                  title: 'Delete Purchase',
+                                  message:
+                                      'Are you sure you want to delete this purchase?',
+                                  onConfirm: () {
+                                    context
+                                        .read<SalesProvider>()
+                                        .removePurchaseAt(index);
+                                  },
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
               ),
-
             ],
           ),
         ),

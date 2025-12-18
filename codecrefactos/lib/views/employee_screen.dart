@@ -1,3 +1,4 @@
+import 'package:codecrefactos/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/employee_viewmodel.dart';
@@ -15,6 +16,7 @@ class EmployeesScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: Appbar(
+        showLogoutButton: false,
         onAdd: () {
           showModalBottomSheet(
             context: context,
@@ -28,7 +30,8 @@ class EmployeesScreen extends StatelessWidget {
         },
         onLogout: () {
           print("Logout Pressed");
-        }, bottonTitle: 'Add Employee',
+        },
+        bottonTitle: 'Add Employee',
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -65,37 +68,44 @@ class EmployeesScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Expanded(
-              child: ListView.builder(
-                itemCount: vm.filteredEmployees.length,
-                itemBuilder: (context, index) {
-                  final emp = vm.filteredEmployees[index];
-                  final realIndex = vm.employeesList.indexOf(emp);
+              child: vm.filteredEmployees.isEmpty
+                  ? const AppEmptyState(
+                      icon: Icons.people_outline,
+                      title: "No Employees Found",
+                      subtitle:
+                          "You can add new employees by tapping the button above.",
+                    )
+                  : ListView.builder(
+                      itemCount: vm.filteredEmployees.length,
+                      itemBuilder: (context, index) {
+                        final emp = vm.filteredEmployees[index];
+                        final realIndex = vm.employeesList.indexOf(emp);
 
-                  return EmployeeCard(
-                    employee: emp,
-                    index: realIndex,
-                    onDelete: () => vm.deleteEmployee(realIndex),
-                    onToggleStatus: () => vm.toggleStatus(realIndex),
-                    onEdit: () {
-                      showModalBottomSheet(
-                        context: context,
-                        isScrollControlled: true,
-                        backgroundColor: Colors.white,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(20),
-                          ),
-                        ),
-                        builder: (_) => AddEmployeeSheet(
-                          vm: vm,
+                        return EmployeeCard(
                           employee: emp,
                           index: realIndex,
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
+                          onDelete: () => vm.deleteEmployee(realIndex),
+                          onToggleStatus: () => vm.toggleStatus(realIndex),
+                          onEdit: () {
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.white,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20),
+                                ),
+                              ),
+                              builder: (_) => AddEmployeeSheet(
+                                vm: vm,
+                                employee: emp,
+                                index: realIndex,
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
             ),
           ],
         ),

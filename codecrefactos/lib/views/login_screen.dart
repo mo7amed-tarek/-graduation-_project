@@ -92,11 +92,14 @@ class LoginScreen extends StatelessWidget {
                   minimumSize: const Size(double.infinity, 45),
                 ),
                 onPressed: () {
-                  if (_formKey.currentState!.validate()) vm.login();
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (c) => Layout()),
-                  );
+                  if (_formKey.currentState!.validate()) {
+                    vm.login();
+
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (c) => Layout()),
+                    );
+                  }
                 },
                 child: Text(
                   TextManager.login,
