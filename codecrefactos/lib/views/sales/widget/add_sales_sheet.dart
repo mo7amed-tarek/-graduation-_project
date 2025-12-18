@@ -1,13 +1,12 @@
-import 'package:codecrefactos/viewmodels/employee_viewmodel.dart';
 import 'package:codecrefactos/viewmodels/sale_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
 class AddSalesSheet extends StatefulWidget {
-   AddSalesSheet({super.key,  this.isEdit = false, this.sale});
-   final bool  isEdit  ;
-   final SaleModel ? sale ;
+  AddSalesSheet({super.key, this.isEdit = false, this.sale});
+  final bool isEdit;
+  final SaleModel? sale;
 
   @override
   State<AddSalesSheet> createState() => _AddSalesSheetState();
@@ -29,6 +28,7 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
       EmployeeController.text = widget.sale!.employee;
     }
   }
+
   @override
   void dispose() {
     CustomerNameController.dispose();
@@ -55,10 +55,8 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-
                 Text(
-                  widget.isEdit == true ? "Edit Sale":
-                  "Add New Sale",
+                  widget.isEdit == true ? "Edit Sale" : "Add New Sale",
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
@@ -94,34 +92,31 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
                 ),
                 Gap(10.w),
                 ElevatedButton(
-                  onPressed: () { if(CustomerNameController.text.isEmpty ||
-                  CategoryController.text.isEmpty ||
-                  EmployeeController.text.isEmpty ||
-                  AmountNameController.text.isEmpty ){
-                    return ;
+                  onPressed: () {
+                    if (CustomerNameController.text.isEmpty ||
+                        CategoryController.text.isEmpty ||
+                        EmployeeController.text.isEmpty ||
+                        AmountNameController.text.isEmpty) {
+                      return;
                     }
-                    if(widget.isEdit==true){
+                    if (widget.isEdit == true) {
                       final saleData = SaleModel(
                         customerName: CustomerNameController.text,
                         category: CategoryController.text,
                         employee: EmployeeController.text,
-                        amount: AmountNameController.text ,
-
+                        amount: AmountNameController.text,
                       );
-                      Navigator.pop(context,saleData);
-
-                    }else{
+                      Navigator.pop(context, saleData);
+                    } else {
                       final editData = SaleModel(
                         customerName: CustomerNameController.text,
                         category: CategoryController.text,
                         employee: EmployeeController.text,
-                        amount: AmountNameController.text ,
-
+                        amount: AmountNameController.text,
                       );
-                      Navigator.pop(context,editData);
+                      Navigator.pop(context, editData);
                     }
-                 } ,
-
+                  },
 
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
@@ -134,8 +129,7 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
                     ),
                   ),
                   child: Text(
-                    widget.isEdit == true ? "Save Changes":
-                    "Add Sale",
+                    widget.isEdit == true ? "Save Changes" : "Add Sale",
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,

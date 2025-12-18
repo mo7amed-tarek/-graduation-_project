@@ -4,17 +4,15 @@ import 'package:gap/gap.dart';
 
 import '../../../viewmodels/sale_model.dart';
 import '../../../widgets/confirm_delete_sheet.dart';
-import 'add_sales_sheet.dart';
 
 class CustomSalescard extends StatelessWidget {
-   CustomSalescard({super.key, required this.saleModel, this.delete, this.edit});
+  CustomSalescard({super.key, required this.saleModel, this.delete, this.edit});
 
   final SaleModel saleModel;
-  void Function() ? delete;
-   void Function() ? edit;
+  void Function()? delete;
+  void Function()? edit;
 
-
-   @override
+  @override
   Widget build(BuildContext context) {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
@@ -59,9 +57,7 @@ class CustomSalescard extends StatelessWidget {
                   ),
                 ),
                 Spacer(),
-                IconButton(icon: Icon(Icons.edit), onPressed:edit
-
-                ),
+                IconButton(icon: Icon(Icons.edit), onPressed: edit),
                 IconButton(
                   icon: Icon(Icons.delete, color: Colors.red),
                   onPressed: () {

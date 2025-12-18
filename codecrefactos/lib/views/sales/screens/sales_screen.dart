@@ -98,6 +98,42 @@ class _SalesScreenState extends State<SalesScreen> {
               Gap(16.h),
               SearchFilter(),
               Gap(16.h),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: sales.length,
+                  itemBuilder: (context, index) {
+                    final sale = sales[index];
+                    return CustomSalescard(
+                      saleModel: sale,
+                      delete: () {
+                        // remove via provider
+                        context.read<SalesProvider>().removeSaleAt(index);
+                      },
+                      edit: () async {
+                        final updatedSaleData = await showModalBottomSheet(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.white,
+                          shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.vertical(
+                              top: Radius.circular(20),
+                            ),
+                          ),
+                          builder: (_) =>
+                              AddSalesSheet(isEdit: true, sale: sale),
+                        );
+                        if (updatedSaleData != null &&
+                            updatedSaleData is SaleModel) {
+                          context.read<SalesProvider>().updateSale(
+                            index,
+                            updatedSaleData,
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),

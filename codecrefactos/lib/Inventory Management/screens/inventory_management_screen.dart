@@ -22,6 +22,7 @@ class InventoryManagementScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: Appbar(
+        bottonTitle: 'Add',
         onAdd: () {
           showModalBottomSheet(
             context: context,
@@ -54,6 +55,7 @@ class InventoryManagementScreen extends StatelessWidget {
               total: "Total Items",
               price: vm.totalItems.toString(),
               imagePath: "assets/total_item.png",
+              cardColor: const Color(0xFFE6FDEE),
             ),
 
             Gap(16.h),
@@ -61,7 +63,7 @@ class InventoryManagementScreen extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: CustomSummarycard(
+                  child: CustomSummaryCard(
                     title: "Low Stock Items",
                     value: vm.lowStockCount.toString(),
                     valueColor: Colors.red,
@@ -69,7 +71,7 @@ class InventoryManagementScreen extends StatelessWidget {
                 ),
                 Gap(12.w),
                 Expanded(
-                  child: CustomSummarycard(
+                  child: CustomSummaryCard(
                     title: "Categories",
                     value: vm.categoriesCount.toString(),
                     valueColor: Colors.deepPurple,
