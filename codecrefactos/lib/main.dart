@@ -1,19 +1,21 @@
 import 'package:codecrefactos/Inventory%20Management/viewmodels/inventory_viewmodel.dart';
 import 'package:codecrefactos/forgot_password/view_model/forgotpassword_view_model.dart';
 import 'package:codecrefactos/viewmodels/employee_viewmodel.dart';
-
 import 'package:codecrefactos/viewmodels/login_viewmodel.dart';
 import 'package:codecrefactos/viewmodels/register_viewmodel.dart';
+import 'package:codecrefactos/viewmodels/sales_provider.dart';
 import 'package:codecrefactos/views/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -23,9 +25,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ForgotPasswordViewModel()),
         ChangeNotifierProvider(create: (_) => EmployeesViewModel()),
         ChangeNotifierProvider(create: (_) => InventoryViewModel()),
+        ChangeNotifierProvider(create: (_) => SalesProvider()),
       ],
       child: ScreenUtilInit(
-        designSize: Size(390, 844),
+        designSize: const Size(390, 844),
         builder: (_, __) =>
             MaterialApp(debugShowCheckedModeBanner: false, home: LoginScreen()),
       ),
