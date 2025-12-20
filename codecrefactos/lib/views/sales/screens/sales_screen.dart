@@ -25,10 +25,11 @@ class SalesScreen extends StatefulWidget {
 class _SalesScreenState extends State<SalesScreen> {
   @override
   Widget build(BuildContext context) {
-    // obtain the current sales list from provider
-    final sales = context.watch<SalesProvider>().sales;
+    final sales = context.watch<SalesProvider>().filteredSales;
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
+
       appBar: Appbar(
         showLogoutButton: false,
         onAdd: () async {
@@ -42,12 +43,10 @@ class _SalesScreenState extends State<SalesScreen> {
             builder: (_) => AddSalesSheet(),
           );
           if (salesData != null && salesData is SaleModel) {
-            // add via provider
             context.read<SalesProvider>().addSale(salesData);
           }
         },
         onLogout: () {
-          // Handle logout action
         },
         bottonTitle: 'Add Sales',
       ),
@@ -114,8 +113,7 @@ class _SalesScreenState extends State<SalesScreen> {
                           return CustomSalescard(
                             saleModel: sale,
                             delete: () {
-                              // remove via provider
-                              context.read<SalesProvider>().removeSaleAt(index);
+                              context.read<SalesProvider>().removeSale(sale);
                             },
                             edit: () async {
                               final updatedSaleData =
@@ -133,10 +131,10 @@ class _SalesScreenState extends State<SalesScreen> {
                                   );
                               if (updatedSaleData != null &&
                                   updatedSaleData is SaleModel) {
-                                context.read<SalesProvider>().updateSale(
-                                  index,
-                                  updatedSaleData,
-                                );
+                                context.read<SalesProvider>().updateSaleByModel(
+                                      sale,
+                                      updatedSaleData,
+                                    );
                               }
                             },
                           );

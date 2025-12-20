@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
+import '../../../viewmodels/sales_provider.dart';
 
 class SearchFilter extends StatelessWidget {
   final bool showDropdown;
@@ -12,7 +14,12 @@ class SearchFilter extends StatelessWidget {
     return Row(
       children: [
         Expanded(
+          //
           child: TextField(
+            onChanged: (value) {
+              context.read<SalesProvider>().setSearchQuery(value);
+            },
+            //
             decoration: InputDecoration(
               hintText: "Search ...",
               prefixIcon: const Icon(Icons.search),

@@ -35,10 +35,10 @@ int selectContainer = -1;
 class _PurchaseScreenState extends State<PurchaseScreen> {
   @override
   Widget build(BuildContext context) {
-    // watch purchases from provider
-    final purchases = context.watch<SalesProvider>().purchases;
+    final purchases = context.watch<SalesProvider>().filteredPurchases;
 
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: Appbar(
         showAddButton: true,
         showLogoutButton: false,
@@ -156,6 +156,9 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
               ),
               Gap(10.h),
               TextField(
+                onChanged: (value) {
+                  context.read<SalesProvider>().setPurchaseSearchQuery(value);
+                },
                 decoration: InputDecoration(
                   hintText: 'Search purchases...',
                   prefixIcon: Icon(Icons.search),
@@ -216,10 +219,10 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                   );
                               if (updatedPurchase != null &&
                                   updatedPurchase is Purchase) {
-                                context.read<SalesProvider>().updatePurchase(
-                                  index,
-                                  updatedPurchase,
-                                );
+                                context.read<SalesProvider>().updatePurchaseByModel(
+                                      p,
+                                      updatedPurchase,
+                                    );
                               }
                             },
                             delete: () {
@@ -230,9 +233,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                   message:
                                       'Are you sure you want to delete this purchase?',
                                   onConfirm: () {
-                                    context
-                                        .read<SalesProvider>()
-                                        .removePurchaseAt(index);
+                                    context.read<SalesProvider>().removePurchase(p);
                                   },
                                 ),
                               );
