@@ -8,7 +8,7 @@ class Profile extends StatelessWidget {
     return Scaffold(
       body: Center(
         child: Text(
-          "Profile Screen",
+          "Settings Page",
           style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
         ),
       ),

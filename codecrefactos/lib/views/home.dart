@@ -75,7 +75,7 @@ class _HomeState extends State<Home> {
                   Gap(10.w),
                   Expanded(
                     child: CustomCard(
-                      toptext: ' Total Employees',
+                      toptext: ' Total Sales',
                       number: "48",
                       imagepath: 'assets/sales.png',
                       bottomtext: "+12% from last month",
@@ -89,7 +89,7 @@ class _HomeState extends State<Home> {
                 children: [
                   Expanded(
                     child: CustomCard(
-                      toptext: ' Total Employees',
+                      toptext: ' Total Purchases',
                       number: "48",
                       imagepath: 'assets/purchases.png',
                       bottomtext: "+12% from last month",
@@ -98,7 +98,7 @@ class _HomeState extends State<Home> {
                   Gap(10.w),
                   Expanded(
                     child: CustomCard(
-                      toptext: ' Total Employees',
+                      toptext: ' Total Inventory',
                       number: "48",
                       imagepath: 'assets/inventory.png',
                       bottomtext: "+12% from last month",
