@@ -21,6 +21,7 @@ class InventoryManagementScreen extends StatelessWidget {
     final vm = context.watch<InventoryViewModel>();
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: Colors.grey.shade100,
       appBar: Appbar(
         showLogoutButton: false,
@@ -35,88 +36,104 @@ class InventoryManagementScreen extends StatelessWidget {
         },
         onLogout: () {},
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Inventory Management",
-              style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold),
-            ),
-            Gap(4.h),
-            Text(
-              "View and manage warehouse products",
-              style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
-            ),
-            Gap(20.h),
-            CustomTotalCart(
-              total: "Total Items",
-              price: vm.totalItems.toString(),
-              imagePath: "assets/total_item.png",
-              cardColor: const Color(0xFFE6FDEE),
-            ),
-            Gap(10.h),
-            Row(
-              children: [
-                Expanded(
-                  child: CustomSummaryCard(
-                    title: "Low Stock Items",
-                    value: vm.lowStockCount.toString(),
-                    valueColor: Colors.red,
-                  ),
-                ),
-                Gap(10.w),
-                Expanded(
-                  child: CustomSummaryCard(
-                    title: "Categories",
-                    value: vm.categoriesCount.toString(),
-                    valueColor: Colors.deepPurple,
-                  ),
-                ),
-              ],
-            ),
-            Gap(10.h),
-            if (vm.lowStockCount > 0)
-              Container(
-                padding: EdgeInsets.all(14.w),
-                decoration: BoxDecoration(
-                  color: Colors.orange.shade50,
-                  borderRadius: BorderRadius.circular(12.r),
-                  border: Border.all(color: Colors.orange.shade200),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.warning_amber_rounded,
-                      color: Colors.orange,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: EdgeInsets.all(12.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // العنوان الرئيسي
+              Text(
+                "Inventory Management",
+                style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold),
+              ),
+              Gap(3.h),
+              Text(
+                "View and manage warehouse products",
+                style: TextStyle(fontSize: 14.sp, color: Colors.grey.shade600),
+              ),
+              Gap(15.h),
+
+              // Total Cart
+              CustomTotalCart(
+                total: "Total Items",
+                price: vm.totalItems.toString(),
+                imagePath: "assets/total_item.png",
+                cardColor: const Color(0xFFE6FDEE),
+              ),
+              Gap(8.h),
+
+              // Summary Cards
+              Row(
+                children: [
+                  Expanded(
+                    child: CustomSummaryCard(
+                      title: "Low Stock Items",
+                      value: vm.lowStockCount.toString(),
+                      valueColor: Colors.red,
                     ),
-                    Gap(8.w),
-                    Expanded(
-                      child: Text(
-                        "${vm.lowStockCount} items are running low on stock. Please reorder soon.",
-                        style: TextStyle(
-                          fontSize: 13.sp,
-                          color: Colors.orange.shade800,
+                  ),
+                  Gap(10.w),
+                  Expanded(
+                    child: CustomSummaryCard(
+                      title: "Categories",
+                      value: vm.categoriesCount.toString(),
+                      valueColor: Colors.deepPurple,
+                    ),
+                  ),
+                ],
+              ),
+              Gap(16.h),
+
+              // Low stock warning
+              if (vm.lowStockCount > 0)
+                Container(
+                  padding: EdgeInsets.all(14.w),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade50,
+                    borderRadius: BorderRadius.circular(12.r),
+                    border: Border.all(color: Colors.orange.shade200),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.warning_amber_rounded,
+                        color: Colors.orange,
+                      ),
+                      Gap(8.w),
+                      Expanded(
+                        child: Text(
+                          "${vm.lowStockCount} items are running low on stock. Please reorder soon.",
+                          style: TextStyle(
+                            fontSize: 13.sp,
+                            color: Colors.orange.shade800,
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            Gap(16.h),
-            const SearchFilter(showDropdown: false),
-            Gap(20.h),
+              Gap(10.h),
 
-            Flexible(
-              child: vm.items.isEmpty
-                  ? const AppEmptyState(
-                      icon: Icons.inventory_2_outlined,
-                      title: "No Products Found",
-                      subtitle:
-                          "Start adding products by tapping the button above.",
+              // Search Filter
+              const SearchFilter(showDropdown: false),
+              Gap(15.h),
+
+              // Items List
+              vm.items.isEmpty
+                  ? SizedBox(
+                      height: 300.h,
+                      child: const AppEmptyState(
+                        icon: Icons.inventory_2_outlined,
+                        title: "No Products Found",
+                        subtitle:
+                            "Start adding products by tapping the button above.",
+                      ),
                     )
                   : ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
                       itemCount: vm.items.length,
                       itemBuilder: (context, index) => InventoryItemCard(
                         item: vm.items[index],
@@ -141,8 +158,8 @@ class InventoryManagementScreen extends StatelessWidget {
                         },
                       ),
                     ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

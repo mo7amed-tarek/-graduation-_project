@@ -21,6 +21,7 @@ class SaleModel {
       customerName: customerName ?? this.customerName,
       category: category ?? this.category,
       employee: employee ?? this.employee,
-amount: amount ??this.amount,  );
+      amount: amount ?? this.amount,
+    );
   }
 }

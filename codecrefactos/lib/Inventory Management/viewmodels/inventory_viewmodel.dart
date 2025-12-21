@@ -20,7 +20,12 @@ class InventoryItem {
 
 class InventoryViewModel extends ChangeNotifier {
   final List<InventoryItem> _items = [];
-  List<InventoryItem> get items => _items;
+  final List<InventoryItem> _filteredItems = [];
+
+  String _searchQuery = '';
+
+  List<InventoryItem> get items =>
+      _searchQuery.isEmpty ? _items : _filteredItems;
 
   int get totalItems => _items.length;
 
@@ -30,11 +35,35 @@ class InventoryViewModel extends ChangeNotifier {
 
   void addItem(InventoryItem item) {
     _items.add(item);
+    _applyFilter();
     notifyListeners();
   }
 
   void deleteItem(int index) {
     _items.removeAt(index);
+    _applyFilter();
     notifyListeners();
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query.toLowerCase();
+    _applyFilter();
+    notifyListeners();
+  }
+
+  void _applyFilter() {
+    if (_searchQuery.isEmpty) {
+      _filteredItems.clear();
+    } else {
+      _filteredItems
+        ..clear()
+        ..addAll(
+          _items.where(
+            (item) =>
+                item.name.toLowerCase().contains(_searchQuery) ||
+                item.category.toLowerCase().contains(_searchQuery),
+          ),
+        );
+    }
   }
 }
