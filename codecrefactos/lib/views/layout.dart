@@ -2,7 +2,7 @@ import 'package:codecrefactos/Inventory%20Management/screens/inventory_managemen
 import 'package:codecrefactos/resources/color_manager.dart';
 import 'package:codecrefactos/views/employee_screen.dart';
 import 'package:codecrefactos/views/home.dart';
-import 'package:codecrefactos/views/profile.dart';
+import 'package:codecrefactos/views/setting.dart';
 import 'package:codecrefactos/views/sales/screens/sales_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
