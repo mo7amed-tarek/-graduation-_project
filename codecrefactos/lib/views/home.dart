@@ -1,3 +1,4 @@
+import 'package:codecrefactos/views/login_screen.dart';
 import 'package:codecrefactos/widgets/custom_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -23,7 +24,18 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60),
-        child: Appbar(showAddButton: false, bottonTitle: '', ),
+        child: Appbar(
+          showAddButton: false,
+          showLogoutButton: true,
+          bottonTitle: '',
+
+          onLogout: () {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => LoginScreen()),
+              (route) => false,
+            );
+          },
+        ),
       ),
       body: SingleChildScrollView(
         child: Padding(
