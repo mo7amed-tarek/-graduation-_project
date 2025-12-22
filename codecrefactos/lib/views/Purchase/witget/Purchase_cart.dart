@@ -20,7 +20,6 @@ class PurchaseCart extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      shadowColor: Color.fromRGBO(0, 0, 0, 0.98),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
       child: Padding(
         padding: EdgeInsets.all(16),
@@ -31,31 +30,33 @@ class PurchaseCart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${purchase.date.year}/${purchase.date.month}/${purchase.date.day}',
-                  style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                  purchase.id,
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
                 ),
                 Text(
-                  purchase.category,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  '${purchase.date.year}/${purchase.date.month}/${purchase.date.day}',
+                  style: TextStyle(fontSize: 14.sp, color: Colors.grey),
                 ),
               ],
             ),
 
-            Gap(12.h),
+            Gap(10.h),
+
+            Text(
+              purchase.category,
+              style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
+            ),
+
+            Gap(10.h),
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  purchase.quantity,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Text(purchase.quantity),
                 Text(
                   purchase.amount,
                   style: TextStyle(
@@ -66,7 +67,7 @@ class PurchaseCart extends StatelessWidget {
               ],
             ),
 
-            Gap(12.h),
+            Gap(8.h),
 
             Text(
               purchase.supplierName,
@@ -78,35 +79,28 @@ class PurchaseCart extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Card(
-                  color: Colors.blue,
-                  shape: RoundedRectangleBorder(
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: purchase.status.toLowerCase() == 'completed'
+                        ? Colors.green
+                        : Colors.orange,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    child: Text(
-                      purchase.status,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                  child: Text(
+                    purchase.status,
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
-
                 Row(
                   children: [
-                    IconButton(
-                      onPressed: edit,
-                      icon: Icon(Icons.edit),
-                      color: Colors.grey,
-                    ),
+                    IconButton(onPressed: edit, icon: const Icon(Icons.edit)),
                     IconButton(
                       onPressed: delete,
-                      icon: Icon(Icons.delete),
-                      color: Colors.red,
+                      icon: const Icon(Icons.delete, color: Colors.red),
                     ),
                   ],
                 ),

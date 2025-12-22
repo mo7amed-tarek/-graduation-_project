@@ -93,6 +93,7 @@ class _SalesScreenState extends State<SalesScreen> {
                   ),
                 ],
               ),
+
               Gap(16.h),
 
               const SearchFilter(),

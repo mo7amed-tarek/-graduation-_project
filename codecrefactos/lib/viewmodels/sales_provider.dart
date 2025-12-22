@@ -12,6 +12,22 @@ class SalesProvider extends ChangeNotifier {
   String _searchQuery = '';
   String _purchaseSearchQuery = '';
 
+  int _invoiceCounter = 1;
+
+  String _generateInvoiceNumber() {
+    final number = _invoiceCounter.toString().padLeft(3, '0');
+    _invoiceCounter++;
+    return 'SO$number';
+  }
+
+  int _purchaseInvoiceCounter = 1;
+
+  String _generatePurchaseInvoiceId() {
+    final number = _purchaseInvoiceCounter.toString().padLeft(3, '0');
+    _purchaseInvoiceCounter++;
+    return 'PO$number';
+  }
+
   List<SaleModel> get sales => List.unmodifiable(_sales);
   List<Purchase> get purchases => List.unmodifiable(_purchases);
 
@@ -34,18 +50,12 @@ class SalesProvider extends ChangeNotifier {
     });
   }
 
-  int get completedSalesCount {
-    return _sales
-        .where((sale) => sale.category.toLowerCase() == 'completed')
-        .length;
-  }
+  // تعديل هنا لاستخدام status بدل category
+  int get completedSalesCount =>
+      _sales.where((s) => s.status.toLowerCase() == 'completed').length;
 
-  /// ⏳ PENDING SALES COUNT
-  int get pendingSalesCount {
-    return _sales
-        .where((sale) => sale.category.toLowerCase() == 'pending')
-        .length;
-  }
+  int get pendingSalesCount =>
+      _sales.where((s) => s.status.toLowerCase() == 'pending').length;
 
   double get totalPurchasesAmount {
     return _purchases.fold(0.0, (sum, purchase) {
@@ -56,13 +66,11 @@ class SalesProvider extends ChangeNotifier {
     });
   }
 
-  int get receivedPurchasesCount {
-    return _purchases.where((p) => p.status.toLowerCase() == 'received').length;
-  }
+  int get receivedPurchasesCount =>
+      _purchases.where((p) => p.status.toLowerCase() == 'received').length;
 
-  int get pendingPurchasesCount {
-    return _purchases.where((p) => p.status.toLowerCase() == 'pending').length;
-  }
+  int get pendingPurchasesCount =>
+      _purchases.where((p) => p.status.toLowerCase() == 'pending').length;
 
   void setSearchQuery(String query) {
     _searchQuery = query.trim();
@@ -106,103 +114,67 @@ class SalesProvider extends ChangeNotifier {
     _filteredPurchases
       ..clear()
       ..addAll(
-        _purchases.where((purchase) {
-          try {
-            final dynamic p = purchase;
-            final candidate =
-                (p.supplierName ?? p.supplier ?? p.name ?? p.title)?.toString();
-            if (candidate == null) return false;
-            return candidate.toLowerCase().contains(q);
-          } catch (_) {
-            return false;
-          }
-        }),
+        _purchases.where((p) => p.supplierName.toLowerCase().contains(q)),
       );
 
     notifyListeners();
   }
 
   void addSale(SaleModel sale) {
-    _sales.add(sale);
+    final saleWithInvoice = sale.copyWith(
+      invoiceNumber: _generateInvoiceNumber(),
+    );
+
+    _sales.add(saleWithInvoice);
     _applySalesFilter();
   }
 
-  void updateSale(int index, SaleModel sale) {
-    if (index >= 0 && index < _sales.length) {
-      _sales[index] = sale;
-      _applySalesFilter();
-    }
-  }
-
   void updateSaleByModel(SaleModel oldSale, SaleModel newSale) {
-    final idx = _sales.indexWhere((s) => identical(s, oldSale) || s == oldSale);
+    final idx = _sales.indexWhere((s) => identical(s, oldSale));
     if (idx != -1) {
       _sales[idx] = newSale;
       _applySalesFilter();
     }
   }
 
-  void removeSaleAt(int index) {
-    if (index >= 0 && index < _sales.length) {
-      _sales.removeAt(index);
-      _applySalesFilter();
-    }
-  }
-
   void removeSale(SaleModel sale) {
-    final idx = _sales.indexWhere((s) => identical(s, sale) || s == sale);
-    if (idx != -1) {
-      _sales.removeAt(idx);
-      _applySalesFilter();
-    }
-  }
-
-  void clearSales() {
-    _sales.clear();
+    _sales.remove(sale);
     _applySalesFilter();
   }
 
   void addPurchase(Purchase purchase) {
-    _purchases.add(purchase);
+    final purchaseWithId = Purchase(
+      id: _generatePurchaseInvoiceId(),
+      supplierName: purchase.supplierName,
+      category: purchase.category,
+      quantity: purchase.quantity,
+      amount: purchase.amount,
+      employee: purchase.employee,
+      date: purchase.date,
+      status: purchase.status,
+    );
+
+    _purchases.add(purchaseWithId);
     _applyPurchaseFilter();
   }
 
-  void updatePurchase(int index, Purchase purchase) {
-    if (index >= 0 && index < _purchases.length) {
-      _purchases[index] = purchase;
-      _applyPurchaseFilter();
-    }
-  }
-
   void updatePurchaseByModel(Purchase oldPurchase, Purchase newPurchase) {
-    final idx = _purchases.indexWhere(
-      (p) => identical(p, oldPurchase) || p == oldPurchase,
-    );
+    final idx = _purchases.indexWhere((p) => identical(p, oldPurchase));
     if (idx != -1) {
       _purchases[idx] = newPurchase;
       _applyPurchaseFilter();
     }
   }
 
-  void removePurchaseAt(int index) {
-    if (index >= 0 && index < _purchases.length) {
-      _purchases.removeAt(index);
-      _applyPurchaseFilter();
-    }
-  }
-
   void removePurchase(Purchase purchase) {
-    final idx = _purchases.indexWhere(
-      (p) => identical(p, purchase) || p == purchase,
-    );
-    if (idx != -1) {
-      _purchases.removeAt(idx);
-      _applyPurchaseFilter();
-    }
-  }
-
-  void clearPurchases() {
-    _purchases.clear();
+    _purchases.remove(purchase);
     _applyPurchaseFilter();
   }
+}
+
+class SalesData {
+  final String month;
+  final double value;
+
+  SalesData({required this.month, required this.value});
 }

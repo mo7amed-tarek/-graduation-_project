@@ -8,7 +8,6 @@ class Employee {
   final bool isActive;
   final String department;
 
-  // Optional values 👇
   final String? phone;
   final String? joinDate;
   final List<String>? permissions;
@@ -59,11 +58,17 @@ class EmployeesViewModel extends ChangeNotifier {
   }
 
   void searchEmployees(String query) {
+    final q = query.toLowerCase();
+
     filteredEmployees = employeesList.where((emp) {
-      final q = query.toLowerCase();
-      return emp.name.toLowerCase().contains(q) ||
-          emp.email.toLowerCase().contains(q);
+      final nameMatch = emp.name.toLowerCase().contains(q);
+      final emailMatch = emp.email.toLowerCase().contains(q);
+      final phoneMatch =
+          emp.phone != null && emp.phone!.toLowerCase().contains(q);
+
+      return nameMatch || emailMatch || phoneMatch;
     }).toList();
+
     notifyListeners();
   }
 

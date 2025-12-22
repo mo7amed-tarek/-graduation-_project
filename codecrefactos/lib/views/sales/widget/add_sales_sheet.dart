@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 
 class AddSalesSheet extends StatefulWidget {
   AddSalesSheet({super.key, this.isEdit = false, this.sale});
+
   final bool isEdit;
   final SaleModel? sale;
 
@@ -13,28 +14,31 @@ class AddSalesSheet extends StatefulWidget {
 }
 
 class _AddSalesSheetState extends State<AddSalesSheet> {
-  final CustomerNameController = TextEditingController();
-  final CategoryController = TextEditingController();
-  final EmployeeController = TextEditingController();
-  final AmountNameController = TextEditingController();
+  final customerController = TextEditingController();
+  final categoryController = TextEditingController();
+  final employeeController = TextEditingController();
+  final amountController = TextEditingController();
+
+  String status = 'Completed';
 
   @override
   void initState() {
     super.initState();
     if (widget.sale != null) {
-      CustomerNameController.text = widget.sale!.customerName;
-      CategoryController.text = widget.sale!.category;
-      AmountNameController.text = widget.sale!.amount.toString();
-      EmployeeController.text = widget.sale!.employee;
+      customerController.text = widget.sale!.customerName;
+      categoryController.text = widget.sale!.category;
+      employeeController.text = widget.sale!.employee;
+      amountController.text = widget.sale!.amount;
+      status = widget.sale!.status ?? 'Completed';
     }
   }
 
   @override
   void dispose() {
-    CustomerNameController.dispose();
-    CategoryController.dispose();
-    EmployeeController.dispose();
-    AmountNameController.dispose();
+    customerController.dispose();
+    categoryController.dispose();
+    employeeController.dispose();
+    amountController.dispose();
     super.dispose();
   }
 
@@ -52,11 +56,12 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
+            /// HEADER
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  widget.isEdit == true ? "Edit Sale" : "Add New Sale",
+                  widget.isEdit ? "Edit Sale" : "Add New Sale",
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
@@ -73,16 +78,24 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
               style: TextStyle(color: Colors.grey, fontSize: 13.sp),
             ),
             Gap(20.h),
+
             _inputLabel("Customer Name"),
-            _textField(CustomerNameController),
+            _textField(customerController),
+
             _inputLabel("Category"),
-            _textField(CategoryController),
+            _textField(categoryController),
+
             _inputLabel("Amount"),
-            _textField(AmountNameController),
+            _textField(amountController, keyboardType: TextInputType.number),
+
             _inputLabel("Employee"),
-            _textField(EmployeeController),
+            _textField(employeeController),
+
+            _inputLabel("Status"),
+            _statusDropdown(),
 
             Gap(25.h),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -92,32 +105,7 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
                 ),
                 Gap(10.w),
                 ElevatedButton(
-                  onPressed: () {
-                    if (CustomerNameController.text.isEmpty ||
-                        CategoryController.text.isEmpty ||
-                        EmployeeController.text.isEmpty ||
-                        AmountNameController.text.isEmpty) {
-                      return;
-                    }
-                    if (widget.isEdit == true) {
-                      final saleData = SaleModel(
-                        customerName: CustomerNameController.text,
-                        category: CategoryController.text,
-                        employee: EmployeeController.text,
-                        amount: AmountNameController.text,
-                      );
-                      Navigator.pop(context, saleData);
-                    } else {
-                      final editData = SaleModel(
-                        customerName: CustomerNameController.text,
-                        category: CategoryController.text,
-                        employee: EmployeeController.text,
-                        amount: AmountNameController.text,
-                      );
-                      Navigator.pop(context, editData);
-                    }
-                  },
-
+                  onPressed: _submit,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     padding: EdgeInsets.symmetric(
@@ -129,7 +117,7 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
                     ),
                   ),
                   child: Text(
-                    widget.isEdit == true ? "Save Changes" : "Add Sale",
+                    widget.isEdit ? "Save Changes" : "Add Sale",
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
@@ -138,11 +126,32 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
                 ),
               ],
             ),
+
             Gap(20.h),
           ],
         ),
       ),
     );
+  }
+
+  void _submit() {
+    if (customerController.text.isEmpty ||
+        categoryController.text.isEmpty ||
+        employeeController.text.isEmpty ||
+        amountController.text.isEmpty)
+      return;
+
+    final sale = SaleModel(
+      invoiceNumber:
+          widget.sale?.invoiceNumber ?? '', // ⚠️ Provider يولّد رقم الفاتورة
+      customerName: customerController.text,
+      category: categoryController.text,
+      employee: employeeController.text,
+      amount: amountController.text,
+      status: status,
+    );
+
+    Navigator.pop(context, sale);
   }
 
   Widget _inputLabel(String text) {
@@ -155,15 +164,44 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
     );
   }
 
-  Widget _textField(TextEditingController controller) {
+  Widget _textField(
+    TextEditingController controller, {
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return TextField(
       controller: controller,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.grey.shade100,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _statusDropdown() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: status,
+          isExpanded: true,
+          items: const [
+            DropdownMenuItem(value: 'Completed', child: Text('Completed')),
+            DropdownMenuItem(value: 'Pending', child: Text('Pending')),
+          ],
+          onChanged: (value) {
+            setState(() {
+              status = value!;
+            });
+          },
         ),
       ),
     );
