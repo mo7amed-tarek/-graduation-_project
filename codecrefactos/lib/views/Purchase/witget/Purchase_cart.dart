@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:gap/gap.dart';
-
+import 'package:provider/provider.dart';
 import '../../../viewmodels/purchase_model.dart';
+import '../../../viewmodels/sales_provider.dart';
 
 class PurchaseCart extends StatelessWidget {
   const PurchaseCart({
@@ -18,6 +18,8 @@ class PurchaseCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isPending = purchase.status.toLowerCase() == 'pending';
+
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
@@ -43,16 +45,12 @@ class PurchaseCart extends StatelessWidget {
                 ),
               ],
             ),
-
-            Gap(10.h),
-
+            SizedBox(height: 10.h),
             Text(
               purchase.category,
               style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
             ),
-
-            Gap(10.h),
-
+            SizedBox(height: 10.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -66,28 +64,19 @@ class PurchaseCart extends StatelessWidget {
                 ),
               ],
             ),
-
-            Gap(8.h),
-
+            SizedBox(height: 8.h),
             Text(
               purchase.supplierName,
               style: TextStyle(fontSize: 14.sp, color: Colors.grey),
             ),
-
-            Gap(10.h),
-
+            SizedBox(height: 10.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 6,
-                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: purchase.status.toLowerCase() == 'completed'
-                        ? Colors.green
-                        : Colors.orange,
+                    color: isPending ? Colors.orange : Colors.green,
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
@@ -97,7 +86,8 @@ class PurchaseCart extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    IconButton(onPressed: edit, icon: const Icon(Icons.edit)),
+                    if (isPending)
+                      IconButton(onPressed: edit, icon: const Icon(Icons.edit)),
                     IconButton(
                       onPressed: delete,
                       icon: const Icon(Icons.delete, color: Colors.red),
@@ -106,6 +96,32 @@ class PurchaseCart extends StatelessWidget {
                 ),
               ],
             ),
+            if (isPending) ...[
+              SizedBox(height: 8.h),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final updatedPurchase = purchase.copyWith(
+                      status: 'Completed',
+                    );
+                    context.read<SalesProvider>().updatePurchaseByModel(
+                      purchase,
+                      updatedPurchase,
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                  child: const Text('Confirm'),
+                ),
+              ),
+            ],
           ],
         ),
       ),

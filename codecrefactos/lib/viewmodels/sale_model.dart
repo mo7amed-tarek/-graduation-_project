@@ -12,7 +12,7 @@ class SaleModel {
     required this.category,
     required this.employee,
     required this.amount,
-    this.status = 'Completed',
+    this.status = 'Pending',
   });
 
   SaleModel copyWith({

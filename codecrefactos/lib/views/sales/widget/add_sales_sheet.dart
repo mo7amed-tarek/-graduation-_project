@@ -1,12 +1,11 @@
-import 'package:codecrefactos/viewmodels/sale_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import '../../../viewmodels/sale_model.dart';
 
 class AddSalesSheet extends StatefulWidget {
-  AddSalesSheet({super.key, this.isEdit = false, this.sale});
+  AddSalesSheet({super.key, this.sale});
 
-  final bool isEdit;
   final SaleModel? sale;
 
   @override
@@ -19,8 +18,6 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
   final employeeController = TextEditingController();
   final amountController = TextEditingController();
 
-  String status = 'Completed';
-
   @override
   void initState() {
     super.initState();
@@ -29,7 +26,6 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
       categoryController.text = widget.sale!.category;
       employeeController.text = widget.sale!.employee;
       amountController.text = widget.sale!.amount;
-      status = widget.sale!.status ?? 'Completed';
     }
   }
 
@@ -61,7 +57,7 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  widget.isEdit ? "Edit Sale" : "Add New Sale",
+                  widget.sale != null ? "Edit Sale" : "Add New Sale",
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
@@ -91,9 +87,6 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
             _inputLabel("Employee"),
             _textField(employeeController),
 
-            _inputLabel("Status"),
-            _statusDropdown(),
-
             Gap(25.h),
 
             Row(
@@ -116,9 +109,9 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
                       borderRadius: BorderRadius.circular(10.r),
                     ),
                   ),
-                  child: Text(
-                    widget.isEdit ? "Save Changes" : "Add Sale",
-                    style: const TextStyle(
+                  child: const Text(
+                    "Add Sale",
+                    style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,
                     ),
@@ -142,13 +135,12 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
       return;
 
     final sale = SaleModel(
-      invoiceNumber:
-          widget.sale?.invoiceNumber ?? '', // ⚠️ Provider يولّد رقم الفاتورة
+      invoiceNumber: widget.sale?.invoiceNumber ?? '',
       customerName: customerController.text,
       category: categoryController.text,
       employee: employeeController.text,
       amount: amountController.text,
-      status: status,
+      status: 'Pending',
     );
 
     Navigator.pop(context, sale);
@@ -177,31 +169,6 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide.none,
-        ),
-      ),
-    );
-  }
-
-  Widget _statusDropdown() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(10.r),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: status,
-          isExpanded: true,
-          items: const [
-            DropdownMenuItem(value: 'Completed', child: Text('Completed')),
-            DropdownMenuItem(value: 'Pending', child: Text('Pending')),
-          ],
-          onChanged: (value) {
-            setState(() {
-              status = value!;
-            });
-          },
         ),
       ),
     );

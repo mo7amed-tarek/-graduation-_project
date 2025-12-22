@@ -16,7 +16,7 @@ class Purchase {
     required this.amount,
     required this.employee,
     required this.date,
-    this.status = "Completed",
+    this.status = "Pending",
   });
 
   Purchase copyWith({
@@ -40,4 +40,3 @@ class Purchase {
     );
   }
 }
-

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-
 import '../../../viewmodels/sale_model.dart';
 import '../../../widgets/confirm_delete_sheet.dart';
+import 'package:provider/provider.dart';
+import '../../../viewmodels/sales_provider.dart';
 
 class CustomSalescard extends StatelessWidget {
   const CustomSalescard({
@@ -29,6 +30,7 @@ class CustomSalescard extends StatelessWidget {
       child: Padding(
         padding: EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -79,7 +81,10 @@ class CustomSalescard extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                IconButton(icon: const Icon(Icons.edit), onPressed: edit),
+
+                if (saleModel.status.toLowerCase() == 'pending')
+                  IconButton(icon: const Icon(Icons.edit), onPressed: edit),
+
                 IconButton(
                   icon: const Icon(Icons.delete, color: Colors.red),
                   onPressed: () {
@@ -98,6 +103,31 @@ class CustomSalescard extends StatelessWidget {
                 ),
               ],
             ),
+
+            if (saleModel.status.toLowerCase() == 'pending') ...[
+              Gap(8.h),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final updatedSale = saleModel.copyWith(status: 'Completed');
+                    context.read<SalesProvider>().updateSaleByModel(
+                      saleModel,
+                      updatedSale,
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(vertical: 12.h),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                  ),
+                  child: const Text('Confirm'),
+                ),
+              ),
+            ],
           ],
         ),
       ),

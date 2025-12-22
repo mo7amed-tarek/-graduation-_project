@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-
 import '../../../viewmodels/purchase_model.dart';
 
 class AddPurchaseSheet extends StatefulWidget {
@@ -21,7 +20,7 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
   final amountController = TextEditingController();
   final employeeController = TextEditingController();
 
-  String status = 'Completed';
+  String status = 'Pending';
 
   @override
   void initState() {
@@ -78,34 +77,22 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
                 ),
               ],
             ),
-
             Text(
               "Enter purchase order details",
               style: TextStyle(color: Colors.grey, fontSize: 13.sp),
             ),
-
             Gap(20.h),
-
             _inputLabel("Supplier Name"),
             _textField(supplierController),
-
             _inputLabel("Category"),
             _textField(categoryController),
-
             _inputLabel("Quantity"),
             _textField(quantityController, keyboardType: TextInputType.number),
-
             _inputLabel("Amount"),
             _textField(amountController, keyboardType: TextInputType.number),
-
             _inputLabel("Employee"),
             _textField(employeeController),
-
-            _inputLabel("Status"),
-            _statusDropdown(),
-
             Gap(25.h),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -136,7 +123,6 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
                 ),
               ],
             ),
-
             Gap(20.h),
           ],
         ),
@@ -154,14 +140,16 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
     }
 
     final purchase = Purchase(
-      id: widget.purchase?.id ?? '',
+      id:
+          widget.purchase?.id ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       supplierName: supplierController.text,
       category: categoryController.text,
       quantity: quantityController.text,
       amount: amountController.text,
       employee: employeeController.text,
       date: widget.purchase?.date ?? DateTime.now(),
-      status: status,
+      status: widget.isEdit ? status : 'Pending',
     );
 
     Navigator.pop(context, purchase);
@@ -190,31 +178,6 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide.none,
-        ),
-      ),
-    );
-  }
-
-  Widget _statusDropdown() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(10.r),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: status,
-          isExpanded: true,
-          items: const [
-            DropdownMenuItem(value: 'Completed', child: Text('Completed')),
-            DropdownMenuItem(value: 'Pending', child: Text('Pending')),
-          ],
-          onChanged: (value) {
-            setState(() {
-              status = value!;
-            });
-          },
         ),
       ),
     );

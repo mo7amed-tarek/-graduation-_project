@@ -120,28 +120,33 @@ class _SalesScreenState extends State<SalesScreen> {
                           delete: () {
                             context.read<SalesProvider>().removeSale(sale);
                           },
-                          edit: () async {
-                            final updatedSaleData = await showModalBottomSheet(
-                              context: context,
-                              isScrollControlled: true,
-                              backgroundColor: Colors.white,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                  top: Radius.circular(20),
-                                ),
-                              ),
-                              builder: (_) =>
-                                  AddSalesSheet(isEdit: true, sale: sale),
-                            );
+                          edit: sale.status.toLowerCase() == 'pending'
+                              ? () async {
+                                  final updatedSaleData =
+                                      await showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        backgroundColor: Colors.white,
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(20),
+                                          ),
+                                        ),
+                                        builder: (_) =>
+                                            AddSalesSheet(sale: sale),
+                                      );
 
-                            if (updatedSaleData != null &&
-                                updatedSaleData is SaleModel) {
-                              context.read<SalesProvider>().updateSaleByModel(
-                                sale,
-                                updatedSaleData,
-                              );
-                            }
-                          },
+                                  if (updatedSaleData != null &&
+                                      updatedSaleData is SaleModel) {
+                                    context
+                                        .read<SalesProvider>()
+                                        .updateSaleByModel(
+                                          sale,
+                                          updatedSaleData,
+                                        );
+                                  }
+                                }
+                              : null,
                         );
                       },
                     ),
