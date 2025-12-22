@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import '../viewmodels/employee_viewmodel.dart';
@@ -20,11 +21,14 @@ class AddEmployeeSheet extends StatefulWidget {
 }
 
 class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
+  final _formKey = GlobalKey<FormState>();
+
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final phoneController = TextEditingController();
   final positionController = TextEditingController();
   final salaryController = TextEditingController();
+
   String? selectedDepartment;
 
   @override
@@ -60,107 +64,122 @@ class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
         top: 20.h,
       ),
       child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.employee != null
-                      ? "Edit Employee"
-                      : "Add New Employee",
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.pop(context),
-                ),
-              ],
-            ),
-            Text(
-              "Enter employee information",
-              style: TextStyle(color: Colors.grey, fontSize: 13.sp),
-            ),
-            Gap(20.h),
-            _inputLabel("Name"),
-            _textField(nameController),
-            _inputLabel("Email"),
-            _textField(emailController),
-            _inputLabel("Phone"),
-            _textField(phoneController),
-            _inputLabel("Position"),
-            _textField(positionController),
-            _inputLabel("Department"),
-            _dropDown(),
-            _inputLabel("Salary"),
-            _textField(salaryController),
-            Gap(25.h),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancel"),
-                ),
-                Gap(10.w),
-                ElevatedButton(
-                  onPressed: () {
-                    if (nameController.text.isEmpty ||
-                        emailController.text.isEmpty ||
-                        phoneController.text.isEmpty ||
-                        positionController.text.isEmpty ||
-                        salaryController.text.isEmpty ||
-                        selectedDepartment == null) {
-                      return;
-                    }
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _header(context),
+              Gap(20.h),
 
-                    final newEmployee = Employee(
-                      name: nameController.text,
-                      role: positionController.text,
-                      email: emailController.text,
-                      phone: phoneController.text,
-                      salary: salaryController.text,
-                      isActive: widget.employee?.isActive ?? true,
-                      department: selectedDepartment!,
-                    );
+              _inputLabel("Name"),
+              _textField(
+                nameController,
+                validator: (v) =>
+                    v == null || v.isEmpty ? "Name is required" : null,
+              ),
 
-                    if (widget.employee != null && widget.index != null) {
-                      widget.vm.updateEmployee(widget.index!, newEmployee);
-                    } else {
-                      widget.vm.addEmployee(newEmployee);
-                    }
+              _inputLabel("Email"),
+              _textField(
+                emailController,
+                validator: (v) =>
+                    v == null || v.isEmpty ? "Email is required" : null,
+              ),
 
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 25.w,
-                      vertical: 12.h,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
-                  ),
-                  child: Text(
-                    widget.employee != null ? "Save" : "Add Employee",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Gap(20.h),
-          ],
+              _inputLabel("Phone"),
+              _textField(
+                phoneController,
+                validator: (v) =>
+                    v == null || v.isEmpty ? "Phone is required" : null,
+              ),
+
+              _inputLabel("Position"),
+              _textField(
+                positionController,
+                validator: (v) =>
+                    v == null || v.isEmpty ? "Position is required" : null,
+              ),
+
+              _inputLabel("Department"),
+              _dropDown(),
+
+              _inputLabel("Salary"),
+              _salaryField(),
+              Gap(25.h),
+              _actions(context),
+              Gap(20.h),
+            ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _header(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          widget.employee != null ? "Edit Employee" : "Add New Employee",
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+        ),
+        IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ],
+    );
+  }
+
+  Widget _actions(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Cancel"),
+        ),
+        Gap(10.w),
+        ElevatedButton(
+          onPressed: () {
+            if (!_formKey.currentState!.validate() ||
+                selectedDepartment == null) {
+              return;
+            }
+
+            final newEmployee = Employee(
+              name: nameController.text,
+              role: positionController.text,
+              email: emailController.text,
+              phone: phoneController.text,
+              salary: salaryController.text,
+              department: selectedDepartment!,
+              // 👇 مهم جدًا
+              isActive: widget.employee?.isActive ?? false,
+            );
+
+            if (widget.employee != null && widget.index != null) {
+              widget.vm.updateEmployee(widget.index!, newEmployee);
+            } else {
+              widget.vm.addEmployee(newEmployee);
+            }
+
+            Navigator.pop(context);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            padding: EdgeInsets.symmetric(horizontal: 25.w, vertical: 12.h),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.r),
+            ),
+          ),
+          child: Text(
+            widget.employee != null ? "Save" : "Add Employee",
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
     );
   }
 
@@ -174,9 +193,45 @@ class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
     );
   }
 
-  Widget _textField(TextEditingController controller) {
-    return TextField(
+  Widget _textField(
+    TextEditingController controller, {
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
       controller: controller,
+      validator: validator,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
+  Widget _salaryField() {
+    return TextFormField(
+      controller: salaryController,
+      keyboardType: TextInputType.number,
+      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*'))],
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return "Salary is required";
+        }
+
+        final salary = int.tryParse(value);
+        if (salary == null) {
+          return "Enter a valid number";
+        }
+
+        if (salary <= 0) {
+          return "Salary must be greater than 0";
+        }
+
+        return null;
+      },
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.grey.shade100,

@@ -17,7 +17,7 @@ class Employee {
     required this.role,
     required this.email,
     required this.salary,
-    required this.isActive,
+    this.isActive = false,
     required this.department,
     this.phone,
     this.joinDate,
@@ -94,6 +94,7 @@ class EmployeesViewModel extends ChangeNotifier {
     employeesList[index] = employeesList[index].copyWith(
       isActive: !employeesList[index].isActive,
     );
+
     filteredEmployees = List.from(employeesList);
     notifyListeners();
   }
