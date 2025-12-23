@@ -4,7 +4,8 @@ class InventoryItem {
   final String name;
   final String category;
   final String date;
-  final String warehouse;
+  final double unitPrice;
+
   final double stockRatio;
   final bool isLowStock;
 
@@ -12,7 +13,7 @@ class InventoryItem {
     required this.name,
     required this.category,
     required this.date,
-    required this.warehouse,
+    required this.unitPrice,
     required this.stockRatio,
     required this.isLowStock,
   });
@@ -60,8 +61,8 @@ class InventoryViewModel extends ChangeNotifier {
         ..addAll(
           _items.where(
             (item) =>
-                item.name.toLowerCase().contains(_searchQuery) ||
-                item.category.toLowerCase().contains(_searchQuery),
+                item.name.toLowerCase().contains(_searchQuery)
+                // item.category.toLowerCase().contains(_searchQuery),
           ),
         );
     }

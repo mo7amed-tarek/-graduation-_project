@@ -50,7 +50,6 @@ class SalesProvider extends ChangeNotifier {
     });
   }
 
-  // تعديل هنا لاستخدام status بدل category
   int get completedSalesCount =>
       _sales.where((s) => s.status.toLowerCase() == 'completed').length;
 

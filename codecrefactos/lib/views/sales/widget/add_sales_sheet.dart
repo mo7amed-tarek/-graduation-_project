@@ -69,6 +69,7 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
                 ),
               ],
             ),
+
             Text(
               "Enter sale details",
               style: TextStyle(color: Colors.grey, fontSize: 13.sp),

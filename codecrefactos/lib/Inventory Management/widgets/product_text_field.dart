@@ -27,15 +27,30 @@ class ProductTextField extends StatelessWidget {
           TextFormField(
             controller: controller,
             keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return "Required";
-              }
-              if (isNumber && double.tryParse(value) == null) {
-                return "Enter valid number";
-              }
-              return null;
-            },
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return "Required";
+                }
+
+                if (isNumber) {
+                  final number = double.tryParse(value);
+
+                  if (number == null) {
+                    return "Enter valid number";
+                  }
+
+                  if (number < 0) {
+                    return "Cannot be negative";
+                  }
+
+                  if (number == 0) {
+                    return "Must be greater than 0";
+                  }
+                }
+
+                return null;
+              },
+
             decoration: InputDecoration(
               filled: true,
               fillColor: Colors.grey.shade100,
