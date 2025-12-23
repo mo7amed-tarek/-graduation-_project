@@ -61,8 +61,8 @@ class InventoryViewModel extends ChangeNotifier {
         ..addAll(
           _items.where(
             (item) =>
-                item.name.toLowerCase().contains(_searchQuery)
-                // item.category.toLowerCase().contains(_searchQuery),
+                item.name.toLowerCase().contains(_searchQuery)||
+                item.category.toLowerCase().contains(_searchQuery),
           ),
         );
     }

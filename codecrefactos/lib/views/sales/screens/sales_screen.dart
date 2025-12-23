@@ -96,7 +96,13 @@ class _SalesScreenState extends State<SalesScreen> {
 
               Gap(16.h),
 
-              const SearchFilter(),
+              SearchFilter(
+                showDropdown: true, // أو حسب ما تحب
+                onChanged: (value) {
+                  // السطر ده هو اللي هيخلي السيرش يرجع يشتغل في السيلز
+                  context.read<SalesProvider>().setSearchQuery(value);
+                },
+              ),
               Gap(16.h),
 
               sales.isEmpty
