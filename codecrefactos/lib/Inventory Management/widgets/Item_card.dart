@@ -60,11 +60,13 @@ class InventoryItemCard extends StatelessWidget {
             ),
 
             Gap(6.h),
+            Text("Unit Price: \$${item.unitPrice}"),
+            Gap(6.h),
+
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(item.warehouse, style: TextStyle(fontSize: 13.sp)),
                 Text(
                   "${(percent * 100).toInt()}%",
                   style: TextStyle(

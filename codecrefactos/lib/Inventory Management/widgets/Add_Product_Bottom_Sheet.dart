@@ -18,10 +18,9 @@ class _AddProductSheetState extends State<AddProductSheet> {
   final _formKey = GlobalKey<FormState>();
 
   final nameCtrl = TextEditingController();
-  final qtyCtrl = TextEditingController();
-  final locationCtrl = TextEditingController();
-  final minCtrl = TextEditingController();
-  final maxCtrl = TextEditingController();
+  final currentQtyCtrl = TextEditingController();
+  final quantityCtrl = TextEditingController();
+  final unitPriceCtrl = TextEditingController();
 
   String? selectedCategory;
   bool isFormValid = false;
@@ -29,15 +28,12 @@ class _AddProductSheetState extends State<AddProductSheet> {
   @override
   void initState() {
     super.initState();
+
     if (widget.item != null) {
       final item = widget.item!;
       nameCtrl.text = item.name;
-      locationCtrl.text = item.warehouse;
-      qtyCtrl.text = (item.stockRatio * 100).toStringAsFixed(0);
-      minCtrl.text = item.isLowStock ? qtyCtrl.text : "0";
-      maxCtrl.text = "100";
+      unitPriceCtrl.text = item.unitPrice.toString();
       selectedCategory = item.category;
-      isFormValid = true;
     }
   }
 
@@ -59,20 +55,16 @@ class _AddProductSheetState extends State<AddProductSheet> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header
               Row(
                 children: [
                   const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Add / Edit Product",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
+                    child: Text(
+                      "Add / Edit Product",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   IconButton(
@@ -84,13 +76,14 @@ class _AddProductSheetState extends State<AddProductSheet> {
 
               const SizedBox(height: 20),
 
+              // Form
               Form(
                 key: _formKey,
                 onChanged: () {
                   setState(() {
                     isFormValid =
                         _formKey.currentState!.validate() &&
-                        selectedCategory != null;
+                            selectedCategory != null;
                   });
                 },
                 child: Column(
@@ -99,28 +92,28 @@ class _AddProductSheetState extends State<AddProductSheet> {
                       label: "Product Name",
                       controller: nameCtrl,
                     ),
+
                     CategoryDropdown(
                       value: selectedCategory,
                       onChanged: (val) =>
                           setState(() => selectedCategory = val),
                     ),
+
                     ProductTextField(
                       label: "Current Quantity",
-                      controller: qtyCtrl,
+                      controller: currentQtyCtrl,
                       isNumber: true,
                     ),
+
                     ProductTextField(
-                      label: "Location",
-                      controller: locationCtrl,
-                    ),
-                    ProductTextField(
-                      label: "Minimum Quantity",
-                      controller: minCtrl,
+                      label: "Quantity",
+                      controller: quantityCtrl,
                       isNumber: true,
                     ),
+
                     ProductTextField(
-                      label: "Maximum Quantity",
-                      controller: maxCtrl,
+                      label: "Unit Price",
+                      controller: unitPriceCtrl,
                       isNumber: true,
                     ),
                   ],
@@ -129,15 +122,12 @@ class _AddProductSheetState extends State<AddProductSheet> {
 
               const SizedBox(height: 30),
 
+              // Buttons
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
                       onPressed: () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.black,
-                      ),
                       child: const Text("Cancel"),
                     ),
                   ),
@@ -146,40 +136,49 @@ class _AddProductSheetState extends State<AddProductSheet> {
                     child: ElevatedButton(
                       onPressed: isFormValid
                           ? () {
-                              final current = double.parse(qtyCtrl.text);
-                              final max = double.parse(maxCtrl.text);
-                              final min = double.parse(minCtrl.text);
+                        final current =
+                        double.tryParse(currentQtyCtrl.text);
+                        final quantity =
+                        double.tryParse(quantityCtrl.text);
+                        final unitPrice =
+                        double.tryParse(unitPriceCtrl.text);
 
-                              final newItem = InventoryItem(
-                                name: nameCtrl.text.trim(),
-                                category: selectedCategory!,
-                                warehouse: locationCtrl.text.trim(),
-                                date: DateTime.now()
-                                    .toString()
-                                    .split(' ')
-                                    .first,
-                                stockRatio: current / max,
-                                isLowStock: current <= min,
-                              );
+                        if (current == null ||
+                            quantity == null ||
+                            unitPrice == null) {
+                          return;
+                        }
 
-                              if (widget.index != null) {
-                                vm.deleteItem(widget.index!);
-                              }
-                              vm.addItem(newItem);
+                        final ratio = current / quantity;
 
-                              Navigator.pop(context);
-                            }
+                        final newItem = InventoryItem(
+                          name: nameCtrl.text.trim(),
+                          category: selectedCategory!,
+                          date: DateTime.now()
+                              .toString()
+                              .split(' ')
+                              .first,
+                          unitPrice: unitPrice,
+                          stockRatio: ratio,
+                          isLowStock: ratio <= 0.2,
+                        );
+
+                        if (widget.index != null) {
+                          vm.deleteItem(widget.index!);
+                        }
+
+                        vm.addItem(newItem);
+                        Navigator.pop(context);
+                      }
                           : null,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF2563EB),
                         foregroundColor: Colors.white,
-                        disabledBackgroundColor: const Color(
-                          0xFF2563EB,
-                        ).withOpacity(0.35),
-                        disabledForegroundColor: Colors.white,
                       ),
                       child: Text(
-                        widget.item != null ? "Update Product" : "Add Product",
+                        widget.item != null
+                            ? "Update Product"
+                            : "Add Product",
                       ),
                     ),
                   ),
