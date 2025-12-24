@@ -8,11 +8,11 @@ import '../../../widgets/appbar.dart';
 import '../../../widgets/confirm_delete_sheet.dart';
 import '../../sales/widget/Custom_Total_cart.dart';
 import '../../sales/widget/custom_SummaryCard.dart';
+import '../viewmodels/Purchase_Provider.dart';
 import '../witget/Purchase_cart.dart';
 import '../witget/add_purchase_sheet.dart';
 
-import '../../../viewmodels/sales_provider.dart';
-import '../../../viewmodels/purchase_model.dart';
+import '../viewmodels/purchase_model.dart';
 
 class PurchaseScreen extends StatefulWidget {
   const PurchaseScreen({super.key});
@@ -34,7 +34,7 @@ int selectContainer = -1;
 class _PurchaseScreenState extends State<PurchaseScreen> {
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<SalesProvider>();
+    final provider = context.watch<PurchasesProvider>();
     final purchases = provider.filteredPurchases;
 
     return Scaffold(
@@ -55,7 +55,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
             builder: (_) => const AddPurchaseSheet(),
           );
           if (purchaseData != null && purchaseData is Purchase) {
-            context.read<SalesProvider>().addPurchase(purchaseData);
+            context.read<PurchasesProvider>().addPurchase(purchaseData);
           }
         },
       ),
@@ -88,15 +88,15 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                 children: [
                   Expanded(
                     child: CustomSummaryCard(
-                      title: 'Received Orders',
-                      value: provider.receivedPurchasesCount.toString(),
+                      title: 'Completed',
+                      value: provider.completedPurchasesCount.toString(),
                       valueColor: const Color(0xff00A63E),
                     ),
                   ),
                   Gap(12.w),
                   Expanded(
                     child: CustomSummaryCard(
-                      title: 'Pending Orders',
+                      title: 'Pending',
                       value: provider.pendingPurchasesCount.toString(),
                       valueColor: const Color(0xffF54900),
                       trailingImage: SizedBox(
@@ -188,7 +188,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                       itemCount: purchases.length,
                       itemBuilder: (context, index) {
                         final p = purchases[index];
-                        return PurchaseCart(
+                        return CustomPurchaseCard(
                           purchase: p,
                           edit: () async {
                             final updatedPurchase = await showModalBottomSheet(
@@ -206,7 +206,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                             if (updatedPurchase != null &&
                                 updatedPurchase is Purchase) {
                               context
-                                  .read<SalesProvider>()
+                                  .read<PurchasesProvider>()
                                   .updatePurchaseByModel(p, updatedPurchase);
                             }
                           },
@@ -218,7 +218,7 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                 message:
                                     'Are you sure you want to delete this purchase?',
                                 onConfirm: () {
-                                  context.read<SalesProvider>().removePurchase(
+                                  context.read<PurchasesProvider>().removePurchase(
                                     p,
                                   );
                                 },

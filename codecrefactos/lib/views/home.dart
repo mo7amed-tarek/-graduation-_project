@@ -6,7 +6,7 @@ import 'package:gap/gap.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../viewmodels/EmployeeModel.dart';
-import '../viewmodels/SalesData.dart';
+import 'sales/viewmodels/SalesData.dart';
 import '../widgets/appbar.dart';
 import '../widgets/employee_item.dart';
 

@@ -4,7 +4,7 @@ import 'package:gap/gap.dart';
 
 class SearchFilter extends StatelessWidget {
   final bool showDropdown;
-  final Function(String)? onChanged; // أضفنا هذا السطر لاستقبال ميثود البحث
+  final Function(String)? onChanged;
 
   const SearchFilter({super.key, this.showDropdown = true, this.onChanged});
 
@@ -14,9 +14,10 @@ class SearchFilter extends StatelessWidget {
       children: [
         Expanded(
           child: TextField(
-            onChanged: onChanged, // نستخدم الـ parameter هنا
+            onChanged: onChanged,
             decoration: InputDecoration(
               hintText: "Search by product name...",
+
               prefixIcon: const Icon(Icons.search),
               contentPadding: EdgeInsets.symmetric(vertical: 10.h),
               border: OutlineInputBorder(

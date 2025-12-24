@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import '../../../viewmodels/sale_model.dart';
+import '../viewmodels/sale_model.dart';
 import '../../../widgets/confirm_delete_sheet.dart';
 import 'package:provider/provider.dart';
-import '../../../viewmodels/sales_provider.dart';
+import '../viewmodels/sales_provider.dart';
 
 class CustomSalescard extends StatelessWidget {
   const CustomSalescard({
@@ -25,10 +25,11 @@ class CustomSalescard extends StatelessWidget {
         : const Color(0xffF54900);
 
     return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.r)),
+      elevation: 2,
+      margin: EdgeInsets.only(bottom: 12.h),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -40,96 +41,128 @@ class CustomSalescard extends StatelessWidget {
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.blue,
+                    fontSize: 14.sp,
                   ),
                 ),
-                Text(saleModel.employee),
-                Text(saleModel.category),
-              ],
-            ),
-
-            Gap(8.h),
-
-            Row(
-              children: [
-                CircleAvatar(child: Text(saleModel.customerName[0])),
-                Gap(10.w),
-                Text(saleModel.customerName),
-                const Spacer(),
-                Text(
-                  saleModel.amount,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    Icon(Icons.person_outline, size: 14.sp, color: Colors.grey),
+                    Gap(4.w),
+                    Text(
+                      saleModel.employee,
+                      style: TextStyle(color: Colors.grey.shade700, fontSize: 12.sp),
+                    ),
+                  ],
                 ),
               ],
             ),
 
-            Gap(10.h),
+            Gap(12.h),
 
             Row(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+                CircleAvatar(
+                  backgroundColor: Colors.blue.shade50,
+                  radius: 18.r,
                   child: Text(
-                    saleModel.status,
-                    style: const TextStyle(color: Colors.white),
+                    saleModel.customerName[0].toUpperCase(),
+                    style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
                   ),
                 ),
+                Gap(10.w),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        saleModel.customerName,
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp),
+                      ),
+                      Text(
+                        "${saleModel.category} • ${saleModel.product}",
+                        style: TextStyle(color: Colors.grey, fontSize: 12.sp),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  "\$${saleModel.amount}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16.sp,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+
+            Gap(15.h),
+
+            Row(
+              children: [
+                _buildStatusChip(statusColor),
                 const Spacer(),
 
                 if (saleModel.status.toLowerCase() == 'pending')
-                  IconButton(icon: const Icon(Icons.edit), onPressed: edit),
+                  IconButton(
+                    icon: Icon(Icons.edit, color: Colors.blue, size: 24.sp),
+                    onPressed: edit,
+                  ),
 
                 IconButton(
-                  icon: const Icon(Icons.delete, color: Colors.red),
-                  onPressed: () {
-                    if (delete != null) {
-                      showModalBottomSheet(
-                        context: context,
-                        builder: (_) => ConfirmDeleteSheet(
-                          title: 'Are you sure?',
-                          message:
-                              'This will delete the sale. This action cannot be undone.',
-                          onConfirm: delete!,
-                        ),
-                      );
-                    }
-                  },
+                  icon: Icon(Icons.delete, color: Colors.red, size: 22.sp),
+                  onPressed: () => _showDeleteDialog(context),
                 ),
               ],
             ),
 
             if (saleModel.status.toLowerCase() == 'pending') ...[
-              Gap(8.h),
+              Gap(10.h),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
                     final updatedSale = saleModel.copyWith(status: 'Completed');
-                    context.read<SalesProvider>().updateSaleByModel(
-                      saleModel,
-                      updatedSale,
-                    );
+                    context.read<SalesProvider>().updateSaleByModel(saleModel, updatedSale);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 12.h),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.r),
-                    ),
+                    elevation: 0,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
                   ),
-                  child: const Text('Confirm'),
+                  child: const Text('Confirm Sale'),
                 ),
               ),
             ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildStatusChip(Color color) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+      decoration: BoxDecoration(
+        // color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(color: color, width: 0.5),
+      ),
+      child: Text(
+        saleModel.status,
+        style: TextStyle(color: color, fontSize: 11.sp, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+
+  void _showDeleteDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => ConfirmDeleteSheet(
+        title: 'Delete Sale?',
+        message: 'Are you sure you want to remove this record?',
+        onConfirm: delete!,
       ),
     );
   }

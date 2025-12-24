@@ -1,41 +1,38 @@
 class Purchase {
-  final String id;
+  final String invoiceNumber;
   final String supplierName;
   final String category;
-  final String quantity;
-  final String amount;
+  final String product;
   final String employee;
-  final DateTime date;
+  final String amount;
   final String status;
 
   Purchase({
-    required this.id,
+    required this.invoiceNumber,
     required this.supplierName,
     required this.category,
-    required this.quantity,
-    required this.amount,
+    required this.product,
     required this.employee,
-    required this.date,
-    this.status = "Pending",
+    required this.amount,
+    this.status = 'Pending',
   });
 
   Purchase copyWith({
+    String? invoiceNumber,
     String? supplierName,
     String? category,
-    String? quantity,
-    String? amount,
+    String? product,
     String? employee,
-    DateTime? date,
+    String? amount,
     String? status,
   }) {
     return Purchase(
-      id: id,
+      invoiceNumber: invoiceNumber ?? this.invoiceNumber,
       supplierName: supplierName ?? this.supplierName,
       category: category ?? this.category,
-      quantity: quantity ?? this.quantity,
-      amount: amount ?? this.amount,
+      product: product ?? this.product,
       employee: employee ?? this.employee,
-      date: date ?? this.date,
+      amount: amount ?? this.amount,
       status: status ?? this.status,
     );
   }

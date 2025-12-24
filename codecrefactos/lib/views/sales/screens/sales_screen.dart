@@ -1,4 +1,4 @@
-import 'package:codecrefactos/viewmodels/sale_model.dart';
+import 'package:codecrefactos/views/sales/viewmodels/sale_model.dart';
 import 'package:codecrefactos/views/sales/widget/Custom_SalesCard.dart';
 import 'package:codecrefactos/views/sales/widget/search_filter.dart';
 import 'package:codecrefactos/widgets/empty_state.dart';
@@ -8,7 +8,7 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 
 import '../../../widgets/appbar.dart';
-import '../../../viewmodels/sales_provider.dart';
+import '../viewmodels/sales_provider.dart';
 import '../widget/Custom_Total_cart.dart';
 import '../widget/add_sales_sheet.dart';
 import '../widget/custom_SummaryCard.dart';
@@ -97,9 +97,8 @@ class _SalesScreenState extends State<SalesScreen> {
               Gap(16.h),
 
               SearchFilter(
-                showDropdown: true, // أو حسب ما تحب
+                showDropdown: true,
                 onChanged: (value) {
-                  // السطر ده هو اللي هيخلي السيرش يرجع يشتغل في السيلز
                   context.read<SalesProvider>().setSearchQuery(value);
                 },
               ),
