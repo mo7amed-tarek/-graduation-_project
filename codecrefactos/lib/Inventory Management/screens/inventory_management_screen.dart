@@ -117,8 +117,14 @@ class InventoryManagementScreen extends StatelessWidget {
               Gap(10.h),
 
               // Search Filter
-              const SearchFilter(showDropdown: false),
-              Gap(15.h),
+// ابحث عن هذا السطر في شاشة المخازن واستبدله
+              SearchFilter(
+                showDropdown: false,
+                onChanged: (value) {
+                  // هنا بنقوله لما تكتب، روح ابحث في موديل المخازن
+                  context.read<InventoryViewModel>().setSearchQuery(value);
+                },
+              ),              Gap(15.h),
 
               // Items List
               vm.items.isEmpty

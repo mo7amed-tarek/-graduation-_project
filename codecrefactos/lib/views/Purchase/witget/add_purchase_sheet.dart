@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import '../../../viewmodels/purchase_model.dart';
+import '../viewmodels/purchase_model.dart';
+import '../viewmodels/PurchasesConstants.dart';
+import '../../sales/widget/CustomDropdownField.dart';
 
 class AddPurchaseSheet extends StatefulWidget {
   const AddPurchaseSheet({super.key, this.isEdit = false, this.purchase});
@@ -15,11 +17,11 @@ class AddPurchaseSheet extends StatefulWidget {
 
 class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
   final supplierController = TextEditingController();
-  final categoryController = TextEditingController();
-  final quantityController = TextEditingController();
   final amountController = TextEditingController();
   final employeeController = TextEditingController();
 
+  String? selectedCategory;
+  String? selectedProduct;
   String status = 'Pending';
 
   @override
@@ -27,10 +29,10 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
     super.initState();
     if (widget.purchase != null) {
       supplierController.text = widget.purchase!.supplierName;
-      categoryController.text = widget.purchase!.category;
-      quantityController.text = widget.purchase!.quantity;
       amountController.text = widget.purchase!.amount;
       employeeController.text = widget.purchase!.employee;
+      selectedCategory = widget.purchase!.category;
+      selectedProduct = widget.purchase!.product;
       status = widget.purchase!.status;
     }
   }
@@ -38,11 +40,17 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
   @override
   void dispose() {
     supplierController.dispose();
-    categoryController.dispose();
-    quantityController.dispose();
     amountController.dispose();
     employeeController.dispose();
     super.dispose();
+  }
+
+  List<String> get _categories => ['Select Category', ...PurchasesConstants.categoriesWithProducts.keys];
+  List<String> get _productsForSelectedCategory {
+    if (selectedCategory == null || !PurchasesConstants.categoriesWithProducts.containsKey(selectedCategory)) {
+      return ['Select Product'];
+    }
+    return ['Select Product', ...PurchasesConstants.categoriesWithProducts[selectedCategory!]!];
   }
 
   @override
@@ -63,9 +71,7 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  widget.isEdit
-                      ? "Edit Purchase Order"
-                      : "Add New Purchase Order",
+                  widget.isEdit ? "Edit Purchase Order" : "Add New Purchase Order",
                   style: TextStyle(
                     fontSize: 18.sp,
                     fontWeight: FontWeight.bold,
@@ -85,9 +91,30 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
             _inputLabel("Supplier Name"),
             _textField(supplierController),
             _inputLabel("Category"),
-            _textField(categoryController),
-            _inputLabel("Quantity"),
-            _textField(quantityController, keyboardType: TextInputType.number),
+            CustomDropdownField(
+              hint: 'Select Category',
+              value: (selectedCategory != null) ? selectedCategory : null,
+              items: PurchasesConstants.categoriesWithProducts.keys.toList(),
+              onChanged: (val) {
+                setState(() {
+                  selectedCategory = val;
+                  selectedProduct = null;
+                });
+              },
+            ),
+            _inputLabel("Product"),
+            CustomDropdownField(
+              hint: 'Select Product',
+              value: (selectedProduct != null) ? selectedProduct : null,
+              items: selectedCategory != null
+                  ? PurchasesConstants.categoriesWithProducts[selectedCategory!]!
+                  : const [],
+              onChanged: (val) {
+                setState(() {
+                  selectedProduct = val;
+                });
+              },
+            ),
             _inputLabel("Amount"),
             _textField(amountController, keyboardType: TextInputType.number),
             _inputLabel("Employee"),
@@ -132,23 +159,20 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
 
   void _submit() {
     if (supplierController.text.isEmpty ||
-        categoryController.text.isEmpty ||
-        quantityController.text.isEmpty ||
+        selectedCategory == null ||
+        selectedProduct == null ||
         amountController.text.isEmpty ||
         employeeController.text.isEmpty) {
       return;
     }
 
     final purchase = Purchase(
-      id:
-          widget.purchase?.id ??
-          DateTime.now().millisecondsSinceEpoch.toString(),
+      invoiceNumber: widget.purchase?.invoiceNumber ?? '',
       supplierName: supplierController.text,
-      category: categoryController.text,
-      quantity: quantityController.text,
-      amount: amountController.text,
+      category: selectedCategory!,
+      product: selectedProduct!,
       employee: employeeController.text,
-      date: widget.purchase?.date ?? DateTime.now(),
+      amount: amountController.text,
       status: widget.isEdit ? status : 'Pending',
     );
 

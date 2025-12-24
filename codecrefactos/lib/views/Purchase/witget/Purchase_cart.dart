@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
-import '../../../viewmodels/purchase_model.dart';
-import '../../../viewmodels/sales_provider.dart';
+import '../viewmodels/Purchase_Provider.dart';
+import '../viewmodels/purchase_model.dart';
 
-class PurchaseCart extends StatelessWidget {
-  const PurchaseCart({
+class CustomPurchaseCard extends StatelessWidget {
+  const CustomPurchaseCard({
     super.key,
     required this.purchase,
     required this.edit,
@@ -18,13 +18,12 @@ class PurchaseCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isPending = purchase.status.toLowerCase() == 'pending';
-
+    final isPending = purchase.status.toLowerCase() == 'pending';
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.r)),
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: EdgeInsets.all(16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -32,7 +31,7 @@ class PurchaseCart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  purchase.id,
+                  purchase.invoiceNumber,
                   style: TextStyle(
                     fontSize: 14.sp,
                     fontWeight: FontWeight.bold,
@@ -40,44 +39,39 @@ class PurchaseCart extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '${purchase.date.year}/${purchase.date.month}/${purchase.date.day}',
+                  '${purchase.category} • ${purchase.product}',
                   style: TextStyle(fontSize: 14.sp, color: Colors.grey),
                 ),
               ],
             ),
             SizedBox(height: 10.h),
             Text(
-              purchase.category,
+              purchase.supplierName,
               style: TextStyle(fontSize: 16.sp, fontWeight: FontWeight.w600),
             ),
-            SizedBox(height: 10.h),
+            SizedBox(height: 8.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(purchase.quantity),
+                Text(
+                  purchase.employee,
+                  style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                ),
                 Text(
                   purchase.amount,
-                  style: TextStyle(
-                    fontSize: 18.sp,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
                 ),
               ],
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              purchase.supplierName,
-              style: TextStyle(fontSize: 14.sp, color: Colors.grey),
             ),
             SizedBox(height: 10.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                  padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 6.h),
                   decoration: BoxDecoration(
-                    color: isPending ? Colors.orange : Colors.green,
-                    borderRadius: BorderRadius.circular(20),
+                    color: isPending ? const Color(0xffF54900) : const Color(0xff00A63E),
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Text(
                     purchase.status,
@@ -102,13 +96,8 @@ class PurchaseCart extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    final updatedPurchase = purchase.copyWith(
-                      status: 'Completed',
-                    );
-                    context.read<SalesProvider>().updatePurchaseByModel(
-                      purchase,
-                      updatedPurchase,
-                    );
+                    final updated = purchase.copyWith(status: 'Completed');
+                    context.read<PurchasesProvider>().updatePurchaseByModel(purchase, updated);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,

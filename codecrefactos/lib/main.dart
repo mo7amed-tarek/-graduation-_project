@@ -3,7 +3,8 @@ import 'package:codecrefactos/forgot_password/view_model/forgotpassword_view_mod
 import 'package:codecrefactos/viewmodels/employee_viewmodel.dart';
 import 'package:codecrefactos/viewmodels/login_viewmodel.dart';
 import 'package:codecrefactos/viewmodels/register_viewmodel.dart';
-import 'package:codecrefactos/viewmodels/sales_provider.dart';
+import 'package:codecrefactos/views/Purchase/viewmodels/Purchase_Provider.dart';
+import 'package:codecrefactos/views/sales/viewmodels/sales_provider.dart';
 import 'package:codecrefactos/views/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => EmployeesViewModel()),
         ChangeNotifierProvider(create: (_) => InventoryViewModel()),
         ChangeNotifierProvider(create: (_) => SalesProvider()),
+        ChangeNotifierProvider(create: (_) => PurchasesProvider()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(390, 844),
