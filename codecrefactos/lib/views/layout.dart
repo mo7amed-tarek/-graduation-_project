@@ -1,6 +1,6 @@
 import 'package:codecrefactos/Inventory%20Management/screens/inventory_management_screen.dart';
+import 'package:codecrefactos/employwee_screen/employee_screen.dart';
 import 'package:codecrefactos/resources/color_manager.dart';
-import 'package:codecrefactos/views/employee_screen.dart';
 import 'package:codecrefactos/views/home.dart';
 import 'package:codecrefactos/views/setting.dart';
 import 'package:codecrefactos/views/sales/screens/sales_screen.dart';

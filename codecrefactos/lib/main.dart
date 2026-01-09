@@ -1,11 +1,11 @@
 import 'package:codecrefactos/Inventory%20Management/viewmodels/inventory_viewmodel.dart';
+import 'package:codecrefactos/employwee_screen/employee_viewmodel.dart';
 import 'package:codecrefactos/forgot_password/view_model/forgotpassword_view_model.dart';
-import 'package:codecrefactos/viewmodels/employee_viewmodel.dart';
-import 'package:codecrefactos/viewmodels/login_viewmodel.dart';
-import 'package:codecrefactos/viewmodels/register_viewmodel.dart';
+import 'package:codecrefactos/login_screen/login_screen.dart';
+import 'package:codecrefactos/login_screen/login_viewmodel.dart';
+import 'package:codecrefactos/register_screen/register_viewmodel.dart';
 import 'package:codecrefactos/views/Purchase/viewmodels/Purchase_Provider.dart';
 import 'package:codecrefactos/views/sales/viewmodels/sales_provider.dart';
-import 'package:codecrefactos/views/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';

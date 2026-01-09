@@ -1,6 +1,8 @@
+import 'package:codecrefactos/employwee_screen/employee_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 import '../viewmodels/SalesConstants.dart';
 import '../viewmodels/sale_model.dart';
 import 'CustomDropdownField.dart';
@@ -16,21 +18,33 @@ class AddSalesSheet extends StatefulWidget {
 class _AddSalesSheetState extends State<AddSalesSheet> {
   final _formKey = GlobalKey<FormState>();
   final customerController = TextEditingController();
-  final employeeController = TextEditingController();
   final amountController = TextEditingController();
 
   String? _selectedCategory;
   String? _selectedProduct;
+  Employee? _selectedEmployee;
 
   @override
   void initState() {
     super.initState();
     if (widget.sale != null) {
       customerController.text = widget.sale!.customerName;
-      employeeController.text = widget.sale!.employee;
       amountController.text = widget.sale!.amount;
       _selectedCategory = widget.sale!.category;
       _selectedProduct = widget.sale!.product;
+
+      final vm = context.read<EmployeesViewModel>();
+      if (vm.employeesList.isNotEmpty) {
+        try {
+          _selectedEmployee = vm.employeesList.firstWhere(
+            (e) => e.name == widget.sale!.employee,
+          );
+        } catch (e) {
+          _selectedEmployee = vm.employeesList.first;
+        }
+      } else {
+        _selectedEmployee = null;
+      }
     }
   }
 
@@ -39,7 +53,9 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
     return Padding(
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
-        left: 20.w, right: 20.w, top: 20.h,
+        left: 20.w,
+        right: 20.w,
+        top: 20.h,
       ),
       child: SingleChildScrollView(
         child: Form(
@@ -53,8 +69,6 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
 
               _inputLabel("Customer Name"),
               _textField(customerController),
-
-              // ... (بقية الكود كما هو في البداية)
 
               _inputLabel("Category"),
               CustomDropdownField(
@@ -82,10 +96,37 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
               ),
 
               _inputLabel("Amount"),
-              _textField(amountController, keyboardType: TextInputType.number),
+              TextFormField(
+                controller: amountController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.grey.shade100,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.r),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return "Required";
+                  }
+
+                  final number = double.tryParse(value);
+                  if (number == null) {
+                    return "Enter a valid number";
+                  }
+
+                  if (number <= 0) {
+                    return "Amount must be greater than zero";
+                  }
+
+                  return null;
+                },
+              ),
 
               _inputLabel("Employee"),
-              _textField(employeeController),
+              _employeeDropdown(),
 
               Gap(25.h),
               _buildButtons(context),
@@ -101,9 +142,14 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(widget.sale != null ? "Edit Sale" : "Add New Sale",
-            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold)),
-        IconButton(icon: const Icon(Icons.close), onPressed: () => Navigator.pop(context)),
+        Text(
+          widget.sale != null ? "Edit Sale" : "Add New Sale",
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
+        ),
+        IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.pop(context),
+        ),
       ],
     );
   }
@@ -112,47 +158,105 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Cancel"),
+        ),
         Gap(10.w),
         ElevatedButton(
           onPressed: _submit,
           style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-          child: Text(widget.sale != null ? "Update" : "Add Sale",
-              style: const TextStyle(color: Colors.white)),
+          child: Text(
+            widget.sale != null ? "Update" : "Add Sale",
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
       ],
     );
   }
 
   void _submit() {
-    if (!_formKey.currentState!.validate() || _selectedCategory == null || _selectedProduct == null) return;
+    if (!_formKey.currentState!.validate() ||
+        _selectedCategory == null ||
+        _selectedProduct == null ||
+        _selectedEmployee == null) {
+      return;
+    }
 
     final sale = SaleModel(
       invoiceNumber: widget.sale?.invoiceNumber ?? '',
       customerName: customerController.text,
       category: _selectedCategory!,
       product: _selectedProduct!,
-      employee: employeeController.text,
+      employee: _selectedEmployee!.name,
       amount: amountController.text,
       status: widget.sale?.status ?? 'Pending',
     );
+
     Navigator.pop(context, sale);
   }
 
   Widget _inputLabel(String text) => Padding(
     padding: EdgeInsets.only(bottom: 5.h, top: 12.h),
-    child: Text(text, style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500)),
+    child: Text(
+      text,
+      style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500),
+    ),
   );
 
-  Widget _textField(TextEditingController controller, {TextInputType keyboardType = TextInputType.text}) {
+  Widget _textField(
+    TextEditingController controller, {
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       decoration: InputDecoration(
-        filled: true, fillColor: Colors.grey.shade100,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10.r), borderSide: BorderSide.none),
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: BorderSide.none,
+        ),
       ),
       validator: (v) => v!.isEmpty ? "Required" : null,
+    );
+  }
+
+  Widget _employeeDropdown() {
+    return Consumer<EmployeesViewModel>(
+      builder: (context, vm, _) {
+        final activeEmployees = vm.employeesList
+            .where((e) => e.isActive)
+            .toList();
+
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: DropdownButton<Employee>(
+            value: activeEmployees.contains(_selectedEmployee)
+                ? _selectedEmployee
+                : null,
+            hint: const Text("Select Employee"),
+            isExpanded: true,
+            underline: const SizedBox(),
+            items: activeEmployees.map((emp) {
+              return DropdownMenuItem<Employee>(
+                value: emp,
+                child: Text(emp.name),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectedEmployee = value;
+              });
+            },
+          ),
+        );
+      },
     );
   }
 }

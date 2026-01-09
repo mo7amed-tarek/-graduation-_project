@@ -1,21 +1,22 @@
+import 'package:codecrefactos/customer_screens/customer_layout.dart';
 import 'package:codecrefactos/forgot_password/screens/forgot_password_screen.dart';
+import 'package:codecrefactos/login_screen/login_viewmodel.dart';
+import 'package:codecrefactos/register_screen/register_screen.dart';
 import 'package:codecrefactos/resources/color_manager.dart';
 import 'package:codecrefactos/resources/text_manager.dart';
-import 'package:codecrefactos/viewmodels/register_viewmodel.dart';
+import 'package:codecrefactos/views/layout.dart';
 import 'package:codecrefactos/widgets/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'login_screen.dart';
-
-class RegisterScreen extends StatelessWidget {
-  RegisterScreen({super.key});
+class LoginScreen extends StatelessWidget {
+  LoginScreen({super.key});
 
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    final vm = Provider.of<RegisterViewModel>(context);
+    final vm = Provider.of<LoginViewModel>(context);
 
     return Scaffold(
       body: Padding(
@@ -24,18 +25,23 @@ class RegisterScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
+
               Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset("assets/logo.png", height: 45),
                   const SizedBox(width: 10),
-                  Text(
-                    "Code",
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      color: ColorManager.primary,
+                  ShaderMask(
+                    shaderCallback: (bounds) => const LinearGradient(
+                      colors: [Color(0xFF3D00FF), Color(0xFFB306FD)],
+                    ).createShader(bounds),
+                    child: Text(
+                      "Code",
+                      style: TextStyle(
+                        fontSize: 36,
+                        fontWeight: FontWeight.bold,
+                        color: ColorManager.white,
+                      ),
                     ),
                   ),
                   Text(
@@ -48,14 +54,15 @@ class RegisterScreen extends StatelessWidget {
                   ),
                 ],
               ),
+
               const SizedBox(height: 110),
 
-              Text(
-                "Sign Up",
-                style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+              const Text(
+                "Log In",
+                style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
 
-              SizedBox(height: 32),
+              const SizedBox(height: 30),
 
               Form(
                 key: _formKey,
@@ -67,40 +74,46 @@ class RegisterScreen extends StatelessWidget {
                       icon: Icons.email_outlined,
                       validator: vm.validateEmail,
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     CustomTextField(
                       hint: TextManager.password,
-                      controller: vm.passCtrl,
+                      controller: vm.passwordCtrl,
                       icon: Icons.lock_outline,
                       isPassword: true,
                       validator: vm.validatePassword,
-                    ),
-                    SizedBox(height: 15),
-                    CustomTextField(
-                      hint: TextManager.repeatPassword,
-                      controller: vm.repeatPassCtrl,
-                      icon: Icons.lock_reset_outlined,
-                      isPassword: true,
-                      validator: vm.validateRepeat,
                     ),
                   ],
                 ),
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    // API CALL
-                  }
-                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorManager.primary,
-                  minimumSize: Size(double.infinity, 45),
+                  minimumSize: const Size(double.infinity, 45),
                 ),
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    final role = await vm.login();
+
+                    if (role == UserRole.admin) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => Layout()),
+                      );
+                    } else {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const CustomerLayout(),
+                        ),
+                      );
+                    }
+                  }
+                },
                 child: Text(
-                  TextManager.signup,
+                  TextManager.login,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -109,7 +122,7 @@ class RegisterScreen extends StatelessWidget {
                 ),
               ),
 
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
 
               Center(
                 child: GestureDetector(
@@ -119,15 +132,15 @@ class RegisterScreen extends StatelessWidget {
                   ),
                   child: Text(
                     TextManager.forgotPassword,
-                    style: TextStyle(color: ColorManager.primary),
+                    style: TextStyle(color: ColorManager.primary, fontSize: 15),
                   ),
                 ),
               ),
 
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
               Row(
-                children: [
+                children: const [
                   Expanded(child: Divider()),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: 8),
@@ -137,29 +150,42 @@ class RegisterScreen extends StatelessWidget {
                 ],
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.asset("assets/google.png", height: 35),
-                  SizedBox(width: 20),
+                  const SizedBox(width: 20),
                   Image.asset("assets/facebook.png", height: 35),
                 ],
               ),
 
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
               Center(
-                child: GestureDetector(
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => LoginScreen()),
-                  ),
-                  child: Text(
-                    "Have an account? Sign In",
-                    style: TextStyle(color: ColorManager.primary),
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Don't have an account?",
+                      style: TextStyle(color: ColorManager.dark),
+                    ),
+                    const SizedBox(width: 6),
+                    GestureDetector(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => RegisterScreen()),
+                      ),
+                      child: Text(
+                        "Sign Up",
+                        style: TextStyle(
+                          color: ColorManager.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],

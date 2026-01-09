@@ -43,7 +43,6 @@ class InventoryManagementScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // العنوان الرئيسي
               Text(
                 "Inventory Management",
                 style: TextStyle(fontSize: 26.sp, fontWeight: FontWeight.bold),
@@ -55,7 +54,6 @@ class InventoryManagementScreen extends StatelessWidget {
               ),
               Gap(15.h),
 
-              // Total Cart
               CustomTotalCart(
                 total: "Total Items",
                 price: vm.totalItems.toString(),
@@ -64,7 +62,6 @@ class InventoryManagementScreen extends StatelessWidget {
               ),
               Gap(8.h),
 
-              // Summary Cards
               Row(
                 children: [
                   Expanded(
@@ -86,7 +83,6 @@ class InventoryManagementScreen extends StatelessWidget {
               ),
               Gap(16.h),
 
-              // Low stock warning
               if (vm.lowStockCount > 0)
                 Container(
                   padding: EdgeInsets.all(14.w),
@@ -116,17 +112,14 @@ class InventoryManagementScreen extends StatelessWidget {
                 ),
               Gap(10.h),
 
-              // Search Filter
-// ابحث عن هذا السطر في شاشة المخازن واستبدله
               SearchFilter(
                 showDropdown: false,
                 onChanged: (value) {
-                  // هنا بنقوله لما تكتب، روح ابحث في موديل المخازن
                   context.read<InventoryViewModel>().setSearchQuery(value);
                 },
-              ),              Gap(15.h),
+              ),
+              Gap(15.h),
 
-              // Items List
               vm.items.isEmpty
                   ? SizedBox(
                       height: 300.h,

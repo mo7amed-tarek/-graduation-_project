@@ -1,8 +1,8 @@
+import 'package:codecrefactos/employwee_screen/employee_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
-import '../viewmodels/employee_viewmodel.dart';
 
 class AddEmployeeSheet extends StatefulWidget {
   final EmployeesViewModel vm;
@@ -155,7 +155,6 @@ class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
               phone: phoneController.text,
               salary: salaryController.text,
               department: selectedDepartment!,
-              // 👇 مهم جدًا
               isActive: widget.employee?.isActive ?? false,
             );
 

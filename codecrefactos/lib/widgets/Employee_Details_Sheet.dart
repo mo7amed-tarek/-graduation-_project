@@ -1,6 +1,6 @@
+import 'package:codecrefactos/employwee_screen/employee_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/employee_viewmodel.dart';
 
 class EmployeeDetailsSheet extends StatefulWidget {
   final Employee employee;

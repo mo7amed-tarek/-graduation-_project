@@ -1,6 +1,6 @@
 // lib/widget/employee_card.dart
+import 'package:codecrefactos/employwee_screen/employee_viewmodel.dart';
 import 'package:flutter/material.dart';
-import '../viewmodels/employee_viewmodel.dart';
 import 'confirm_delete_sheet.dart';
 import 'employee_details_sheet.dart';
 

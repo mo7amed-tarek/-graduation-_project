@@ -1,9 +1,9 @@
+import 'package:codecrefactos/employwee_screen/EmployeeModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:gap/gap.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
-import '../viewmodels/EmployeeModel.dart';
 
 class EmployeeItem extends StatelessWidget {
   final EmployeeModel employee;

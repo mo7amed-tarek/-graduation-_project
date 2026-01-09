@@ -1,14 +1,19 @@
-import 'package:codecrefactos/views/login_screen.dart';
+import 'package:codecrefactos/Inventory%20Management/viewmodels/inventory_viewmodel.dart';
+import 'package:codecrefactos/employwee_screen/EmployeeModel.dart';
+import 'package:codecrefactos/employwee_screen/employee_viewmodel.dart';
+import 'package:codecrefactos/login_screen/login_screen.dart';
+import 'package:codecrefactos/views/Purchase/viewmodels/Purchase_Provider.dart';
 import 'package:codecrefactos/widgets/custom_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../viewmodels/EmployeeModel.dart';
-import 'sales/viewmodels/SalesData.dart';
+import '../views/sales/viewmodels/SalesData.dart';
 import '../widgets/appbar.dart';
 import '../widgets/employee_item.dart';
+import '../views/sales/viewmodels/sales_provider.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -20,15 +25,19 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
+    final vm = context.watch<InventoryViewModel>();
+    final salesProvider = context.watch<SalesProvider>();
+    final purchasesProvider = context.watch<PurchasesProvider>();
+    final employeesProvider = context.watch<EmployeesViewModel>();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(60),
+        preferredSize: Size.fromHeight(70),
         child: Appbar(
           showAddButton: false,
           showLogoutButton: true,
           bottonTitle: '',
-
           onLogout: () {
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -61,13 +70,13 @@ class _HomeState extends State<Home> {
                 ),
               ),
               Gap(10.h),
-              ////////////////////////////////////////////////
+
               Row(
                 children: [
                   Expanded(
                     child: CustomCard(
-                      toptext: ' Total Employees',
-                      number: "48",
+                      toptext: 'Total Employees',
+                      number: employeesProvider.employeesList.length.toString(),
                       imagepath: 'assets/employyy.png',
                       bottomtext: "+12% from last month",
                     ),
@@ -75,8 +84,9 @@ class _HomeState extends State<Home> {
                   Gap(10.w),
                   Expanded(
                     child: CustomCard(
-                      toptext: ' Total Sales',
-                      number: "48",
+                      toptext: 'Total Sales',
+                      number:
+                          "\$${salesProvider.totalSalesAmount.toStringAsFixed(2)}",
                       imagepath: 'assets/sales.png',
                       bottomtext: "+12% from last month",
                     ),
@@ -89,8 +99,9 @@ class _HomeState extends State<Home> {
                 children: [
                   Expanded(
                     child: CustomCard(
-                      toptext: ' Total Purchases',
-                      number: "48",
+                      toptext: 'Total Purchases',
+                      number:
+                          "\$${purchasesProvider.totalPurchasesAmount.toStringAsFixed(2)}",
                       imagepath: 'assets/purchases.png',
                       bottomtext: "+12% from last month",
                     ),
@@ -98,8 +109,8 @@ class _HomeState extends State<Home> {
                   Gap(10.w),
                   Expanded(
                     child: CustomCard(
-                      toptext: ' Total Inventory',
-                      number: "48",
+                      toptext: 'Total Inventory',
+                      number: vm.totalItems.toString(),
                       imagepath: 'assets/inventory.png',
                       bottomtext: "+12% from last month",
                     ),
@@ -107,9 +118,10 @@ class _HomeState extends State<Home> {
                 ],
               ),
               Gap(10.h),
+
               Container(
                 height: 285.h,
-                width: 420.w,
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16.r),
@@ -170,7 +182,6 @@ class _HomeState extends State<Home> {
                               yValueMapper: (data, _) => data.value,
                               color: Color(0xFF4285F4),
                             ),
-
                             ColumnSeries<SalesData, String>(
                               name: 'Purchases',
                               width: 0.5.w,
@@ -193,10 +204,11 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              Gap(10),
+              Gap(10.h),
+
               Container(
                 height: 200.h,
-                width: 420.w,
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(16.r),
@@ -232,7 +244,7 @@ class _HomeState extends State<Home> {
                           percentText: "85%",
                         ),
                       ),
-                      Gap(20),
+                      Gap(20.h),
                       EmployeeItem(
                         employee: EmployeeModel(
                           imagePath: "assets/rat2.png",

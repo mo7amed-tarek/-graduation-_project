@@ -53,7 +53,6 @@ class InventoryItemCard extends StatelessWidget {
 
             Gap(4.h),
 
-            /// DATE
             Text(
               item.date,
               style: TextStyle(fontSize: 12.sp, color: Colors.grey),
@@ -62,7 +61,6 @@ class InventoryItemCard extends StatelessWidget {
             Gap(6.h),
             Text("Unit Price: \$${item.unitPrice}"),
             Gap(6.h),
-
 
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
