@@ -1,4 +1,4 @@
-import 'package:codecrefactos/customer_screens/customer_layout.dart';
+import 'package:codecrefactos/customer_screens/views/home_view.dart';
 import 'package:codecrefactos/forgot_password/screens/forgot_password_screen.dart';
 import 'package:codecrefactos/login_screen/login_viewmodel.dart';
 import 'package:codecrefactos/register_screen/register_screen.dart';
@@ -26,7 +26,6 @@ class LoginScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 30),
-
               Row(
                 children: [
                   Image.asset("assets/logo.png", height: 45),
@@ -54,16 +53,12 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 110),
-
               const Text(
                 "Log In",
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
-
               const SizedBox(height: 30),
-
               Form(
                 key: _formKey,
                 child: Column(
@@ -85,9 +80,7 @@ class LoginScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
-
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorManager.primary,
@@ -105,9 +98,7 @@ class LoginScreen extends StatelessWidget {
                     } else {
                       Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => const CustomerLayout(),
-                        ),
+                        MaterialPageRoute(builder: (_) => const HomeView()),
                       );
                     }
                   }
@@ -121,9 +112,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 12),
-
               Center(
                 child: GestureDetector(
                   onTap: () => Navigator.push(
@@ -136,9 +125,7 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
               ),
-
               const SizedBox(height: 25),
-
               Row(
                 children: const [
                   Expanded(child: Divider()),
@@ -149,9 +136,7 @@ class LoginScreen extends StatelessWidget {
                   Expanded(child: Divider()),
                 ],
               ),
-
               const SizedBox(height: 20),
-
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -160,9 +145,7 @@ class LoginScreen extends StatelessWidget {
                   Image.asset("assets/facebook.png", height: 35),
                 ],
               ),
-
               const SizedBox(height: 25),
-
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

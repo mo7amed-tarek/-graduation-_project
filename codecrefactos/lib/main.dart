@@ -1,4 +1,7 @@
 import 'package:codecrefactos/Inventory%20Management/viewmodels/inventory_viewmodel.dart';
+import 'package:codecrefactos/customer_screens/view_models/cart_view_model.dart';
+import 'package:codecrefactos/customer_screens/view_models/home_view_model.dart';
+import 'package:codecrefactos/customer_screens/view_models/order_vm.dart';
 import 'package:codecrefactos/employwee_screen/employee_viewmodel.dart';
 import 'package:codecrefactos/forgot_password/view_model/forgotpassword_view_model.dart';
 import 'package:codecrefactos/login_screen/login_screen.dart';
@@ -28,6 +31,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => InventoryViewModel()),
         ChangeNotifierProvider(create: (_) => SalesProvider()),
         ChangeNotifierProvider(create: (_) => PurchasesProvider()),
+        ChangeNotifierProvider(create: (_) => HomeVM()),
+        ChangeNotifierProvider(create: (_) => CartVM()),
+        ChangeNotifierProvider(create: (_) => OrderVM()),
       ],
       child: ScreenUtilInit(
         designSize: const Size(390, 844),
