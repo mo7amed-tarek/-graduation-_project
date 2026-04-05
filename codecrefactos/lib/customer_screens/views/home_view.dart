@@ -15,7 +15,8 @@ class _HomeViewState extends State<HomeView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<String> categories = ['Mobile', 'Laptop', 'Accessories'];
+  final List<String> categories = ['Mobiles', 'Laptops', 'Accessories'];
+
   String searchQuery = '';
 
   final ScrollController _scrollController = ScrollController();
@@ -105,9 +106,9 @@ class _HomeViewState extends State<HomeView>
               controller: _tabController,
               children: categories.map((category) {
                 final filteredProducts = vm.products.where((product) {
-                  final matchesCategory = product.category
-                      .toLowerCase()
-                      .contains(category.toLowerCase());
+                  final matchesCategory =
+                      product.categoryName.toLowerCase().trim() ==
+                      category.toLowerCase().trim();
 
                   final matchesSearch = product.name.toLowerCase().contains(
                     searchQuery.toLowerCase(),
@@ -120,17 +121,14 @@ class _HomeViewState extends State<HomeView>
                   controller: _scrollController,
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(12),
-
                   itemCount:
                       filteredProducts.length + (vm.isLoadingMore ? 1 : 0),
-
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     childAspectRatio: 0.65,
                     mainAxisSpacing: 14,
                     crossAxisSpacing: 14,
                   ),
-
                   itemBuilder: (_, i) {
                     if (i >= filteredProducts.length) {
                       return const Center(child: CircularProgressIndicator());
@@ -168,7 +166,9 @@ class _HomeViewState extends State<HomeView>
                               fit: BoxFit.contain,
                               loadingBuilder:
                                   (context, child, loadingProgress) {
-                                    if (loadingProgress == null) return child;
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    }
                                     return const Center(
                                       child: CircularProgressIndicator(),
                                     );
@@ -176,7 +176,6 @@ class _HomeViewState extends State<HomeView>
                               errorBuilder: (_, __, ___) =>
                                   const Icon(Icons.broken_image),
                             ),
-
                             Padding(
                               padding: const EdgeInsets.all(8),
                               child: Column(

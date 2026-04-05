@@ -9,8 +9,9 @@ class ApiService {
     dio = Dio(
       BaseOptions(
         baseUrl: "http://store2.runasp.net/api/",
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
+        connectTimeout: const Duration(seconds: 20), // ⬅️ زودناها
+        receiveTimeout: const Duration(seconds: 60), // ⬅️ مهم جدًا
+        sendTimeout: const Duration(seconds: 60), // ⬅️ مهم جدًا
         headers: {"Accept": "application/json"},
       ),
     );

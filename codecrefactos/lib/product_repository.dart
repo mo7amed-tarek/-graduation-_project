@@ -27,6 +27,7 @@ class ProductRepository {
 
       return [];
     } catch (e) {
+      print("GET PRODUCTS ERROR: $e");
       throw Exception("Failed to load products");
     }
   }
@@ -47,9 +48,10 @@ class ProductRepository {
         }
       }
 
-      throw Exception("Unexpected response format");
+      return 0;
     } catch (e) {
-      throw Exception("Failed to add product");
+      print("ADD PRODUCT ERROR: $e");
+      rethrow;
     }
   }
 
@@ -57,6 +59,7 @@ class ProductRepository {
     try {
       await _api.patch('Product/$id', item.toJson());
     } catch (e) {
+      print("UPDATE ERROR: $e");
       throw Exception("Failed to update product");
     }
   }
@@ -65,22 +68,31 @@ class ProductRepository {
     try {
       await _api.delete('Product/$id');
     } catch (e) {
+      print("DELETE ERROR: $e");
       throw Exception("Failed to delete product");
     }
   }
 
+  // ✅ FIX HERE (image → file)
   Future<void> uploadProductImage(int productId, String imagePath) async {
     try {
       final formData = FormData.fromMap({
-        "file": await MultipartFile.fromFile(imagePath),
+        "file": await MultipartFile.fromFile(
+          // ✅ مهم
+          imagePath,
+          filename: imagePath.split('/').last,
+        ),
       });
 
-      await _api.post(
+      final response = await _api.post(
         'Product/upload-image/$productId',
         formData,
         isFormData: true,
       );
+
+      print("UPLOAD RESPONSE: ${response.data}");
     } catch (e) {
+      print("UPLOAD IMAGE ERROR: $e");
       throw Exception("Failed to upload image");
     }
   }

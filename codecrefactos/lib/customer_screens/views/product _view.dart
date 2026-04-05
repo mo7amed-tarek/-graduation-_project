@@ -20,9 +20,9 @@ class ProductView extends StatelessWidget {
 
     if (url.startsWith("http")) {
       return url;
-    } else {
-      return baseUrl + url;
     }
+
+    return "$baseUrl${url.startsWith('/') ? '' : '/'}$url";
   }
 
   @override
@@ -43,7 +43,9 @@ class ProductView extends StatelessWidget {
           builder: (_, vm, __) {
             final similarProducts = homeVM.products
                 .where(
-                  (p) => p.category == product.category && p.id != product.id,
+                  (p) =>
+                      p.categoryName == product.categoryName &&
+                      p.id != product.id,
                 )
                 .toList();
 
@@ -52,6 +54,7 @@ class ProductView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  /// Product Image
                   Hero(
                     tag: product.id,
                     child: Container(
@@ -83,9 +86,13 @@ class ProductView extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 12),
+
+                  /// Rating
                   RatingStars(rating: product.rating),
 
                   const SizedBox(height: 8),
+
+                  /// Name
                   Text(
                     product.name,
                     style: const TextStyle(
@@ -95,6 +102,8 @@ class ProductView extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 6),
+
+                  /// Price
                   Text(
                     '${product.price} EGP',
                     style: const TextStyle(
@@ -105,14 +114,20 @@ class ProductView extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 12),
+
+                  /// Description
                   Text(product.description),
 
                   const SizedBox(height: 16),
+
+                  /// Colors
                   const Text(
                     'Color',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
+
                   const SizedBox(height: 8),
+
                   ColorSelector(
                     colors: product.colors,
                     selected: vm.selectedColor,
@@ -121,6 +136,7 @@ class ProductView extends StatelessWidget {
 
                   const SizedBox(height: 24),
 
+                  /// Buttons
                   ActionButtons(
                     add: () {
                       context.read<CartVM>().addItem(product);
@@ -141,6 +157,7 @@ class ProductView extends StatelessWidget {
 
                   const SizedBox(height: 32),
 
+                  /// Similar Products
                   if (similarProducts.isNotEmpty) ...[
                     const Text(
                       'Similar Products',
@@ -150,6 +167,7 @@ class ProductView extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
+
                     SizedBox(
                       height: 180,
                       child: ListView.builder(
@@ -157,6 +175,7 @@ class ProductView extends StatelessWidget {
                         itemCount: similarProducts.length,
                         itemBuilder: (context, index) {
                           final simProd = similarProducts[index];
+
                           return GestureDetector(
                             onTap: () {
                               Navigator.pushReplacement(

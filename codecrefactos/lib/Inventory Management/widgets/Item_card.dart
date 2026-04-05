@@ -35,47 +35,6 @@ class InventoryItemCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ✅ IMAGE SECTION (NEW)
-            if (item.pictureUrl.isNotEmpty)
-              ClipRRect(
-                borderRadius: BorderRadius.circular(12.r),
-                child: Image.network(
-                  item.pictureUrl,
-                  height: 160.h,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  loadingBuilder: (context, child, loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return Container(
-                      height: 160.h,
-                      width: double.infinity,
-                      alignment: Alignment.center,
-                      child: const CircularProgressIndicator(),
-                    );
-                  },
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      height: 160.h,
-                      width: double.infinity,
-                      color: Colors.grey.shade200,
-                      child: const Icon(Icons.broken_image, size: 40),
-                    );
-                  },
-                ),
-              )
-            else
-              Container(
-                height: 160.h,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(12.r),
-                ),
-                child: const Icon(Icons.image_not_supported),
-              ),
-
-            Gap(10.h),
-
             // Name + Category ID
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

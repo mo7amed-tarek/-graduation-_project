@@ -6,7 +6,7 @@ class Product {
   final double rating;
   final String description;
   final List<int> colors;
-  final String category;
+  final String categoryName;
 
   Product({
     required this.id,
@@ -16,7 +16,7 @@ class Product {
     required this.rating,
     required this.description,
     required this.colors,
-    required this.category,
+    required this.categoryName,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -36,7 +36,7 @@ class Product {
       rating: 4.0,
       description: json['description'] ?? '',
       colors: [0xFF000000],
-      category: json['categoryName'] ?? 'unknown',
+      categoryName: json['categoryName'] ?? 'unknown',
     );
   }
 
@@ -47,7 +47,7 @@ class Product {
       "pictureUrl": image,
       "price": price,
       "description": description,
-      "categoryName": category,
+      "categoryName": categoryName,
     };
   }
 }

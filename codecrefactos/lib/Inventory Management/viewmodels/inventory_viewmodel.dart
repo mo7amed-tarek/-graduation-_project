@@ -58,11 +58,12 @@ class InventoryItem {
     );
   }
 
+  // ✅ pictureUrl بيتبعت N/A لو فاضي
   Map<String, dynamic> toJson() => {
     'name': name,
     'description': description,
     'color': color,
-    'pictureUrl': pictureUrl,
+    'pictureUrl': pictureUrl.isNotEmpty ? pictureUrl : 'N/A',
     'price': price,
     'categoryId': categoryId,
     'quantity': quantity,
@@ -101,6 +102,7 @@ class InventoryViewModel extends ChangeNotifier {
     }
 
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
 
     try {
@@ -109,9 +111,7 @@ class InventoryViewModel extends ChangeNotifier {
         pageSize: _pageSize,
       );
 
-      if (data.length < _pageSize) {
-        hasMore = false;
-      }
+      if (data.length < _pageSize) hasMore = false;
 
       _items.addAll(data);
       _applyFilter();
@@ -136,9 +136,7 @@ class InventoryViewModel extends ChangeNotifier {
         pageSize: _pageSize,
       );
 
-      if (data.length < _pageSize) {
-        hasMore = false;
-      }
+      if (data.length < _pageSize) hasMore = false;
 
       _items.addAll(data);
       _applyFilter();
@@ -150,16 +148,14 @@ class InventoryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ❗ الإضافة هنا بتبعت JSON فقط
   Future<int> addItem(InventoryItem item) async {
-    final id = await _repo.addProduct(item);
-    await loadItems(refresh: true);
-    return id;
+    return await _repo.addProduct(item);
   }
 
   Future<void> updateItem(InventoryItem item) async {
     if (item.id == null) return;
     await _repo.updateProduct(item.id!, item);
-    await loadItems(refresh: true);
   }
 
   Future<void> deleteItem(InventoryItem item) async {
@@ -168,9 +164,9 @@ class InventoryViewModel extends ChangeNotifier {
     await loadItems(refresh: true);
   }
 
+  // ❗ رفع الصورة Endpoint منفصل
   Future<void> uploadImage(int id, String path) async {
     await _repo.uploadProductImage(id, path);
-    await loadItems(refresh: true);
   }
 
   void setSearchQuery(String query) {

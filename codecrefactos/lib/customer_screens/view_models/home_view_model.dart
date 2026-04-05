@@ -11,7 +11,7 @@ class HomeVM extends ChangeNotifier {
   List<Product> get products => _products;
 
   int _pageIndex = 1;
-  final int _pageSize = 5;
+  final int _pageSize = 10; // مهم يكون مطابق للـ API
 
   bool isLoading = false;
   bool isLoadingMore = false;

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/inventory_viewmodel.dart';
+import '../../customer_screens/view_models/home_view_model.dart'; // ✅ إضافة
 
 class AddProductSheet extends StatefulWidget {
   final InventoryItem? item;
@@ -27,6 +28,15 @@ class _AddProductSheetState extends State<AddProductSheet> {
   final ImagePicker _picker = ImagePicker();
 
   bool isFormValid = false;
+  bool _isSubmitting = false;
+
+  final List<Map<String, dynamic>> categories = [
+    {"id": 1, "name": "Mobiles"},
+    {"id": 2, "name": "Laptops"},
+    {"id": 3, "name": "Accessories"},
+  ];
+
+  Map<String, dynamic>? selectedCategory;
 
   @override
   void initState() {
@@ -40,6 +50,11 @@ class _AddProductSheetState extends State<AddProductSheet> {
       priceCtrl.text = item.price.toString();
       categoryIdCtrl.text = item.categoryId.toString();
       quantityCtrl.text = item.quantity.toString();
+
+      selectedCategory = categories.firstWhere(
+        (c) => c["id"] == item.categoryId,
+        orElse: () => categories.first,
+      );
     }
   }
 
@@ -62,47 +77,71 @@ class _AddProductSheetState extends State<AddProductSheet> {
   Future<void> _pickImage() async {
     final picked = await _picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
-      setState(() {
-        _selectedImage = File(picked.path);
-      });
+      setState(() => _selectedImage = File(picked.path));
     }
   }
 
   void _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final vm = context.read<InventoryViewModel>();
+    if (selectedCategory == null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text("Please select category")));
+      return;
+    }
+
+    final inventoryVM = context.read<InventoryViewModel>();
+    final homeVM = context.read<HomeVM>(); // ✅ إضافة
+
+    setState(() => _isSubmitting = true);
 
     final item = InventoryItem(
       id: widget.item?.id,
       name: nameCtrl.text.trim(),
       description: descCtrl.text.trim(),
       color: colorCtrl.text.trim(),
-      pictureUrl: "",
+      pictureUrl: '',
       price: double.tryParse(priceCtrl.text) ?? 0,
-      categoryName: widget.item?.categoryName ?? '',
-      categoryId: int.tryParse(categoryIdCtrl.text) ?? 0,
+      categoryName: selectedCategory!["name"],
+      categoryId: selectedCategory!["id"],
       quantity: int.tryParse(quantityCtrl.text) ?? 0,
       isLowStock: (int.tryParse(quantityCtrl.text) ?? 0) <= 5,
     );
 
-    if (widget.item != null) {
-      // update
-      await vm.updateItem(item);
+    try {
+      if (widget.item != null) {
+        await inventoryVM.updateItem(item);
 
-      if (_selectedImage != null) {
-        await vm.uploadImage(widget.item!.id!, _selectedImage!.path);
-      }
-    } else {
-      // add
-      final newId = await vm.addItem(item);
+        if (_selectedImage != null) {
+          await inventoryVM.uploadImage(widget.item!.id!, _selectedImage!.path);
+        }
+      } else {
+        final newId = await inventoryVM.addItem(item);
 
-      if (_selectedImage != null) {
-        await vm.uploadImage(newId, _selectedImage!.path);
+        if (_selectedImage != null && newId != 0) {
+          await inventoryVM.uploadImage(newId, _selectedImage!.path);
+        }
       }
+
+      // ✅ أهم سطر: تحديث HomeVM
+      await homeVM.fetchProducts(refresh: true);
+
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error: ${e.toString()}"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
-
-    if (mounted) Navigator.pop(context);
   }
 
   Widget _buildField(
@@ -182,7 +221,28 @@ class _AddProductSheetState extends State<AddProductSheet> {
                 _buildField("Description", descCtrl),
                 _buildField("Color", colorCtrl),
                 _buildField("Price", priceCtrl, isNumber: true),
-                _buildField("Category ID", categoryIdCtrl, isNumber: true),
+
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: DropdownButtonFormField<Map<String, dynamic>>(
+                    value: selectedCategory,
+                    decoration: _inputDeco("Category"),
+                    items: categories.map((cat) {
+                      return DropdownMenuItem(
+                        value: cat,
+                        child: Text(cat["name"]),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        selectedCategory = value;
+                      });
+                    },
+                    validator: (v) =>
+                        v == null ? 'Please select category' : null,
+                  ),
+                ),
+
                 _buildField("Quantity", quantityCtrl, isNumber: true),
 
                 const SizedBox(height: 20),
@@ -198,8 +258,19 @@ class _AddProductSheetState extends State<AddProductSheet> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: isFormValid ? _submit : null,
-                        child: Text(widget.item != null ? "Update" : "Add"),
+                        onPressed: (isFormValid && !_isSubmitting)
+                            ? _submit
+                            : null,
+                        child: _isSubmitting
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text(widget.item != null ? "Update" : "Add"),
                       ),
                     ),
                   ],
