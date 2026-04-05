@@ -17,59 +17,161 @@ class InventoryItemCard extends StatelessWidget {
     this.onDelete,
   });
 
-  double _safePercent(double value) {
-    if (value.isNaN || value.isInfinite) return 0.0;
-    return value.clamp(0.0, 1.0);
+  double _safePercent(int quantity) {
+    if (quantity <= 0) return 0.0;
+    return (quantity / 100).clamp(0.0, 1.0);
   }
 
   @override
   Widget build(BuildContext context) {
-    final percent = _safePercent(item.stockRatio);
+    final percent = _safePercent(item.quantity);
 
     return Card(
       margin: EdgeInsets.only(bottom: 12.h),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.r)),
+      elevation: 2,
       child: Padding(
         padding: EdgeInsets.all(14.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // ✅ IMAGE SECTION (NEW)
+            if (item.pictureUrl.isNotEmpty)
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12.r),
+                child: Image.network(
+                  item.pictureUrl,
+                  height: 160.h,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 160.h,
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      child: const CircularProgressIndicator(),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 160.h,
+                      width: double.infinity,
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.broken_image, size: 40),
+                    );
+                  },
+                ),
+              )
+            else
+              Container(
+                height: 160.h,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade200,
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: const Icon(Icons.image_not_supported),
+              ),
+
+            Gap(10.h),
+
+            // Name + Category ID
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  item.name,
-                  style: TextStyle(
-                    fontSize: 16.sp,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    item.name,
+                    style: TextStyle(
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                Text(
-                  item.category,
-                  style: TextStyle(fontSize: 12.sp, color: Colors.grey),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 3.h),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: Text(
+                    "Cat #${item.categoryId}",
+                    style: TextStyle(
+                      fontSize: 11.sp,
+                      color: Colors.deepPurple,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
               ],
             ),
 
-            Gap(4.h),
+            Gap(6.h),
 
-            Text(
-              item.date,
-              style: TextStyle(fontSize: 12.sp, color: Colors.grey),
+            // Description
+            if (item.description.isNotEmpty)
+              Text(
+                item.description,
+                style: TextStyle(fontSize: 12.sp, color: Colors.grey.shade600),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+
+            Gap(6.h),
+
+            // Color + Price
+            Row(
+              children: [
+                if (item.color.isNotEmpty) ...[
+                  Container(
+                    width: 12.w,
+                    height: 12.h,
+                    decoration: BoxDecoration(
+                      color: _parseColor(item.color),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                  ),
+                  Gap(6.w),
+                  Text(
+                    item.color,
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  Gap(12.w),
+                ],
+                const Spacer(),
+                Text(
+                  "Price: \$${item.price.toStringAsFixed(2)}",
+                  style: TextStyle(
+                    fontSize: 13.sp,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
             ),
 
-            Gap(6.h),
-            Text("Unit Price: \$${item.unitPrice}"),
-            Gap(6.h),
+            Gap(10.h),
 
+            // Stock label
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "${(percent * 100).toInt()}%",
+                  "Stock",
+                  style: TextStyle(fontSize: 12.sp, color: Colors.grey),
+                ),
+                Text(
+                  "${item.quantity} units",
                   style: TextStyle(
                     fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
+                    color: item.isLowStock ? Colors.red : Colors.black87,
                   ),
                 ),
               ],
@@ -77,6 +179,7 @@ class InventoryItemCard extends StatelessWidget {
 
             Gap(6.h),
 
+            // Progress bar
             LinearPercentIndicator(
               lineHeight: 6.h,
               percent: percent,
@@ -88,6 +191,7 @@ class InventoryItemCard extends StatelessWidget {
 
             Gap(10.h),
 
+            // Status + Actions
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -103,10 +207,11 @@ class InventoryItemCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Text(
-                    item.isLowStock ? "Low Stock" : "Normal",
+                    item.isLowStock ? "Low Stock" : "In Stock",
                     style: TextStyle(
                       fontSize: 12.sp,
                       color: item.isLowStock ? Colors.red : Colors.blue,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -133,5 +238,33 @@ class InventoryItemCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _parseColor(String colorName) {
+    switch (colorName.toLowerCase().trim()) {
+      case 'red':
+        return Colors.red;
+      case 'blue':
+        return Colors.blue;
+      case 'green':
+        return Colors.green;
+      case 'yellow':
+        return Colors.yellow;
+      case 'orange':
+        return Colors.orange;
+      case 'purple':
+        return Colors.purple;
+      case 'black':
+        return Colors.black;
+      case 'white':
+        return Colors.white;
+      case 'grey':
+      case 'gray':
+        return Colors.grey;
+      case 'pink':
+        return Colors.pink;
+      default:
+        return Colors.grey.shade400;
+    }
   }
 }

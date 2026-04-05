@@ -13,17 +13,19 @@ import 'package:codecrefactos/customer_screens/view_models/confirm_order_view_mo
 class ConfirmOrderView extends StatelessWidget {
   const ConfirmOrderView({super.key});
 
+  static final GlobalKey<FormState> _customerFormKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     final cartVM = context.watch<CartVM>();
-
-    final _customerFormKey = GlobalKey<FormState>();
 
     return ChangeNotifierProvider(
       create: (_) => ConfirmOrderVM(),
       child: Builder(
         builder: (context) {
           final confirmVM = context.watch<ConfirmOrderVM>();
+
+          double totalPrice = cartVM.total + confirmVM.shippingCost;
 
           return Scaffold(
             backgroundColor: Colors.grey.shade200,
@@ -39,18 +41,23 @@ class ConfirmOrderView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   OrderSummaryList(items: cartVM.items),
+
                   const SizedBox(height: 24),
 
                   CustomerInfoForm(formKey: _customerFormKey),
+
                   const SizedBox(height: 24),
 
                   const PaymentMethodsRow(),
+
                   const SizedBox(height: 24),
 
                   const ShippingMethodSection(),
+
                   const SizedBox(height: 24),
 
-                  TotalSection(total: cartVM.total + confirmVM.shippingCost),
+                  TotalSection(total: totalPrice),
+
                   const SizedBox(height: 24),
 
                   CustomButton(
@@ -79,25 +86,25 @@ class ConfirmOrderView extends StatelessWidget {
                         context: context,
                         builder: (context) {
                           return AlertDialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
                             title: const Text('Confirm Order?'),
                             content: Text(
-                              'Do you want to confirm this order which costs \$${cartVM.total + confirmVM.shippingCost}?',
+                              'Total: ${totalPrice.toStringAsFixed(0)} EGP\n\nAre you sure you want to confirm?',
                             ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.pop(context),
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.grey,
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: const Text('No, Cancel'),
+                                child: const Text('Cancel'),
                               ),
-                              const SizedBox(width: 8),
-                              TextButton(
+                              ElevatedButton(
                                 onPressed: () {
                                   Navigator.pop(context);
+
                                   cartVM.clear();
-                                  Navigator.push(
+
+                                  Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                       builder: (_) =>
@@ -105,11 +112,7 @@ class ConfirmOrderView extends StatelessWidget {
                                     ),
                                   );
                                 },
-                                style: TextButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                ),
-                                child: const Text('Yes, Confirm'),
+                                child: const Text('Confirm'),
                               ),
                             ],
                           );

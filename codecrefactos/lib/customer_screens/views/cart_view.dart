@@ -9,6 +9,15 @@ import 'home_view.dart';
 class CartView extends StatelessWidget {
   const CartView({super.key});
 
+  String fixImageUrl(String url) {
+    const baseUrl = "http://store2.runasp.net";
+
+    if (url.isEmpty) return "";
+    if (url.startsWith("http")) return url;
+
+    return baseUrl + url;
+  }
+
   @override
   Widget build(BuildContext context) {
     final cartVM = context.watch<CartVM>();
@@ -27,7 +36,6 @@ class CartView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// ===== ORDER LIST =====
             const Text(
               'Your Order',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -44,26 +52,31 @@ class CartView extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
+                          boxShadow: const [
                             BoxShadow(color: Colors.black12, blurRadius: 6),
                           ],
                         ),
                         child: Row(
                           children: [
-                            Image.asset(
-                              item.product.image,
+                            Image.network(
+                              fixImageUrl(item.product.image),
                               width: 70,
                               height: 70,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.broken_image),
                             ),
+
                             const SizedBox(width: 12),
 
-                            /// NAME + PRICE
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
                                     item.product.name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -79,7 +92,6 @@ class CartView extends StatelessWidget {
                               ),
                             ),
 
-                            /// QUANTITY + DELETE
                             Column(
                               children: [
                                 Row(
@@ -97,7 +109,6 @@ class CartView extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-
                                 IconButton(
                                   icon: const Icon(
                                     Icons.delete,
@@ -116,7 +127,6 @@ class CartView extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            /// ===== TOTAL =====
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -144,7 +154,6 @@ class CartView extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            /// ===== CONFIRM BUTTON =====
             SizedBox(
               width: double.infinity,
               height: 52,
@@ -178,7 +187,6 @@ class CartView extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            /// ===== BUY AGAIN HEADER =====
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -203,6 +211,7 @@ class CartView extends StatelessWidget {
                 ),
               ],
             ),
+
             const SizedBox(height: 12),
 
             SizedBox(
@@ -229,14 +238,23 @@ class CartView extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(color: Colors.black12, blurRadius: 6),
                         ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(child: Image.asset(product.image)),
+                          /// 🔴 صورة (FIXED)
+                          Expanded(
+                            child: Image.network(
+                              fixImageUrl(product.image),
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.broken_image),
+                            ),
+                          ),
+
                           const SizedBox(height: 6),
                           Text(
                             product.name,
@@ -261,7 +279,6 @@ class CartView extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            /// ===== CUSTOMER SERVICE =====
             SizedBox(
               width: double.infinity,
               height: 50,

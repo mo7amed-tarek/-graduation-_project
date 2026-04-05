@@ -6,6 +6,15 @@ class OrderSummaryList extends StatelessWidget {
 
   const OrderSummaryList({super.key, required this.items});
 
+  String fixImageUrl(String url) {
+    const baseUrl = "http://store2.runasp.net";
+
+    if (url.isEmpty) return "";
+    if (url.startsWith("http")) return url;
+
+    return baseUrl + url;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -30,20 +39,31 @@ class OrderSummaryList extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Image.asset(item.product.image, width: 60, height: 60),
+                Image.network(
+                  fixImageUrl(item.product.image),
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.contain,
+                  errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
+                ),
+
                 const SizedBox(width: 12),
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         item.product.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text('Qty: ${item.quantity}'),
                     ],
                   ),
                 ),
+
                 Text(
                   '${(item.product.price * item.quantity).toStringAsFixed(0)} EGP',
                   style: const TextStyle(

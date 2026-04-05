@@ -14,47 +14,71 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+
   final List<String> categories = ['Mobile', 'Laptop', 'Accessories'];
   String searchQuery = '';
+
+  final ScrollController _scrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
+
     _tabController = TabController(length: categories.length, vsync: this);
+
+    Future.microtask(() {
+      context.read<HomeVM>().fetchProducts(refresh: true);
+    });
+
+    _scrollController.addListener(() {
+      final vm = context.read<HomeVM>();
+
+      if (_scrollController.position.pixels >=
+          _scrollController.position.maxScrollExtent - 200) {
+        if (!vm.isLoadingMore && vm.hasMore) {
+          vm.fetchProducts();
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _tabController.dispose();
     super.dispose();
+  }
+
+  String imageUrl(String path) {
+    if (path.startsWith('http')) return path;
+
+    const baseUrl = "http://store2.runasp.net";
+
+    return "$baseUrl${path.startsWith('/') ? '' : '/'}$path";
   }
 
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<HomeVM>();
 
+    if (vm.isLoading && vm.products.isEmpty) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
-        title: const Text(
-          'Home',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-        ),
+        title: const Text('Home'),
         centerTitle: true,
-        elevation: 0,
         backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: Colors.blue,
-          labelColor: Colors.blue,
-          unselectedLabelColor: Colors.grey,
           tabs: categories.map((c) => Tab(text: c)).toList(),
         ),
       ),
       body: Column(
         children: [
-          // Search Bar
+          /// Search
           Padding(
             padding: const EdgeInsets.all(12),
             child: TextField(
@@ -68,76 +92,61 @@ class _HomeViewState extends State<HomeView>
                 prefixIcon: const Icon(Icons.search),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 0,
-                  horizontal: 16,
-                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade400,
-                    width: 1.5,
-                  ),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade400,
-                    width: 1.5,
-                  ),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.blue, width: 2),
                 ),
               ),
             ),
           ),
 
-          // TabBarView
+          /// Content
           Expanded(
             child: TabBarView(
               controller: _tabController,
               children: categories.map((category) {
-                final filteredProducts = vm.products
-                    .where(
-                      (p) => p.category.toLowerCase() == category.toLowerCase(),
-                    )
-                    .where(
-                      (p) => p.name.toLowerCase().contains(
-                        searchQuery.toLowerCase(),
-                      ),
-                    )
-                    .toList();
+                final filteredProducts = vm.products.where((product) {
+                  final matchesCategory = product.category
+                      .toLowerCase()
+                      .contains(category.toLowerCase());
 
-                if (filteredProducts.isEmpty) {
-                  return const Center(
-                    child: Text(
-                      'No products found',
-                      style: TextStyle(color: Colors.grey),
-                    ),
+                  final matchesSearch = product.name.toLowerCase().contains(
+                    searchQuery.toLowerCase(),
                   );
-                }
+
+                  return matchesCategory && matchesSearch;
+                }).toList();
 
                 return GridView.builder(
+                  controller: _scrollController,
+                  physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(12),
-                  physics: const BouncingScrollPhysics(),
+
+                  itemCount:
+                      filteredProducts.length + (vm.isLoadingMore ? 1 : 0),
+
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
+                    childAspectRatio: 0.65,
                     mainAxisSpacing: 14,
                     crossAxisSpacing: 14,
-                    childAspectRatio: 0.65,
                   ),
-                  itemCount: filteredProducts.length,
+
                   itemBuilder: (_, i) {
+                    if (i >= filteredProducts.length) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
                     final product = filteredProducts[i];
+
                     return GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProductView(product: product),
-                        ),
-                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ProductView(product: product),
+                          ),
+                        );
+                      },
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -146,32 +155,28 @@ class _HomeViewState extends State<HomeView>
                             BoxShadow(
                               color: Colors.grey.withOpacity(0.3),
                               blurRadius: 6,
-                              offset: const Offset(0, 3),
                             ),
                           ],
-                          border: Border.all(
-                            color: Colors.grey.shade200,
-                            width: 1,
-                          ),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ClipRRect(
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(16),
-                                topRight: Radius.circular(16),
-                              ),
-                              child: Container(
-                                height: 120,
-                                width: double.infinity,
-                                alignment: Alignment.center,
-                                child: Image.asset(
-                                  product.image,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
+                            Image.network(
+                              imageUrl(product.image),
+                              height: 120,
+                              width: double.infinity,
+                              fit: BoxFit.contain,
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const Center(
+                                      child: CircularProgressIndicator(),
+                                    );
+                                  },
+                              errorBuilder: (_, __, ___) =>
+                                  const Icon(Icons.broken_image),
                             ),
+
                             Padding(
                               padding: const EdgeInsets.all(8),
                               child: Column(
@@ -187,7 +192,7 @@ class _HomeViewState extends State<HomeView>
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    'EGP ${product.price.toStringAsFixed(0)}',
+                                    "EGP ${product.price}",
                                     style: const TextStyle(
                                       color: Colors.blue,
                                       fontWeight: FontWeight.bold,

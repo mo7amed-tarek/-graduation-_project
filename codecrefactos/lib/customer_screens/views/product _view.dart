@@ -13,6 +13,18 @@ class ProductView extends StatelessWidget {
   final Product product;
   const ProductView({super.key, required this.product});
 
+  String fixImageUrl(String url) {
+    const baseUrl = "http://store2.runasp.net";
+
+    if (url.isEmpty) return "";
+
+    if (url.startsWith("http")) {
+      return url;
+    } else {
+      return baseUrl + url;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final homeVM = context.read<HomeVM>();
@@ -48,10 +60,24 @@ class ProductView extends StatelessWidget {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(24),
                       ),
-                      child: Image.asset(
-                        product.image,
+                      child: Image.network(
+                        fixImageUrl(product.image),
                         height: 180,
                         fit: BoxFit.contain,
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) return child;
+                          return const SizedBox(
+                            height: 180,
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        },
+                        errorBuilder: (context, error, stackTrace) {
+                          debugPrint("Image Error: ${product.image}");
+                          return const SizedBox(
+                            height: 180,
+                            child: Icon(Icons.broken_image, size: 50),
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -105,7 +131,6 @@ class ProductView extends StatelessWidget {
                         ),
                       );
                     },
-
                     buy: () {
                       Navigator.push(
                         context,
@@ -148,7 +173,7 @@ class ProductView extends StatelessWidget {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
-                                boxShadow: [
+                                boxShadow: const [
                                   BoxShadow(
                                     color: Colors.black12,
                                     blurRadius: 6,
@@ -158,7 +183,15 @@ class ProductView extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(child: Image.asset(simProd.image)),
+                                  Expanded(
+                                    child: Image.network(
+                                      fixImageUrl(simProd.image),
+                                      fit: BoxFit.contain,
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              const Icon(Icons.broken_image),
+                                    ),
+                                  ),
                                   const SizedBox(height: 6),
                                   Text(
                                     simProd.name,

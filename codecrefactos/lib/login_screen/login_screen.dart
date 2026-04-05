@@ -26,6 +26,7 @@ class LoginScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 30),
+
               Row(
                 children: [
                   Image.asset("assets/logo.png", height: 45),
@@ -53,12 +54,16 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ],
               ),
+
               const SizedBox(height: 110),
+
               const Text(
                 "Log In",
                 style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
               ),
+
               const SizedBox(height: 30),
+
               Form(
                 key: _formKey,
                 child: Column(
@@ -80,39 +85,94 @@ class LoginScreen extends StatelessWidget {
                   ],
                 ),
               ),
+
+              Consumer<LoginViewModel>(
+                builder: (context, vm, _) {
+                  if (!vm.fieldErrors.containsKey("general")) {
+                    return const SizedBox.shrink();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.error_outline,
+                          color: Colors.red,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          vm.fieldErrors["general"]!,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 13,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+
               const SizedBox(height: 20),
+
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: ColorManager.primary,
                   minimumSize: const Size(double.infinity, 45),
                 ),
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final role = await vm.login();
+                onPressed: vm.isLoading
+                    ? null
+                    : () async {
+                        vm.clearErrors();
 
-                    if (role == UserRole.admin) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => Layout()),
-                      );
-                    } else {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (_) => const HomeView()),
-                      );
-                    }
-                  }
-                },
-                child: Text(
-                  TextManager.login,
-                  style: const TextStyle(
+                        if (_formKey.currentState!.validate()) {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (_) => const Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          );
+
+                          final success = await vm.login();
+
+                          Navigator.pop(context);
+
+                          if (!success) {
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              _formKey.currentState!.validate();
+                            });
+                            return;
+                          }
+
+                          if (vm.role?.toLowerCase() == "admin") {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (_) => const Layout()),
+                            );
+                          } else {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const HomeView(),
+                              ),
+                            );
+                          }
+                        }
+                      },
+                child: const Text(
+                  "Login",
+                  style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
                   ),
                 ),
               ),
+
               const SizedBox(height: 12),
+
               Center(
                 child: GestureDetector(
                   onTap: () => Navigator.push(
@@ -125,7 +185,9 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
               ),
+
               const SizedBox(height: 25),
+
               Row(
                 children: const [
                   Expanded(child: Divider()),
@@ -136,7 +198,9 @@ class LoginScreen extends StatelessWidget {
                   Expanded(child: Divider()),
                 ],
               ),
+
               const SizedBox(height: 20),
+
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -145,7 +209,9 @@ class LoginScreen extends StatelessWidget {
                   Image.asset("assets/facebook.png", height: 35),
                 ],
               ),
+
               const SizedBox(height: 25),
+
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,

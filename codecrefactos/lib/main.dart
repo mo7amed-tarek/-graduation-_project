@@ -1,4 +1,5 @@
 import 'package:codecrefactos/Inventory%20Management/viewmodels/inventory_viewmodel.dart';
+import 'package:codecrefactos/apiService.dart';
 import 'package:codecrefactos/customer_screens/view_models/cart_view_model.dart';
 import 'package:codecrefactos/customer_screens/view_models/home_view_model.dart';
 import 'package:codecrefactos/customer_screens/view_models/order_vm.dart';
@@ -9,6 +10,7 @@ import 'package:codecrefactos/login_screen/login_viewmodel.dart';
 import 'package:codecrefactos/register_screen/register_viewmodel.dart';
 import 'package:codecrefactos/views/Purchase/viewmodels/Purchase_Provider.dart';
 import 'package:codecrefactos/views/sales/viewmodels/sales_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
@@ -27,18 +29,30 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
         ChangeNotifierProvider(create: (_) => RegisterViewModel()),
         ChangeNotifierProvider(create: (_) => ForgotPasswordViewModel()),
+
         ChangeNotifierProvider(create: (_) => EmployeesViewModel()),
         ChangeNotifierProvider(create: (_) => InventoryViewModel()),
         ChangeNotifierProvider(create: (_) => SalesProvider()),
         ChangeNotifierProvider(create: (_) => PurchasesProvider()),
-        ChangeNotifierProvider(create: (_) => HomeVM()),
+
+        Provider<ApiService>(create: (_) => ApiService()),
+
+        ChangeNotifierProvider(
+          create: (context) => HomeVM(context.read<ApiService>()),
+        ),
+
         ChangeNotifierProvider(create: (_) => CartVM()),
         ChangeNotifierProvider(create: (_) => OrderVM()),
       ],
+
       child: ScreenUtilInit(
         designSize: const Size(390, 844),
-        builder: (_, __) =>
-            MaterialApp(debugShowCheckedModeBanner: false, home: LoginScreen()),
+        builder: (_, __) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            home: LoginScreen(),
+          );
+        },
       ),
     );
   }
