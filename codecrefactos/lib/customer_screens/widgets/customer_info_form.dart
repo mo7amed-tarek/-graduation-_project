@@ -2,23 +2,26 @@ import 'package:flutter/material.dart';
 
 class CustomerInfoForm extends StatefulWidget {
   final GlobalKey<FormState>? formKey;
+  final TextEditingController nameController;
+  final TextEditingController phoneController;
+  final TextEditingController addressController;
 
-  const CustomerInfoForm({super.key, this.formKey});
+  const CustomerInfoForm({
+    super.key, 
+    this.formKey,
+    required this.nameController,
+    required this.phoneController,
+    required this.addressController,
+  });
 
   @override
   State<CustomerInfoForm> createState() => _CustomerInfoFormState();
 }
 
 class _CustomerInfoFormState extends State<CustomerInfoForm> {
-  final _nameController = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _addressController = TextEditingController();
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _phoneController.dispose();
-    _addressController.dispose();
     super.dispose();
   }
 
@@ -35,7 +38,7 @@ class _CustomerInfoFormState extends State<CustomerInfoForm> {
           ),
           const SizedBox(height: 12),
           _InputField(
-            controller: _nameController,
+            controller: widget.nameController,
             hint: 'Name',
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
@@ -45,7 +48,7 @@ class _CustomerInfoFormState extends State<CustomerInfoForm> {
             },
           ),
           _InputField(
-            controller: _phoneController,
+            controller: widget.phoneController,
             hint: 'Phone',
             keyboardType: TextInputType.phone,
             validator: (value) {
@@ -59,7 +62,7 @@ class _CustomerInfoFormState extends State<CustomerInfoForm> {
             },
           ),
           _InputField(
-            controller: _addressController,
+            controller: widget.addressController,
             hint: 'Address',
             validator: (value) {
               if (value == null || value.trim().isEmpty) {

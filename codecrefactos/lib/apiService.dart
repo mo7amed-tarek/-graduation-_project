@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 
 class ApiService {
   late final Dio dio;
@@ -28,7 +29,49 @@ class ApiService {
     );
 
     dio.interceptors.add(
-      LogInterceptor(requestBody: true, responseBody: true, error: true),
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          debugPrint("================= API REQUEST =================");
+          debugPrint("Method: ${options.method}");
+          debugPrint("URL: ${options.uri}");
+          debugPrint("Headers: ${options.headers}");
+          if (options.queryParameters.isNotEmpty) {
+            debugPrint("QueryParameters: ${options.queryParameters}");
+          }
+          if (options.data != null) {
+            try {
+              if (options.data is FormData) {
+                 final fd = options.data as FormData;
+                 debugPrint("Body (FormData): Fields: ${fd.fields}, Files lengths: ${fd.files.length}");
+              } else {
+                 debugPrint("Body: ${options.data}");
+              }
+            } catch (_) {
+              debugPrint("Body: ${options.data}");
+            }
+          }
+          debugPrint("===============================================");
+          return handler.next(options);
+        },
+        onResponse: (response, handler) {
+          debugPrint("================= API RESPONSE =================");
+          debugPrint("URL: ${response.requestOptions.uri}");
+          debugPrint("StatusCode: ${response.statusCode}");
+          debugPrint("Response data: ${response.data}");
+          debugPrint("================================================");
+          return handler.next(response);
+        },
+        onError: (DioException e, handler) {
+          debugPrint("================= API ERROR ===================");
+          debugPrint("URL: ${e.requestOptions.uri}");
+          debugPrint("StatusCode: ${e.response?.statusCode}");
+          debugPrint("Type: ${e.type}");
+          debugPrint("Message: ${e.message}");
+          debugPrint("Response Data: ${e.response?.data}");
+          debugPrint("===============================================");
+          return handler.next(e);
+        },
+      ),
     );
   }
 
@@ -78,6 +121,23 @@ class ApiService {
     Map<String, dynamic>? headers,
   }) async {
     return await dio.delete(endpoint, options: Options(headers: headers));
+  }
+
+  Future<Response> createOrder({
+    required String address,
+    required String phone,
+    required int deliveryMethodId,
+    required String paymentMethod,
+  }) async {
+    return await post(
+      "Orders/CreateOrder",
+      {
+        "address": address,
+        "phone": phone,
+        "deliveryMethodId": deliveryMethodId,
+        "paymentMethod": paymentMethod,
+      },
+    );
   }
 
   Map<String, String> handleError(DioException e) {

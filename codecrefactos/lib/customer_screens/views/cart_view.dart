@@ -59,7 +59,7 @@ class CartView extends StatelessWidget {
                         child: Row(
                           children: [
                             Image.network(
-                              fixImageUrl(item.product.image),
+                              fixImageUrl(item.pictureUrl),
                               width: 70,
                               height: 70,
                               fit: BoxFit.contain,
@@ -74,7 +74,7 @@ class CartView extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    item.product.name,
+                                    item.productName,
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
@@ -82,7 +82,7 @@ class CartView extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    '${item.product.price} EGP',
+                                    '${item.price} EGP',
                                     style: const TextStyle(
                                       color: Colors.green,
                                       fontWeight: FontWeight.bold,
@@ -99,13 +99,13 @@ class CartView extends StatelessWidget {
                                     IconButton(
                                       icon: const Icon(Icons.remove),
                                       onPressed: () =>
-                                          cartVM.decreaseQuantity(item.product),
+                                          cartVM.decreaseQuantity(item),
                                     ),
                                     Text(item.quantity.toString()),
                                     IconButton(
                                       icon: const Icon(Icons.add),
                                       onPressed: () =>
-                                          cartVM.increaseQuantity(item.product),
+                                          cartVM.increaseQuantity(item),
                                     ),
                                   ],
                                 ),
@@ -115,7 +115,7 @@ class CartView extends StatelessWidget {
                                     color: Colors.red,
                                   ),
                                   onPressed: () =>
-                                      cartVM.removeItem(item.product),
+                                      cartVM.removeItem(item),
                                 ),
                               ],
                             ),

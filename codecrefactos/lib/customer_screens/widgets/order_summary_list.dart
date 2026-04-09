@@ -1,8 +1,8 @@
-import 'package:codecrefactos/customer_screens/view_models/cart_view_model.dart';
+import 'package:codecrefactos/customer_screens/models/basket_model.dart';
 import 'package:flutter/material.dart';
 
 class OrderSummaryList extends StatelessWidget {
-  final List<CartItem> items;
+  final List<BasketItem> items;
 
   const OrderSummaryList({super.key, required this.items});
 
@@ -40,7 +40,7 @@ class OrderSummaryList extends StatelessWidget {
             child: Row(
               children: [
                 Image.network(
-                  fixImageUrl(item.product.image),
+                  fixImageUrl(item.pictureUrl),
                   width: 60,
                   height: 60,
                   fit: BoxFit.contain,
@@ -54,7 +54,7 @@ class OrderSummaryList extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        item.product.name,
+                        item.productName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -65,7 +65,7 @@ class OrderSummaryList extends StatelessWidget {
                 ),
 
                 Text(
-                  '${(item.product.price * item.quantity).toStringAsFixed(0)} EGP',
+                  '${(item.price * item.quantity).toStringAsFixed(0)} EGP',
                   style: const TextStyle(
                     color: Colors.green,
                     fontWeight: FontWeight.bold,
