@@ -38,7 +38,7 @@ class CustomPurchaseCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  purchase.invoiceNumber,
+                  purchase.id != null ? '#${purchase.id}' : '#NEW',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.blue,
@@ -50,7 +50,7 @@ class CustomPurchaseCard extends StatelessWidget {
                     Icon(Icons.person_outline, size: 14.sp, color: Colors.grey),
                     Gap(4.w),
                     Text(
-                      purchase.employee,
+                      purchase.employeeName ?? 'Unknown',
                       style: TextStyle(
                         color: Colors.grey.shade700,
                         fontSize: 12.sp,
@@ -91,7 +91,7 @@ class CustomPurchaseCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "${purchase.category} • ${purchase.product}",
+                        "${purchase.categoryName ?? 'Unknown'} • ${purchase.productName ?? 'Unknown'}",
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(color: Colors.grey, fontSize: 12.sp),
@@ -100,7 +100,7 @@ class CustomPurchaseCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  purchase.amount,
+                  "\$${(purchase.price ?? 0.0).toStringAsFixed(2)}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.sp,

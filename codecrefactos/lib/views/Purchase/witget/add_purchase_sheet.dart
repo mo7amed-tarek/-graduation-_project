@@ -4,8 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/purchase_model.dart';
-import '../viewmodels/PurchasesConstants.dart';
-import '../../sales/widget/CustomDropdownField.dart';
+import '../../../Inventory Management/viewmodels/inventory_viewmodel.dart';
 
 class AddPurchaseSheet extends StatefulWidget {
   const AddPurchaseSheet({super.key, this.isEdit = false, this.purchase});
@@ -21,11 +20,10 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
   final _formKey = GlobalKey<FormState>();
 
   final supplierController = TextEditingController();
-  final amountController = TextEditingController();
+  final quantityController = TextEditingController();
 
-  String? selectedCategory;
-  String? selectedProduct;
-  String status = 'Pending';
+  InventoryItem? _selectedProduct;
+  String status = 'PendingOrder';
   Employee? _selectedEmployee;
 
   bool isFormValid = false;
@@ -33,20 +31,30 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
   @override
   void initState() {
     super.initState();
+    Future.microtask(() {
+      context.read<InventoryViewModel>().loadItems(refresh: true);
+    });
 
     final vm = context.read<EmployeesViewModel>();
 
     if (widget.purchase != null) {
       supplierController.text = widget.purchase!.supplierName;
-      amountController.text = widget.purchase!.amount;
-      selectedCategory = widget.purchase!.category;
-      selectedProduct = widget.purchase!.product;
+      quantityController.text = widget.purchase!.quantity.toString();
       status = widget.purchase!.status;
+
+      final inventoryVm = context.read<InventoryViewModel>();
+      if (inventoryVm.items.isNotEmpty) {
+        try {
+          _selectedProduct = inventoryVm.items.firstWhere(
+            (p) => p.id == widget.purchase!.productId || p.name == widget.purchase!.productName,
+          );
+        } catch (_) {}
+      }
 
       if (vm.employeesList.isNotEmpty) {
         try {
           _selectedEmployee = vm.employeesList.firstWhere(
-            (e) => e.name == widget.purchase!.employee,
+            (e) => e.id == widget.purchase!.employeeId || e.name == widget.purchase!.employeeName,
           );
         } catch (e) {
           _selectedEmployee = vm.employeesList.first;
@@ -58,7 +66,7 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
   @override
   void dispose() {
     supplierController.dispose();
-    amountController.dispose();
+    quantityController.dispose();
     super.dispose();
   }
 
@@ -108,8 +116,7 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
                 setState(() {
                   isFormValid =
                       _formKey.currentState!.validate() &&
-                      selectedCategory != null &&
-                      selectedProduct != null &&
+                      _selectedProduct != null &&
                       _selectedEmployee != null;
                 });
               },
@@ -124,48 +131,37 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
                         : null,
                   ),
 
-                  _inputLabel("Category"),
-                  CustomDropdownField(
-                    hint: 'Select Category',
-                    value: selectedCategory,
-                    items: PurchasesConstants.categoriesWithProducts.keys
-                        .toList(),
-                    onChanged: (val) {
-                      setState(() {
-                        selectedCategory = val;
-                        selectedProduct = null;
-                      });
-                    },
-                  ),
-
                   _inputLabel("Product"),
-                  CustomDropdownField(
-                    hint: 'Select Product',
-                    value: selectedProduct,
-                    items: selectedCategory != null
-                        ? PurchasesConstants
-                              .categoriesWithProducts[selectedCategory!]!
-                        : const [],
-                    onChanged: (val) {
-                      setState(() => selectedProduct = val);
-                    },
-                  ),
+                  _productDropdown(),
 
-                  _inputLabel("Amount"),
+                  _inputLabel("Quantity"),
                   _textField(
-                    controller: amountController,
+                    controller: quantityController,
                     keyboardType: TextInputType.number,
+                    onChanged: (val) => setState(() {}),
                     validator: (val) {
-                      if (val == null || val.trim().isEmpty) {
-                        return 'Amount is required';
-                      }
-                      final number = double.tryParse(val);
-                      if (number == null || number <= 0) {
-                        return 'Amount must be greater than 0';
-                      }
+                      if (val == null || val.trim().isEmpty) return 'Required';
+                      final number = int.tryParse(val);
+                      if (number == null || number <= 0) return 'Must be > 0';
                       return null;
                     },
                   ),
+
+                  if (_selectedProduct != null &&
+                      quantityController.text.isNotEmpty &&
+                      int.tryParse(quantityController.text) != null &&
+                      int.parse(quantityController.text) > 0)
+                    Padding(
+                      padding: EdgeInsets.only(top: 10.h),
+                      child: Text(
+                        "Total Price: \$${(_selectedProduct!.price * int.parse(quantityController.text)).toStringAsFixed(2)}",
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.sp,
+                        ),
+                      ),
+                    ),
 
                   _inputLabel("Employee"),
                   _employeeDropdown(),
@@ -211,14 +207,23 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
   }
 
   void _submit() {
+    if (!_formKey.currentState!.validate() ||
+        _selectedProduct == null ||
+        _selectedEmployee == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all required fields.')),
+      );
+      return;
+    }
+
     final purchase = Purchase(
-      invoiceNumber: widget.purchase?.invoiceNumber ?? '',
+      id: widget.purchase?.id,
       supplierName: supplierController.text.trim(),
-      category: selectedCategory!,
-      product: selectedProduct!,
-      employee: _selectedEmployee!.name,
-      amount: amountController.text.trim(),
-      status: widget.isEdit ? status : 'Pending',
+      employeeId: _selectedEmployee!.id,
+      productId: _selectedProduct!.id,
+      quantity: int.parse(quantityController.text.trim()),
+      price: _selectedProduct!.price * int.parse(quantityController.text.trim()),
+      status: widget.isEdit ? status : 'PendingOrder',
     );
 
     Navigator.pop(context, purchase);
@@ -239,11 +244,13 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
+    void Function(String)? onChanged,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
+      onChanged: onChanged,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.grey.shade100,
@@ -284,6 +291,41 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
             onChanged: (value) {
               setState(() {
                 _selectedEmployee = value;
+              });
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _productDropdown() {
+    return Consumer<InventoryViewModel>(
+      builder: (context, vm, _) {
+        final products = vm.items;
+
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: DropdownButton<InventoryItem>(
+            value: products.contains(_selectedProduct)
+                ? _selectedProduct
+                : null,
+            hint: const Text("Select Product"),
+            isExpanded: true,
+            underline: const SizedBox(),
+            items: products.map((prod) {
+              return DropdownMenuItem<InventoryItem>(
+                value: prod,
+                child: Text("\$${prod.price} - ${prod.name}"),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectedProduct = value;
               });
             },
           ),

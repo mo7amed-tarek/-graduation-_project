@@ -1,38 +1,79 @@
 class Purchase {
-  final String invoiceNumber;
+  final int? id;
   final String supplierName;
-  final String category;
-  final String product;
-  final String employee;
-  final String amount;
+  final String? employeeName;
+  final int? employeeId;
+  final String? productName;
+  final int? productId;
+  final String? categoryName;
+  final int quantity;
+  final double? price;
+  final double? totalAmount;
   final String status;
 
   Purchase({
-    required this.invoiceNumber,
+    this.id,
     required this.supplierName,
-    required this.category,
-    required this.product,
-    required this.employee,
-    required this.amount,
-    this.status = 'Pending',
+    this.employeeName,
+    this.employeeId,
+    this.productName,
+    this.productId,
+    this.categoryName,
+    required this.quantity,
+    this.price,
+    this.totalAmount,
+    this.status = 'PendingOrder',
   });
 
+  factory Purchase.fromJson(Map<String, dynamic> json) {
+    return Purchase(
+      id: json['id'],
+      supplierName: json['supplierName'] ?? '',
+      employeeName: json['employeeName'],
+      productName: json['productName'],
+      categoryName: json['categoryName'],
+      quantity: json['quantity'] ?? 0,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      totalAmount: (json['totalAmount'] as num?)?.toDouble() ?? 0.0,
+      status: json['status'] ?? 'PendingOrder',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "supplierName": supplierName,
+      "employeeId": employeeId,
+      "productId": productId,
+      "quantity": quantity,
+      "price": price,
+      "status": status,
+    };
+  }
+
   Purchase copyWith({
-    String? invoiceNumber,
+    int? id,
     String? supplierName,
-    String? category,
-    String? product,
-    String? employee,
-    String? amount,
+    String? employeeName,
+    int? employeeId,
+    String? productName,
+    int? productId,
+    String? categoryName,
+    int? quantity,
+    double? price,
+    double? totalAmount,
     String? status,
   }) {
     return Purchase(
-      invoiceNumber: invoiceNumber ?? this.invoiceNumber,
+      id: id ?? this.id,
       supplierName: supplierName ?? this.supplierName,
-      category: category ?? this.category,
-      product: product ?? this.product,
-      employee: employee ?? this.employee,
-      amount: amount ?? this.amount,
+      employeeName: employeeName ?? this.employeeName,
+      employeeId: employeeId ?? this.employeeId,
+      productName: productName ?? this.productName,
+      productId: productId ?? this.productId,
+      categoryName: categoryName ?? this.categoryName,
+      quantity: quantity ?? this.quantity,
+      price: price ?? this.price,
+      totalAmount: totalAmount ?? this.totalAmount,
       status: status ?? this.status,
     );
   }
