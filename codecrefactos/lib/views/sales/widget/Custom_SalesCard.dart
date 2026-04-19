@@ -37,7 +37,7 @@ class CustomSalescard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  saleModel.invoiceNumber,
+                  saleModel.id != null ? '#${saleModel.id}' : '#NEW',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.blue,
@@ -49,7 +49,7 @@ class CustomSalescard extends StatelessWidget {
                     Icon(Icons.person_outline, size: 14.sp, color: Colors.grey),
                     Gap(4.w),
                     Text(
-                      saleModel.employee,
+                      saleModel.employeeName ?? 'Unknown',
                       style: TextStyle(color: Colors.grey.shade700, fontSize: 12.sp),
                     ),
                   ],
@@ -79,14 +79,14 @@ class CustomSalescard extends StatelessWidget {
                         style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15.sp),
                       ),
                       Text(
-                        "${saleModel.category} • ${saleModel.product}",
+                        "${saleModel.categoryName ?? 'Unknown'} • ${saleModel.productName ?? 'Unknown'}",
                         style: TextStyle(color: Colors.grey, fontSize: 12.sp),
                       ),
                     ],
                   ),
                 ),
                 Text(
-                  "\$${saleModel.amount}",
+                  "\$${saleModel.totalAmount?.toStringAsFixed(2) ?? '0.00'}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.sp,
