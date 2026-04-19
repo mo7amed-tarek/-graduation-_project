@@ -4,24 +4,13 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0d413ec9-cb94-4130-96c7-a651db42ff43" name="Changes" comment="">
+    <list default="true" id="a9abaec9-b9b0-4386-bdee-5bab5cd9883c" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/copilot.data.migration.ask2agent.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/lib/apiService.dart" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/lib/apiService.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/view_models/cart_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/view_models/cart_view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/view_models/confirm_order_view_model.dart" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/view_models/confirm_order_view_model.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/views/cart_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/views/cart_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/views/confirm_view.dart" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/views/confirm_view.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/widgets/customer_info_form.dart" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/widgets/customer_info_form.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/widgets/order_summary_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/lib/customer_screens/widgets/order_summary_list.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/linux/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/linux/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/linux/flutter/generated_plugin_registrant.h" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/linux/flutter/generated_plugin_registrant.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/linux/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/linux/flutter/generated_plugins.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/macos/Flutter/GeneratedPluginRegistrant.swift" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/macos/Flutter/GeneratedPluginRegistrant.swift" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/windows/flutter/generated_plugin_registrant.cc" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/windows/flutter/generated_plugin_registrant.cc" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/windows/flutter/generated_plugin_registrant.h" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/windows/flutter/generated_plugin_registrant.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/codecrefactos/windows/flutter/generated_plugins.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/windows/flutter/generated_plugins.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/codecrefactos/lib/employwee_screen/employee_viewmodel.dart" beforeDir="false" afterPath="$PROJECT_DIR$/codecrefactos/lib/employwee_screen/employee_viewmodel.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -33,7 +22,7 @@
   </component>
   <component name="CopilotPersistence">
     <persistenceIdMap>
-      <entry key="_C:/Users/sayed/OneDrive/Desktop/-graduation-_project" value="37897hMC4iuqqURKNBSJTLyoNTD" />
+      <entry key="_C:/Users/sayed/OneDrive/Desktop/-graduation-_project" value="3CYQ7GzbR5F06MzR5qxCAegYxwg" />
     </persistenceIdMap>
   </component>
   <component name="Git.Settings">
@@ -52,44 +41,42 @@
   }
 }</component>
   <component name="ProjectColorInfo">{
-  &quot;associatedIndex&quot;: 1
+  &quot;associatedIndex&quot;: 8
 }</component>
-  <component name="ProjectId" id="37897hMC4iuqqURKNBSJTLyoNTD" />
+  <component name="ProjectId" id="3CYQ7GzbR5F06MzR5qxCAegYxwg" />
   <component name="ProjectViewState">
-    <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "dart.analysis.tool.window.visible": "false",
-    "git-widget-placeholder": "cart-with-confirmorder",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/sayed/OneDrive/Desktop/-graduation-_project",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;implement-api&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/sayed/OneDrive/Desktop/-graduation-_project&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\sayed\OneDrive\Desktop\-graduation-_project\codecrefactos" />
-      <recent name="D:\-graduation-_project\codecrefactos" />
     </key>
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="0d413ec9-cb94-4130-96c7-a651db42ff43" name="Changes" comment="" />
-      <created>1766273667010</created>
+      <changelist id="a9abaec9-b9b0-4386-bdee-5bab5cd9883c" name="Changes" comment="" />
+      <created>1776559854441</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1766273667010</updated>
+      <updated>1776559854441</updated>
     </task>
     <servers />
   </component>
