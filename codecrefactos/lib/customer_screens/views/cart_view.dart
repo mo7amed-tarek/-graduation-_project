@@ -38,7 +38,7 @@ class CartView extends StatelessWidget {
           children: [
             const Text(
               'Your Order',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
 
@@ -138,7 +138,7 @@ class CartView extends StatelessWidget {
                 children: [
                   const Text(
                     'Total',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   Text(
                     '${cartVM.total.toStringAsFixed(0)} EGP',
@@ -192,7 +192,7 @@ class CartView extends StatelessWidget {
               children: [
                 const Text(
                   'Buy Again',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 GestureDetector(
                   onTap: () {
@@ -245,7 +245,6 @@ class CartView extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          /// 🔴 صورة (FIXED)
                           Expanded(
                             child: Image.network(
                               fixImageUrl(product.image),
