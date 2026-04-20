@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
           create: (context) => HomeVM(context.read<ApiService>()),
         ),
 
-        ChangeNotifierProvider(create: (_) => CartVM()),
+ChangeNotifierProvider(create: (context) => CartVM(context.read<ApiService>())),
         ChangeNotifierProvider(create: (_) => OrderVM()),
       ],
 

@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import '../viewmodels/SalesConstants.dart';
+import '../../../Inventory Management/viewmodels/inventory_viewmodel.dart';
 import '../viewmodels/sale_model.dart';
-import 'CustomDropdownField.dart';
 
 class AddSalesSheet extends StatefulWidget {
   final SaleModel? sale;
@@ -18,26 +17,36 @@ class AddSalesSheet extends StatefulWidget {
 class _AddSalesSheetState extends State<AddSalesSheet> {
   final _formKey = GlobalKey<FormState>();
   final customerController = TextEditingController();
-  final amountController = TextEditingController();
+  final quantityController = TextEditingController();
 
-  String? _selectedCategory;
-  String? _selectedProduct;
+  InventoryItem? _selectedProduct;
   Employee? _selectedEmployee;
 
   @override
   void initState() {
     super.initState();
+    Future.microtask(() {
+      context.read<InventoryViewModel>().loadItems(refresh: true);
+    });
+
     if (widget.sale != null) {
       customerController.text = widget.sale!.customerName;
-      amountController.text = widget.sale!.amount;
-      _selectedCategory = widget.sale!.category;
-      _selectedProduct = widget.sale!.product;
+      quantityController.text = widget.sale!.quantity.toString();
+
+      final inventoryVm = context.read<InventoryViewModel>();
+      if (inventoryVm.items.isNotEmpty) {
+        try {
+          _selectedProduct = inventoryVm.items.firstWhere(
+            (p) => p.id == widget.sale!.productId || p.name == widget.sale!.productName,
+          );
+        } catch (_) {}
+      }
 
       final vm = context.read<EmployeesViewModel>();
       if (vm.employeesList.isNotEmpty) {
         try {
           _selectedEmployee = vm.employeesList.firstWhere(
-            (e) => e.name == widget.sale!.employee,
+            (e) => e.id == widget.sale!.employeeId || e.name == widget.sale!.employeeName,
           );
         } catch (e) {
           _selectedEmployee = vm.employeesList.first;
@@ -70,34 +79,12 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
               _inputLabel("Customer Name"),
               _textField(customerController),
 
-              _inputLabel("Category"),
-              CustomDropdownField(
-                hint: "Select Category",
-                value: _selectedCategory,
-                items: SalesConstants.categoriesWithProducts.keys.toList(),
-                onChanged: (val) => setState(() {
-                  _selectedCategory = val;
-                  _selectedProduct = null;
-                }),
-              ),
-
               _inputLabel("Product"),
-              CustomDropdownField(
-                hint: _selectedCategory == null
-                    ? "Select category first"
-                    : "Select Product",
-                value: _selectedProduct,
-                items: _selectedCategory != null
-                    ? SalesConstants.categoriesWithProducts[_selectedCategory!]!
-                    : [],
-                onChanged: _selectedCategory == null
-                    ? (val) {}
-                    : (val) => setState(() => _selectedProduct = val),
-              ),
+              _productDropdown(),
 
-              _inputLabel("Amount"),
+              _inputLabel("Quantity"),
               TextFormField(
-                controller: amountController,
+                controller: quantityController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   filled: true,
@@ -118,7 +105,7 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
                   }
 
                   if (number <= 0) {
-                    return "Amount must be greater than zero";
+                    return "Quantity must be greater than zero";
                   }
 
                   return null;
@@ -177,19 +164,20 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
 
   void _submit() {
     if (!_formKey.currentState!.validate() ||
-        _selectedCategory == null ||
         _selectedProduct == null ||
         _selectedEmployee == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all required fields.')),
+      );
       return;
     }
 
     final sale = SaleModel(
-      invoiceNumber: widget.sale?.invoiceNumber ?? '',
+      id: widget.sale?.id,
       customerName: customerController.text,
-      category: _selectedCategory!,
-      product: _selectedProduct!,
-      employee: _selectedEmployee!.name,
-      amount: amountController.text,
+      employeeId: _selectedEmployee!.id,
+      productId: _selectedProduct!.id,
+      quantity: int.parse(quantityController.text),
       status: widget.sale?.status ?? 'Pending',
     );
 
@@ -252,6 +240,41 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
             onChanged: (value) {
               setState(() {
                 _selectedEmployee = value;
+              });
+            },
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _productDropdown() {
+    return Consumer<InventoryViewModel>(
+      builder: (context, vm, _) {
+        final products = vm.items;
+
+        return Container(
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
+          decoration: BoxDecoration(
+            color: Colors.grey.shade100,
+            borderRadius: BorderRadius.circular(10.r),
+          ),
+          child: DropdownButton<InventoryItem>(
+            value: products.contains(_selectedProduct)
+                ? _selectedProduct
+                : null,
+            hint: const Text("Select Product"),
+            isExpanded: true,
+            underline: const SizedBox(),
+            items: products.map((prod) {
+              return DropdownMenuItem<InventoryItem>(
+                value: prod,
+                child: Text("\$${prod.price} - ${prod.name}"),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                _selectedProduct = value;
               });
             },
           ),
