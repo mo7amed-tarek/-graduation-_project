@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../apiService.dart';
 
 class LoginViewModel with ChangeNotifier {
@@ -46,9 +47,16 @@ class LoginViewModel with ChangeNotifier {
       final response = await apiService.post("User/login", data);
 
       if (response.statusCode == 200) {
-        token = response.data['token'] as String?;
-        role = response.data['role'] as String?;
+        token = response.data['token'];
+        role = response.data['role'];
+
         ApiService.token = token;
+
+        // ✅ حفظ التوكن
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString("token", token ?? "");
+        await prefs.setString("role", role ?? "");
+
         return true;
       } else {
         return false;
@@ -81,10 +89,8 @@ class LoginViewModel with ChangeNotifier {
         } else if (resData['title'] != null) {
           errors["general"] = resData['title'].toString();
         }
-      } else if (resData is String && resData.trim().isNotEmpty) {
-        errors["general"] = resData.trim();
       } else {
-        errors["general"] = "Login failed. Please try again.";
+        errors["general"] = "Login failed";
       }
 
       fieldErrors = errors;
@@ -98,6 +104,11 @@ class LoginViewModel with ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
   }
 
   void clearErrors() {

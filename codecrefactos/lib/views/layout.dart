@@ -1,12 +1,10 @@
 import 'package:codecrefactos/Inventory%20Management/screens/inventory_management_screen.dart';
 import 'package:codecrefactos/employwee_screen/employee_screen.dart';
-import 'package:codecrefactos/resources/color_manager.dart';
 import 'package:codecrefactos/views/home.dart';
 import 'package:codecrefactos/views/setting.dart';
 import 'package:codecrefactos/views/sales/screens/sales_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import 'Purchase/screens/Purchase_screen.dart';
 
 class Layout extends StatefulWidget {
@@ -23,106 +21,140 @@ class _LayoutState extends State<Layout> {
     Home(),
     EmployeesScreen(),
     SalesScreen(),
-
     PurchaseScreen(),
     InventoryManagementScreen(),
     Profile(),
   ];
 
-  List<String> icons = [
-    "assets/dashboard.png",
-    "assets/employ.png",
-    "assets/Icon.png",
-    "assets/Icon (1).png",
-    "assets/Group 427320746.png",
-    "assets/settting.png",
+  final List<_NavItem> navItems = const [
+    _NavItem(
+      icon: Icons.home_outlined,
+      activeIcon: Icons.home_rounded,
+      label: 'Home',
+    ),
+    _NavItem(
+      icon: Icons.badge_outlined,
+      activeIcon: Icons.badge_rounded,
+      label: 'Employees',
+    ),
+    _NavItem(
+      icon: Icons.trending_up_outlined,
+      activeIcon: Icons.trending_up_rounded,
+      label: 'Sales',
+    ),
+    _NavItem(
+      icon: Icons.shopping_cart_outlined,
+      activeIcon: Icons.shopping_cart_rounded,
+      label: 'Purchase',
+    ),
+    _NavItem(
+      icon: Icons.inventory_2_outlined,
+      activeIcon: Icons.inventory_2_rounded,
+      label: 'Inventory',
+    ),
+    _NavItem(
+      icon: Icons.settings_outlined,
+      activeIcon: Icons.settings_rounded,
+      label: 'Settings',
+    ),
   ];
 
-  List<String> selectedIcons = [
-    "assets/dashboard.png",
-
-    "assets/employ.png",
-    "assets/Icon.png",
-    "assets/Icon (1).png",
-    "assets/Group 427320746.png",
-    "assets/settting.png",
-  ];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorManager.primary,
-
       body: pages[selectedIndex],
+      bottomNavigationBar: _ModernNavBar(
+        items: navItems,
+        selectedIndex: selectedIndex,
+        onTap: (index) => setState(() => selectedIndex = index),
+      ),
+    );
+  }
+}
 
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
-        },
-        currentIndex: selectedIndex,
+// ── Data class ───────────────────────────────────────────────────────────────
+class _NavItem {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  const _NavItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+  });
+}
 
-        items: [
-          BottomNavigationBarItem(
-            activeIcon: Image.asset(
-              selectedIcons[0],
-              fit: BoxFit.contain,
-              height: 25.h,
-            ),
-            icon: Image.asset(icons[0], fit: BoxFit.contain, height: 20.h),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            activeIcon: Image.asset(
-              selectedIcons[1],
-              fit: BoxFit.contain,
-              height: 25.h,
-            ),
+// ── Custom NavBar ─────────────────────────────────────────────────────────────
+class _ModernNavBar extends StatelessWidget {
+  final List<_NavItem> items;
+  final int selectedIndex;
+  final ValueChanged<int> onTap;
 
-            icon: Image.asset(icons[1], fit: BoxFit.contain, height: 20.h),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            activeIcon: Image.asset(
-              selectedIcons[2],
-              fit: BoxFit.contain,
-              height: 25.h,
-            ),
+  const _ModernNavBar({
+    required this.items,
+    required this.selectedIndex,
+    required this.onTap,
+  });
 
-            icon: Image.asset(icons[2], fit: BoxFit.contain, height: 20.h),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            activeIcon: Image.asset(
-              selectedIcons[3],
-              fit: BoxFit.contain,
-              height: 25.h,
-            ),
+  @override
+  Widget build(BuildContext context) {
+    const Color activeColor = Color(0xFF2D3554);
+    const Color inactiveColor = Color(0xFFAEB4C8);
 
-            icon: Image.asset(icons[3], fit: BoxFit.contain, height: 20.h),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            activeIcon: Image.asset(
-              selectedIcons[4],
-              fit: BoxFit.contain,
-              height: 25.h,
-            ),
-
-            icon: Image.asset(icons[4], fit: BoxFit.contain, height: 20.h),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            activeIcon: Image.asset(
-              selectedIcons[5],
-              fit: BoxFit.contain,
-              height: 25.h,
-            ),
-
-            icon: Image.asset(icons[5], fit: BoxFit.contain, height: 20.h),
-            label: '',
+    return Container(
+      height: 80.h,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.r),
+          topRight: Radius.circular(20.r),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 30,
+            spreadRadius: 0,
+            offset: const Offset(0, -4),
           ),
         ],
+      ),
+      child: Row(
+        children: List.generate(items.length, (i) {
+          final bool isActive = i == selectedIndex;
+          return Expanded(
+            child: GestureDetector(
+              onTap: () => onTap(i),
+              behavior: HitTestBehavior.opaque,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    transitionBuilder: (child, anim) =>
+                        ScaleTransition(scale: anim, child: child),
+                    child: Icon(
+                      isActive ? items[i].activeIcon : items[i].icon,
+                      key: ValueKey('${i}_$isActive'),
+                      size: 22.sp,
+                      color: isActive ? activeColor : inactiveColor,
+                    ),
+                  ),
+                  SizedBox(height: 4.h),
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeOut,
+                    width: isActive ? 4.w : 0,
+                    height: isActive ? 4.h : 0,
+                    decoration: BoxDecoration(
+                      color: activeColor,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

@@ -37,7 +37,9 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
       if (inventoryVm.items.isNotEmpty) {
         try {
           _selectedProduct = inventoryVm.items.firstWhere(
-            (p) => p.id == widget.sale!.productId || p.name == widget.sale!.productName,
+            (p) =>
+                p.id == widget.sale!.productId ||
+                p.name == widget.sale!.productName,
           );
         } catch (_) {}
       }
@@ -46,7 +48,9 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
       if (vm.employeesList.isNotEmpty) {
         try {
           _selectedEmployee = vm.employeesList.firstWhere(
-            (e) => e.id == widget.sale!.employeeId || e.name == widget.sale!.employeeName,
+            (e) =>
+                e.id == widget.sale!.employeeId ||
+                e.name == widget.sale!.employeeName,
           );
         } catch (e) {
           _selectedEmployee = vm.employeesList.first;
@@ -147,7 +151,7 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
       children: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Cancel"),
+          child: const Text("Cancel", style: TextStyle(color: Colors.red)),
         ),
         Gap(10.w),
         ElevatedButton(

@@ -51,6 +51,7 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen> {
     final vm = context.watch<InventoryViewModel>();
 
     return Scaffold(
+      extendBody: true,
       backgroundColor: Colors.grey.shade100,
       appBar: Appbar(
         showLogoutButton: false,

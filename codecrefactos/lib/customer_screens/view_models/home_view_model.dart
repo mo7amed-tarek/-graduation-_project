@@ -1,5 +1,6 @@
 import 'package:codecrefactos/apiService.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/product_model.dart';
 
 class HomeVM extends ChangeNotifier {
@@ -59,5 +60,12 @@ class HomeVM extends ChangeNotifier {
       isLoadingMore = false;
       notifyListeners();
     }
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+
+    notifyListeners();
   }
 }

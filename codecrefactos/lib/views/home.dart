@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(70),
+        preferredSize: Size.fromHeight(70.h),
         child: Appbar(
           showAddButton: false,
           showLogoutButton: true,

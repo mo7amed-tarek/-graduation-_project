@@ -22,12 +22,12 @@ class CustomCard extends StatelessWidget {
       width: 192.w,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: [
           BoxShadow(
             color: Colors.grey.withOpacity(0.2),
-            blurRadius: 10,
-            spreadRadius: 6,
+            blurRadius: 10.r,
+            spreadRadius: 6.r,
             offset: Offset(0, 6),
           ),
         ],

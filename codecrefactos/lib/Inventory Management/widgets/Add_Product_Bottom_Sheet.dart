@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/inventory_viewmodel.dart';
-import '../../customer_screens/view_models/home_view_model.dart'; // ✅ إضافة
+import '../../customer_screens/view_models/home_view_model.dart';
 
 class AddProductSheet extends StatefulWidget {
   final InventoryItem? item;
@@ -21,7 +21,6 @@ class _AddProductSheetState extends State<AddProductSheet> {
   final descCtrl = TextEditingController();
   final colorCtrl = TextEditingController();
   final priceCtrl = TextEditingController();
-  final categoryIdCtrl = TextEditingController();
   final quantityCtrl = TextEditingController();
 
   File? _selectedImage;
@@ -48,7 +47,6 @@ class _AddProductSheetState extends State<AddProductSheet> {
       descCtrl.text = item.description;
       colorCtrl.text = item.color;
       priceCtrl.text = item.price.toString();
-      categoryIdCtrl.text = item.categoryId.toString();
       quantityCtrl.text = item.quantity.toString();
 
       selectedCategory = categories.firstWhere(
@@ -64,16 +62,29 @@ class _AddProductSheetState extends State<AddProductSheet> {
     descCtrl.dispose();
     colorCtrl.dispose();
     priceCtrl.dispose();
-    categoryIdCtrl.dispose();
     quantityCtrl.dispose();
     super.dispose();
   }
 
   InputDecoration _inputDeco(String label) => InputDecoration(
     labelText: label,
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-  );
 
+    labelStyle: const TextStyle(color: Colors.grey),
+
+    floatingLabelStyle: const TextStyle(color: Colors.grey),
+
+    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+
+    enabledBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Colors.grey),
+    ),
+
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Colors.blue, width: 2),
+    ),
+  );
   Future<void> _pickImage() async {
     final picked = await _picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
@@ -92,7 +103,7 @@ class _AddProductSheetState extends State<AddProductSheet> {
     }
 
     final inventoryVM = context.read<InventoryViewModel>();
-    final homeVM = context.read<HomeVM>(); // ✅ إضافة
+    final homeVM = context.read<HomeVM>();
 
     setState(() => _isSubmitting = true);
 
@@ -124,19 +135,13 @@ class _AddProductSheetState extends State<AddProductSheet> {
         }
       }
 
-      // ✅ أهم سطر: تحديث HomeVM
       await homeVM.fetchProducts(refresh: true);
 
-      if (mounted) {
-        Navigator.pop(context);
-      }
+      if (mounted) Navigator.pop(context);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error: ${e.toString()}"),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -144,16 +149,16 @@ class _AddProductSheetState extends State<AddProductSheet> {
     }
   }
 
-  Widget _buildField(
+  Widget _field(
     String label,
     TextEditingController ctrl, {
-    bool isNumber = false,
+    bool number = false,
   }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
       child: TextFormField(
         controller: ctrl,
-        keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+        keyboardType: number ? TextInputType.number : TextInputType.text,
         decoration: _inputDeco(label),
         validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
       ),
@@ -170,7 +175,7 @@ class _AddProductSheetState extends State<AddProductSheet> {
         padding: const EdgeInsets.all(20),
         decoration: const BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
         ),
         child: Form(
           key: _formKey,
@@ -181,16 +186,31 @@ class _AddProductSheetState extends State<AddProductSheet> {
           },
           child: SingleChildScrollView(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // handle
+                Center(
+                  child: Container(
+                    width: 50,
+                    height: 5,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 15),
+
+                // header
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Expanded(
-                      child: Text(
-                        "Product",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    Text(
+                      widget.item != null ? "Edit Product" : "Add Product",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     IconButton(
@@ -200,27 +220,58 @@ class _AddProductSheetState extends State<AddProductSheet> {
                   ],
                 ),
 
+                Text(
+                  "Fill product details below",
+                  style: TextStyle(color: Colors.grey[600]),
+                ),
+
+                const SizedBox(height: 20),
+
+                // image picker
                 GestureDetector(
                   onTap: _pickImage,
                   child: Container(
-                    height: 150,
+                    height: 160,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey),
-                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.grey.shade300),
                     ),
                     child: _selectedImage != null
-                        ? Image.file(_selectedImage!, fit: BoxFit.cover)
-                        : const Center(child: Text("Tap to select image")),
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(15),
+                            child: Image.file(
+                              _selectedImage!,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add_a_photo_outlined, size: 40),
+                              SizedBox(height: 8),
+                              Text("Tap to upload image"),
+                            ],
+                          ),
                   ),
                 ),
 
-                const SizedBox(height: 14),
+                const SizedBox(height: 20),
 
-                _buildField("Name", nameCtrl),
-                _buildField("Description", descCtrl),
-                _buildField("Color", colorCtrl),
-                _buildField("Price", priceCtrl, isNumber: true),
+                _field("Name", nameCtrl),
+                _field("Description", descCtrl),
+                _field("Color", colorCtrl),
+
+                Row(
+                  children: [
+                    Expanded(child: _field("Price", priceCtrl, number: true)),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _field("Quantity", quantityCtrl, number: true),
+                    ),
+                  ],
+                ),
 
                 Padding(
                   padding: const EdgeInsets.only(bottom: 14),
@@ -234,46 +285,38 @@ class _AddProductSheetState extends State<AddProductSheet> {
                       );
                     }).toList(),
                     onChanged: (value) {
-                      setState(() {
-                        selectedCategory = value;
-                      });
+                      setState(() => selectedCategory = value);
                     },
                     validator: (v) =>
                         v == null ? 'Please select category' : null,
                   ),
                 ),
 
-                _buildField("Quantity", quantityCtrl, isNumber: true),
-
                 const SizedBox(height: 20),
 
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text("Cancel"),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: (isFormValid && !_isSubmitting) ? _submit : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: (isFormValid && !_isSubmitting)
-                            ? _submit
-                            : null,
-                        child: _isSubmitting
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : Text(widget.item != null ? "Update" : "Add"),
-                      ),
-                    ),
-                  ],
+                    child: _isSubmitting
+                        ? const CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          )
+                        : Text(
+                            widget.item != null
+                                ? "Update Product"
+                                : "Add Product",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                  ),
                 ),
               ],
             ),

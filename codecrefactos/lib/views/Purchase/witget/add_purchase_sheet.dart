@@ -46,7 +46,9 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
       if (inventoryVm.items.isNotEmpty) {
         try {
           _selectedProduct = inventoryVm.items.firstWhere(
-            (p) => p.id == widget.purchase!.productId || p.name == widget.purchase!.productName,
+            (p) =>
+                p.id == widget.purchase!.productId ||
+                p.name == widget.purchase!.productName,
           );
         } catch (_) {}
       }
@@ -54,7 +56,9 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
       if (vm.employeesList.isNotEmpty) {
         try {
           _selectedEmployee = vm.employeesList.firstWhere(
-            (e) => e.id == widget.purchase!.employeeId || e.name == widget.purchase!.employeeName,
+            (e) =>
+                e.id == widget.purchase!.employeeId ||
+                e.name == widget.purchase!.employeeName,
           );
         } catch (e) {
           _selectedEmployee = vm.employeesList.first;
@@ -172,28 +176,24 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
             Gap(30.h),
 
             Row(
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text("Cancel"),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(color: Colors.red),
                   ),
                 ),
-                Gap(12.w),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: isFormValid ? _submit : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 12.h),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.r),
-                      ),
-                    ),
-                    child: Text(
-                      widget.isEdit ? "Save Changes" : "Add Purchase",
-                    ),
+
+                Gap(10.w),
+
+                ElevatedButton(
+                  onPressed: isFormValid ? _submit : null,
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                  child: Text(
+                    widget.isEdit ? "Save Changes" : "Add Purchase",
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -222,7 +222,8 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
       employeeId: _selectedEmployee!.id,
       productId: _selectedProduct!.id,
       quantity: int.parse(quantityController.text.trim()),
-      price: _selectedProduct!.price * int.parse(quantityController.text.trim()),
+      price:
+          _selectedProduct!.price * int.parse(quantityController.text.trim()),
       status: widget.isEdit ? status : 'PendingOrder',
     );
 
