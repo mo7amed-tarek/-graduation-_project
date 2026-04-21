@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/inventory_viewmodel.dart';
@@ -26,7 +28,6 @@ class _AddProductSheetState extends State<AddProductSheet> {
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
 
-  bool isFormValid = false;
   bool _isSubmitting = false;
 
   final List<Map<String, dynamic>> categories = [
@@ -66,25 +67,6 @@ class _AddProductSheetState extends State<AddProductSheet> {
     super.dispose();
   }
 
-  InputDecoration _inputDeco(String label) => InputDecoration(
-    labelText: label,
-
-    labelStyle: const TextStyle(color: Colors.grey),
-
-    floatingLabelStyle: const TextStyle(color: Colors.grey),
-
-    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-
-    enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Colors.grey),
-    ),
-
-    focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Colors.blue, width: 2),
-    ),
-  );
   Future<void> _pickImage() async {
     final picked = await _picker.pickImage(source: ImageSource.gallery);
     if (picked != null) {
@@ -123,13 +105,11 @@ class _AddProductSheetState extends State<AddProductSheet> {
     try {
       if (widget.item != null) {
         await inventoryVM.updateItem(item);
-
         if (_selectedImage != null) {
           await inventoryVM.uploadImage(widget.item!.id!, _selectedImage!.path);
         }
       } else {
         final newId = await inventoryVM.addItem(item);
-
         if (_selectedImage != null && newId != 0) {
           await inventoryVM.uploadImage(newId, _selectedImage!.path);
         }
@@ -149,177 +129,227 @@ class _AddProductSheetState extends State<AddProductSheet> {
     }
   }
 
-  Widget _field(
-    String label,
+  Widget _inputLabel(String text) => Padding(
+    padding: EdgeInsets.only(bottom: 5.h, top: 12.h),
+    child: Text(
+      text,
+      style: TextStyle(fontSize: 13.sp, fontWeight: FontWeight.w500),
+    ),
+  );
+
+  Widget _textField(
     TextEditingController ctrl, {
-    bool number = false,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
   }) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: TextFormField(
-        controller: ctrl,
-        keyboardType: number ? TextInputType.number : TextInputType.text,
-        decoration: _inputDeco(label),
-        validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+    return TextFormField(
+      controller: ctrl,
+      keyboardType: keyboardType,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.grey.shade100,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(10.r),
+          borderSide: BorderSide.none,
+        ),
       ),
+      validator:
+          validator ??
+          (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+      ),
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 20.w,
+        right: 20.w,
+        top: 20.h,
       ),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-        ),
+      child: SingleChildScrollView(
         child: Form(
           key: _formKey,
-          onChanged: () {
-            setState(() {
-              isFormValid = _formKey.currentState?.validate() ?? false;
-            });
-          },
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // handle
-                Center(
-                  child: Container(
-                    width: 50,
-                    height: 5,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle
+              Center(
+                child: Container(
+                  width: 50,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(20),
                   ),
                 ),
+              ),
 
-                const SizedBox(height: 15),
+              Gap(15.h),
 
-                // header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      widget.item != null ? "Edit Product" : "Add Product",
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
+              // Header
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.item != null ? "Edit Product" : "Add Product",
+                    style: TextStyle(
+                      fontSize: 18.sp,
+                      fontWeight: FontWeight.bold,
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ],
-                ),
-
-                Text(
-                  "Fill product details below",
-                  style: TextStyle(color: Colors.grey[600]),
-                ),
-
-                const SizedBox(height: 20),
-
-                // image picker
-                GestureDetector(
-                  onTap: _pickImage,
-                  child: Container(
-                    height: 160,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.grey.shade300),
-                    ),
-                    child: _selectedImage != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
-                            child: Image.file(
-                              _selectedImage!,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : const Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.add_a_photo_outlined, size: 40),
-                              SizedBox(height: 8),
-                              Text("Tap to upload image"),
-                            ],
-                          ),
                   ),
-                ),
-
-                const SizedBox(height: 20),
-
-                _field("Name", nameCtrl),
-                _field("Description", descCtrl),
-                _field("Color", colorCtrl),
-
-                Row(
-                  children: [
-                    Expanded(child: _field("Price", priceCtrl, number: true)),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _field("Quantity", quantityCtrl, number: true),
-                    ),
-                  ],
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 14),
-                  child: DropdownButtonFormField<Map<String, dynamic>>(
-                    value: selectedCategory,
-                    decoration: _inputDeco("Category"),
-                    items: categories.map((cat) {
-                      return DropdownMenuItem(
-                        value: cat,
-                        child: Text(cat["name"]),
-                      );
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() => selectedCategory = value);
-                    },
-                    validator: (v) =>
-                        v == null ? 'Please select category' : null,
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.pop(context),
                   ),
-                ),
+                ],
+              ),
 
-                const SizedBox(height: 20),
+              Gap(20.h),
 
-                SizedBox(
+              // Image Picker
+              GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  height: 130.h,
                   width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: (isFormValid && !_isSubmitting) ? _submit : null,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade100,
+                    borderRadius: BorderRadius.circular(10.r),
+                  ),
+                  child: _selectedImage != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10.r),
+                          child: Image.file(_selectedImage!, fit: BoxFit.cover),
+                        )
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_a_photo_outlined,
+                              size: 36.sp,
+                              color: Colors.grey,
+                            ),
+                            Gap(8.h),
+                            Text(
+                              "Tap to upload image",
+                              style: TextStyle(
+                                fontSize: 13.sp,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                ),
+              ),
+
+              _inputLabel("Name"),
+              _textField(nameCtrl),
+
+              _inputLabel("Description"),
+              _textField(descCtrl),
+
+              _inputLabel("Color"),
+              _textField(colorCtrl),
+
+              _inputLabel("Price"),
+              _textField(
+                priceCtrl,
+                keyboardType: TextInputType.number,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return 'Required';
+                  if (double.tryParse(v) == null) return 'Enter a valid number';
+                  return null;
+                },
+              ),
+
+              _inputLabel("Quantity"),
+              _textField(
+                quantityCtrl,
+                keyboardType: TextInputType.number,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return 'Required';
+                  final n = int.tryParse(v);
+                  if (n == null) return 'Enter a valid number';
+                  if (n < 0) return 'Quantity cannot be negative';
+                  return null;
+                },
+              ),
+
+              _inputLabel("Category"),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 12.w),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade100,
+                  borderRadius: BorderRadius.circular(10.r),
+                ),
+                child: DropdownButtonFormField<Map<String, dynamic>>(
+                  value: selectedCategory,
+                  decoration: const InputDecoration(border: InputBorder.none),
+                  hint: const Text("Select Category"),
+                  isExpanded: true,
+                  items: categories.map((cat) {
+                    return DropdownMenuItem(
+                      value: cat,
+                      child: Text(cat["name"]),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    setState(() => selectedCategory = value);
+                  },
+                  validator: (v) => v == null ? 'Please select category' : null,
+                ),
+              ),
+
+              Gap(25.h),
+
+              // Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      "Cancel",
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  Gap(10.w),
+                  ElevatedButton(
+                    onPressed: _isSubmitting ? null : _submit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10.r),
                       ),
                     ),
                     child: _isSubmitting
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
+                        ? SizedBox(
+                            width: 18.w,
+                            height: 18.h,
+                            child: const CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
                           )
                         : Text(
                             widget.item != null
                                 ? "Update Product"
                                 : "Add Product",
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+
+              Gap(20.h),
+            ],
           ),
         ),
       ),

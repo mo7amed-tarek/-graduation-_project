@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:codecrefactos/apiService.dart';
 import 'package:codecrefactos/Inventory%20Management/viewmodels/inventory_viewmodel.dart';
 
 class ProductRepository {
   final ApiService _api = ApiService();
 
-  Future<List<InventoryItem>> getProducts({
+  Future<({List<InventoryItem> items, bool hasMore})> getProducts({
     int pageIndex = 1,
     int pageSize = 5,
   }) async {
@@ -16,50 +17,80 @@ class ProductRepository {
       );
 
       final data = response.data;
+      List<InventoryItem> list = [];
 
       if (data is Map<String, dynamic>) {
-        final list = data['data'];
+        final inner = data['data'];
 
-        if (list is List) {
-          return list.map((e) => InventoryItem.fromJson(e)).toList();
+        if (inner is List) {
+          list = inner.map((e) => InventoryItem.fromJson(e)).toList();
         }
+
+        if (inner is Map && inner['items'] is List) {
+          list = (inner['items'] as List)
+              .map((e) => InventoryItem.fromJson(e))
+              .toList();
+        }
+      } else if (data is List) {
+        list = data.map((e) => InventoryItem.fromJson(e)).toList();
+      } else {
+        debugPrint("⚠️ Unexpected response structure: $data");
       }
 
-      return [];
+      return (items: list, hasMore: list.length >= pageSize);
+    } on DioException catch (e) {
+      debugPrint("GET PRODUCTS DioError: ${e.response?.data} | ${e.message}");
+      throw Exception("Failed to load products: ${e.message}");
     } catch (e) {
-      print("GET PRODUCTS ERROR: $e");
+      debugPrint("GET PRODUCTS ERROR: $e");
       throw Exception("Failed to load products");
     }
   }
 
   Future<int> addProduct(InventoryItem item) async {
     try {
-      final response = await _api.post('Product', item.toJson());
+      final response = await _api.post(
+        'Product',
+        item.toJson(),
+        headers: {'Content-Type': 'application/json'},
+      );
 
       final data = response.data;
+      debugPrint("ADD PRODUCT RESPONSE: $data");
 
       if (data is Map<String, dynamic>) {
-        if (data['data'] != null && data['data']['id'] != null) {
-          return data['data']['id'];
-        }
+        final id =
+            data['data']?['id'] ??
+            data['id'] ??
+            data['productId'] ??
+            data['data']?['productId'];
 
-        if (data['id'] != null) {
-          return data['id'];
-        }
+        if (id != null) return int.tryParse(id.toString()) ?? 0;
       }
 
+      debugPrint("⚠️ Could not extract ID from response: $data");
       return 0;
+    } on DioException catch (e) {
+      debugPrint("ADD PRODUCT DioError: ${e.response?.data} | ${e.message}");
+      rethrow;
     } catch (e) {
-      print("ADD PRODUCT ERROR: $e");
+      debugPrint("ADD PRODUCT ERROR: $e");
       rethrow;
     }
   }
 
   Future<void> updateProduct(int id, InventoryItem item) async {
     try {
-      await _api.patch('Product/$id', item.toJson());
+      await _api.patch(
+        'Product/$id',
+        item.toJson(),
+        headers: {'Content-Type': 'application/json'},
+      );
+    } on DioException catch (e) {
+      debugPrint("UPDATE DioError: ${e.response?.data} | ${e.message}");
+      throw Exception("Failed to update product: ${e.response?.data}");
     } catch (e) {
-      print("UPDATE ERROR: $e");
+      debugPrint("UPDATE ERROR: $e");
       throw Exception("Failed to update product");
     }
   }
@@ -67,18 +98,19 @@ class ProductRepository {
   Future<void> deleteProduct(int id) async {
     try {
       await _api.delete('Product/$id');
+    } on DioException catch (e) {
+      debugPrint("DELETE DioError: ${e.response?.data} | ${e.message}");
+      throw Exception("Failed to delete product: ${e.response?.data}");
     } catch (e) {
-      print("DELETE ERROR: $e");
+      debugPrint("DELETE ERROR: $e");
       throw Exception("Failed to delete product");
     }
   }
 
-  // ✅ FIX HERE (image → file)
   Future<void> uploadProductImage(int productId, String imagePath) async {
     try {
       final formData = FormData.fromMap({
         "file": await MultipartFile.fromFile(
-          // ✅ مهم
           imagePath,
           filename: imagePath.split('/').last,
         ),
@@ -90,9 +122,12 @@ class ProductRepository {
         isFormData: true,
       );
 
-      print("UPLOAD RESPONSE: ${response.data}");
+      debugPrint("UPLOAD RESPONSE: ${response.data}");
+    } on DioException catch (e) {
+      debugPrint("UPLOAD DioError: ${e.response?.data} | ${e.message}");
+      throw Exception("Failed to upload image: ${e.response?.data}");
     } catch (e) {
-      print("UPLOAD IMAGE ERROR: $e");
+      debugPrint("UPLOAD IMAGE ERROR: $e");
       throw Exception("Failed to upload image");
     }
   }

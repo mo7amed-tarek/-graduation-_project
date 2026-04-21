@@ -58,7 +58,6 @@ class InventoryItem {
     );
   }
 
-  // ✅ pictureUrl بيتبعت N/A لو فاضي
   Map<String, dynamic> toJson() => {
     'name': name,
     'description': description,
@@ -106,14 +105,13 @@ class InventoryViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final data = await _repo.getProducts(
+      final result = await _repo.getProducts(
         pageIndex: _pageIndex,
         pageSize: _pageSize,
       );
 
-      if (data.length < _pageSize) hasMore = false;
-
-      _items.addAll(data);
+      hasMore = result.hasMore; // ✅
+      _items.addAll(result.items);
       _applyFilter();
     } catch (e) {
       errorMessage = e.toString();
@@ -131,14 +129,13 @@ class InventoryViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final data = await _repo.getProducts(
+      final result = await _repo.getProducts(
         pageIndex: _pageIndex,
         pageSize: _pageSize,
       );
 
-      if (data.length < _pageSize) hasMore = false;
-
-      _items.addAll(data);
+      hasMore = result.hasMore; // ✅
+      _items.addAll(result.items);
       _applyFilter();
     } catch (e) {
       errorMessage = e.toString();
@@ -148,7 +145,6 @@ class InventoryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  // ❗ الإضافة هنا بتبعت JSON فقط
   Future<int> addItem(InventoryItem item) async {
     return await _repo.addProduct(item);
   }
@@ -164,7 +160,6 @@ class InventoryViewModel extends ChangeNotifier {
     await loadItems(refresh: true);
   }
 
-  // ❗ رفع الصورة Endpoint منفصل
   Future<void> uploadImage(int id, String path) async {
     await _repo.uploadProductImage(id, path);
   }
