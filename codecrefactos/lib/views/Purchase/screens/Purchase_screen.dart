@@ -111,49 +111,6 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
               Gap(9.h),
 
               /// Categories
-              SizedBox(
-                height: 36.h,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: Categories.length,
-                  separatorBuilder: (_, __) => Gap(10.w),
-                  itemBuilder: (context, index) {
-                    bool isSelect = index == selectContainer;
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectContainer = index;
-                        });
-                      },
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minHeight: 36.h,
-                          maxHeight: 36.h,
-                          minWidth: 150.w,
-                          maxWidth: 150.w,
-                        ),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 200),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20.r),
-                            color: isSelect ? Colors.black : Colors.white54,
-                          ),
-                          child: Center(
-                            child: Text(
-                              Categories[index],
-                              style: TextStyle(
-                                fontSize: 18.sp,
-                                color: isSelect ? Colors.white : Colors.black87,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              Gap(10.h),
 
               /// Search
               TextField(
@@ -218,9 +175,9 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                 message:
                                     'Are you sure you want to delete this purchase?',
                                 onConfirm: () {
-                                  context.read<PurchasesProvider>().removePurchase(
-                                    p,
-                                  );
+                                  context
+                                      .read<PurchasesProvider>()
+                                      .removePurchase(p);
                                 },
                               ),
                             );

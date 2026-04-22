@@ -41,10 +41,12 @@ class ApiService {
           if (options.data != null) {
             try {
               if (options.data is FormData) {
-                 final fd = options.data as FormData;
-                 debugPrint("Body (FormData): Fields: ${fd.fields}, Files lengths: ${fd.files.length}");
+                final fd = options.data as FormData;
+                debugPrint(
+                  "Body (FormData): Fields: ${fd.fields}, Files lengths: ${fd.files.length}",
+                );
               } else {
-                 debugPrint("Body: ${options.data}");
+                debugPrint("Body: ${options.data}");
               }
             } catch (_) {
               debugPrint("Body: ${options.data}");
@@ -129,15 +131,12 @@ class ApiService {
     required int deliveryMethodId,
     required String paymentMethod,
   }) async {
-    return await post(
-      "Orders/CreateOrder",
-      {
-        "address": address,
-        "phone": phone,
-        "deliveryMethodId": deliveryMethodId,
-        "paymentMethod": paymentMethod,
-      },
-    );
+    return await post("Orders/CreateOrder", {
+      "address": address,
+      "phone": phone,
+      "deliveryMethodId": deliveryMethodId,
+      "paymentMethod": paymentMethod,
+    });
   }
 
   Map<String, String> handleError(DioException e) {

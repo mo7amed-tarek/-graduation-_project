@@ -23,7 +23,7 @@ class _LayoutState extends State<Layout> {
     SalesScreen(),
     PurchaseScreen(),
     InventoryManagementScreen(),
-    Profile(),
+    SettingsScreen(),
   ];
 
   final List<_NavItem> navItems = const [

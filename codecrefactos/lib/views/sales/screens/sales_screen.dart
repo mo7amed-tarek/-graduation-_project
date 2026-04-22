@@ -97,7 +97,7 @@ class _SalesScreenState extends State<SalesScreen> {
               Gap(16.h),
 
               SearchFilter(
-                showDropdown: true,
+                showDropdown: false,
                 onChanged: (value) {
                   context.read<SalesProvider>().setSearchQuery(value);
                 },

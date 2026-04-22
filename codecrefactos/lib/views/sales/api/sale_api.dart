@@ -40,7 +40,10 @@ class SaleApi {
 
   Future<void> updateSale(int id, Map<String, dynamic> updatedData) async {
     try {
-      final response = await _apiService.patch('Sales/UpdateSale/$id', updatedData);
+      final response = await _apiService.patch(
+        'Sales/UpdateSale/$id',
+        updatedData,
+      );
       if (response.statusCode != 200 && response.statusCode != 204) {
         throw Exception('Failed to update sale');
       }
