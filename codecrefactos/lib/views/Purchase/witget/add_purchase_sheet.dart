@@ -23,52 +23,97 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
   final quantityController = TextEditingController();
 
   InventoryItem? _selectedProduct;
-  String status = 'PendingOrder';
   Employee? _selectedEmployee;
+  String status = 'PendingOrder';
 
   bool isFormValid = false;
 
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      context.read<InventoryViewModel>().loadItems(refresh: true);
+
+    Future.microtask(() async {
+      await context.read<InventoryViewModel>().loadItems(refresh: true);
+
+      if (!mounted) return;
+      _setInitialEditValues();
+      _updateFormValidity();
     });
 
-    final vm = context.read<EmployeesViewModel>();
+    Future.microtask(() {
+      if (!mounted) return;
+      _setInitialEditValues();
+      _updateFormValidity();
+    });
 
     if (widget.purchase != null) {
       supplierController.text = widget.purchase!.supplierName;
       quantityController.text = widget.purchase!.quantity.toString();
       status = widget.purchase!.status;
+    }
 
-      final inventoryVm = context.read<InventoryViewModel>();
-      if (inventoryVm.items.isNotEmpty) {
-        try {
-          _selectedProduct = inventoryVm.items.firstWhere(
-            (p) =>
-                p.id == widget.purchase!.productId ||
-                p.name == widget.purchase!.productName,
-          );
-        } catch (_) {}
-      }
+    supplierController.addListener(_updateFormValidity);
+    quantityController.addListener(_updateFormValidity);
+  }
 
-      if (vm.employeesList.isNotEmpty) {
-        try {
-          _selectedEmployee = vm.employeesList.firstWhere(
-            (e) =>
-                e.id == widget.purchase!.employeeId ||
-                e.name == widget.purchase!.employeeName,
-          );
-        } catch (e) {
-          _selectedEmployee = vm.employeesList.first;
-        }
+  void _setInitialEditValues() {
+    if (widget.purchase == null) return;
+
+    final inventoryVm = context.read<InventoryViewModel>();
+    final employeeVm = context.read<EmployeesViewModel>();
+
+    if (inventoryVm.items.isNotEmpty) {
+      try {
+        _selectedProduct = inventoryVm.items.firstWhere(
+          (p) =>
+              p.id == widget.purchase!.productId ||
+              p.name == widget.purchase!.productName,
+        );
+      } catch (_) {
+        _selectedProduct = null;
       }
+    }
+
+    if (employeeVm.employeesList.isNotEmpty) {
+      try {
+        _selectedEmployee = employeeVm.employeesList.firstWhere(
+          (e) =>
+              e.id == widget.purchase!.employeeId ||
+              e.name == widget.purchase!.employeeName,
+        );
+      } catch (_) {
+        _selectedEmployee = null;
+      }
+    }
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  void _updateFormValidity() {
+    if (!mounted) return;
+
+    final isValid =
+        supplierController.text.trim().isNotEmpty &&
+        int.tryParse(quantityController.text.trim()) != null &&
+        int.parse(quantityController.text.trim()) > 0 &&
+        _selectedProduct != null &&
+        _selectedEmployee != null;
+
+    if (isFormValid != isValid) {
+      setState(() {
+        isFormValid = isValid;
+      });
+    } else {
+      setState(() {});
     }
   }
 
   @override
   void dispose() {
+    supplierController.removeListener(_updateFormValidity);
+    quantityController.removeListener(_updateFormValidity);
     supplierController.dispose();
     quantityController.dispose();
     super.dispose();
@@ -106,24 +151,13 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
                 ),
               ],
             ),
-
             Text(
               "Enter purchase order details",
               style: TextStyle(color: Colors.grey, fontSize: 13.sp),
             ),
-
             Gap(20.h),
-
             Form(
               key: _formKey,
-              onChanged: () {
-                setState(() {
-                  isFormValid =
-                      _formKey.currentState!.validate() &&
-                      _selectedProduct != null &&
-                      _selectedEmployee != null;
-                });
-              },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -142,7 +176,6 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
                   _textField(
                     controller: quantityController,
                     keyboardType: TextInputType.number,
-                    onChanged: (val) => setState(() {}),
                     validator: (val) {
                       if (val == null || val.trim().isEmpty) return 'Required';
                       final number = int.tryParse(val);
@@ -172,9 +205,7 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
                 ],
               ),
             ),
-
             Gap(30.h),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -185,9 +216,7 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
                     style: TextStyle(color: Colors.red),
                   ),
                 ),
-
                 Gap(10.w),
-
                 ElevatedButton(
                   onPressed: isFormValid ? _submit : null,
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
@@ -198,7 +227,6 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
                 ),
               ],
             ),
-
             Gap(20.h),
           ],
         ),
@@ -216,21 +244,21 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
       return;
     }
 
+    final quantity = int.parse(quantityController.text.trim());
+
     final purchase = Purchase(
       id: widget.purchase?.id,
       supplierName: supplierController.text.trim(),
       employeeId: _selectedEmployee!.id,
       productId: _selectedProduct!.id,
-      quantity: int.parse(quantityController.text.trim()),
-      price:
-          _selectedProduct!.price * int.parse(quantityController.text.trim()),
+      quantity: quantity,
+      price: _selectedProduct!.price,
       status: widget.isEdit ? status : 'PendingOrder',
     );
 
     Navigator.pop(context, purchase);
   }
 
-  /// ===== UI Helpers =====
   Widget _inputLabel(String text) {
     return Padding(
       padding: EdgeInsets.only(bottom: 5.h, top: 12.h),
@@ -245,13 +273,11 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
     required TextEditingController controller,
     TextInputType keyboardType = TextInputType.text,
     String? Function(String?)? validator,
-    void Function(String)? onChanged,
   }) {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
       validator: validator,
-      onChanged: onChanged,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.grey.shade100,
@@ -270,29 +296,39 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
             .where((e) => e.isActive)
             .toList();
 
+        if (widget.purchase != null &&
+            _selectedEmployee == null &&
+            activeEmployees.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _setInitialEditValues();
+            _updateFormValidity();
+          });
+        }
+
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           decoration: BoxDecoration(
             color: Colors.grey.shade100,
             borderRadius: BorderRadius.circular(10.r),
           ),
-          child: DropdownButton<Employee>(
+          child: DropdownButtonFormField<Employee>(
             value: activeEmployees.contains(_selectedEmployee)
                 ? _selectedEmployee
                 : null,
+            decoration: const InputDecoration(border: InputBorder.none),
             hint: const Text("Select Employee"),
             isExpanded: true,
-            underline: const SizedBox(),
             items: activeEmployees.map((emp) {
               return DropdownMenuItem<Employee>(
                 value: emp,
                 child: Text(emp.name),
               );
             }).toList(),
+            validator: (value) =>
+                value == null ? 'Please select an employee' : null,
             onChanged: (value) {
-              setState(() {
-                _selectedEmployee = value;
-              });
+              _selectedEmployee = value;
+              _updateFormValidity();
             },
           ),
         );
@@ -305,29 +341,39 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
       builder: (context, vm, _) {
         final products = vm.items;
 
+        if (widget.purchase != null &&
+            _selectedProduct == null &&
+            products.isNotEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _setInitialEditValues();
+            _updateFormValidity();
+          });
+        }
+
         return Container(
           padding: EdgeInsets.symmetric(horizontal: 12.w),
           decoration: BoxDecoration(
             color: Colors.grey.shade100,
             borderRadius: BorderRadius.circular(10.r),
           ),
-          child: DropdownButton<InventoryItem>(
+          child: DropdownButtonFormField<InventoryItem>(
             value: products.contains(_selectedProduct)
                 ? _selectedProduct
                 : null,
+            decoration: const InputDecoration(border: InputBorder.none),
             hint: const Text("Select Product"),
             isExpanded: true,
-            underline: const SizedBox(),
             items: products.map((prod) {
               return DropdownMenuItem<InventoryItem>(
                 value: prod,
                 child: Text("\$${prod.price} - ${prod.name}"),
               );
             }).toList(),
+            validator: (value) =>
+                value == null ? 'Please select a product' : null,
             onChanged: (value) {
-              setState(() {
-                _selectedProduct = value;
-              });
+              _selectedProduct = value;
+              _updateFormValidity();
             },
           ),
         );
