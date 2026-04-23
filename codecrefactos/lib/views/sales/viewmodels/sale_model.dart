@@ -42,8 +42,8 @@ class SaleModel {
   Map<String, dynamic> toJson() {
     return {
       "customerName": customerName,
-      "employeeId": employeeId,
-      "productId": productId,
+      if (employeeId != null) "employeeId": employeeId,
+      if (productId != null) "productId": productId,
       "quantity": quantity,
       "status": status,
     };

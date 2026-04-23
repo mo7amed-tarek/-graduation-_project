@@ -33,6 +33,14 @@ int selectContainer = -1;
 
 class _PurchaseScreenState extends State<PurchaseScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<PurchasesProvider>().fetchPurchases();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final provider = context.watch<PurchasesProvider>();
     final purchases = provider.filteredPurchases;
@@ -162,9 +170,20 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                             );
                             if (updatedPurchase != null &&
                                 updatedPurchase is Purchase) {
-                              context
-                                  .read<PurchasesProvider>()
-                                  .updatePurchaseByModel(p, updatedPurchase);
+                              try {
+                                await context
+                                    .read<PurchasesProvider>()
+                                    .updatePurchaseByModel(p, updatedPurchase);
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(e.toString().replaceAll('Exception: ', '')),
+                                      backgroundColor: Colors.red,
+                                    ),
+                                  );
+                                }
+                              }
                             }
                           },
                           delete: () {

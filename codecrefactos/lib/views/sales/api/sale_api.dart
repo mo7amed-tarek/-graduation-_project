@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import '../../../apiService.dart';
 
 class SaleApi {
@@ -47,6 +48,24 @@ class SaleApi {
       if (response.statusCode != 200 && response.statusCode != 204) {
         throw Exception('Failed to update sale');
       }
+    } on DioException catch (e) {
+      if (e.response?.data != null && e.response!.data is Map) {
+        final data = e.response!.data as Map;
+        if (data.containsKey('errors')) {
+          final errors = data['errors'] as Map;
+          if (errors.containsKey('Product.OutOfStock')) {
+            throw Exception('Requested quantity exceeds available stock');
+          }
+          if (errors.isNotEmpty) {
+            final firstKey = errors.keys.first;
+            final firstErrorList = errors[firstKey];
+            if (firstErrorList is List && firstErrorList.isNotEmpty) {
+              throw Exception(firstErrorList[0].toString());
+            }
+          }
+        }
+      }
+      throw Exception('Failed to update sale: ${e.message}');
     } catch (e) {
       throw Exception('Failed to update sale: $e');
     }

@@ -42,8 +42,8 @@ class Purchase {
   Map<String, dynamic> toJson() {
     return {
       "supplierName": supplierName,
-      "employeeId": employeeId,
-      "productId": productId,
+      if (employeeId != null) "employeeId": employeeId,
+      if (productId != null) "productId": productId,
       "quantity": quantity,
       "price": price,
       "status": status,

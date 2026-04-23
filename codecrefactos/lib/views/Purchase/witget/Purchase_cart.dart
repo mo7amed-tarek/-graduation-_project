@@ -19,7 +19,7 @@ class CustomPurchaseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isPending = purchase.status.toLowerCase() == 'pending';
+    final bool isPending = purchase.status.toLowerCase().contains('pending');
 
     Color statusColor = isPending
         ? const Color(0xffF54900)
@@ -133,12 +133,23 @@ class CustomPurchaseCard extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     final updated = purchase.copyWith(status: 'Completed');
-                    context.read<PurchasesProvider>().updatePurchaseByModel(
-                      purchase,
-                      updated,
-                    );
+                    try {
+                      await context.read<PurchasesProvider>().updatePurchaseByModel(
+                        purchase,
+                        updated,
+                      );
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(e.toString().replaceAll('Exception: ', '')),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
