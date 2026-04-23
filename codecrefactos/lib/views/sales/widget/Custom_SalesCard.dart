@@ -121,9 +121,20 @@ class CustomSalescard extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
                     final updatedSale = saleModel.copyWith(status: 'Completed');
-                    context.read<SalesProvider>().updateSaleByModel(saleModel, updatedSale);
+                    try {
+                      await context.read<SalesProvider>().updateSaleByModel(saleModel, updatedSale);
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(e.toString().replaceAll('Exception: ', '')),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,

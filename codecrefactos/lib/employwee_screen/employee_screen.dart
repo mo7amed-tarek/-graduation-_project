@@ -6,8 +6,21 @@ import '../widgets/employee_card.dart';
 import '../widgets/appbar.dart';
 import '../widgets/bottom_shit_add.dart';
 
-class EmployeesScreen extends StatelessWidget {
+class EmployeesScreen extends StatefulWidget {
   const EmployeesScreen({super.key});
+
+  @override
+  State<EmployeesScreen> createState() => _EmployeesScreenState();
+}
+
+class _EmployeesScreenState extends State<EmployeesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<EmployeesViewModel>().fetchEmployees();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

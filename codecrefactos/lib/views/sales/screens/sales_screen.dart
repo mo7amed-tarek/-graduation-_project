@@ -22,6 +22,14 @@ class SalesScreen extends StatefulWidget {
 
 class _SalesScreenState extends State<SalesScreen> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<SalesProvider>().fetchSales();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final salesProvider = context.watch<SalesProvider>();
     final sales = salesProvider.filteredSales;
@@ -143,12 +151,23 @@ class _SalesScreenState extends State<SalesScreen> {
 
                                   if (updatedSaleData != null &&
                                       updatedSaleData is SaleModel) {
-                                    context
-                                        .read<SalesProvider>()
-                                        .updateSaleByModel(
-                                          sale,
-                                          updatedSaleData,
+                                    try {
+                                      await context
+                                          .read<SalesProvider>()
+                                          .updateSaleByModel(
+                                            sale,
+                                            updatedSaleData,
+                                          );
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text(e.toString().replaceAll('Exception: ', '')),
+                                            backgroundColor: Colors.red,
+                                          ),
                                         );
+                                      }
+                                    }
                                   }
                                 }
                               : null,

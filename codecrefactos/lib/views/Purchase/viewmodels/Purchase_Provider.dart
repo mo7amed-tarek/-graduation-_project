@@ -29,10 +29,10 @@ class PurchasesProvider extends ChangeNotifier {
   }
 
   int get completedPurchasesCount =>
-      _purchases.where((p) => p.status.toLowerCase() == 'completed' || p.status.toLowerCase() == 'received').length;
+      _purchases.where((p) => p.status.toLowerCase().contains('completed') || p.status.toLowerCase() == 'received').length;
 
   int get pendingPurchasesCount =>
-      _purchases.where((p) => p.status.toLowerCase() == 'pending').length;
+      _purchases.where((p) => p.status.toLowerCase().contains('pending')).length;
 
   Future<void> fetchPurchases() async {
     isLoading = true;
@@ -87,6 +87,7 @@ class PurchasesProvider extends ChangeNotifier {
     } catch (e) {
       errorMessage = e.toString();
       notifyListeners();
+      rethrow;
     }
   }
 

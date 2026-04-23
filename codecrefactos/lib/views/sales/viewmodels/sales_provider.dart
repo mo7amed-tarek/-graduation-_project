@@ -86,6 +86,7 @@ class SalesProvider extends ChangeNotifier {
     } catch (e) {
       errorMessage = e.toString();
       notifyListeners();
+      rethrow;
     }
   }
 
