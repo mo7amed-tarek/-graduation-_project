@@ -9,11 +9,20 @@ class ProductRepository {
   Future<({List<InventoryItem> items, bool hasMore})> getProducts({
     int pageIndex = 1,
     int pageSize = 5,
+    String? sort,
   }) async {
     try {
+      final Map<String, dynamic> queryParams = {
+        'pageIndex': pageIndex, 
+        'pageSize': pageSize
+      };
+      if (sort != null) {
+        queryParams['Sort'] = sort;
+      }
+      
       final response = await _api.get(
         'Product/All_Products',
-        queryParameters: {'pageIndex': pageIndex, 'pageSize': pageSize},
+        queryParameters: queryParams,
       );
 
       final data = response.data;
@@ -37,7 +46,18 @@ class ProductRepository {
         debugPrint("⚠️ Unexpected response structure: $data");
       }
 
-      return (items: list, hasMore: list.length >= pageSize);
+      bool hasMore = list.length >= pageSize;
+      
+      if (data is Map<String, dynamic>) {
+        if (data.containsKey('pageSize') && data['pageSize'] is int) {
+          int actualPageSize = data['pageSize'];
+          if (actualPageSize > 0) {
+            hasMore = list.length >= actualPageSize;
+          }
+        }
+      }
+
+      return (items: list, hasMore: hasMore);
     } on DioException catch (e) {
       debugPrint("GET PRODUCTS DioError: ${e.response?.data} | ${e.message}");
       throw Exception("Failed to load products: ${e.message}");

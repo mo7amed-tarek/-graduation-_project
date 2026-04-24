@@ -10,10 +10,12 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../views/sales/viewmodels/SalesData.dart';
-import '../widgets/appbar.dart';
-import '../widgets/employee_item.dart';
-import '../views/sales/viewmodels/sales_provider.dart';
+import '../sales/viewmodels/SalesData.dart';
+import '../../widgets/appbar.dart';
+import '../../widgets/employee_item.dart';
+import '../sales/viewmodels/sales_provider.dart';
+import 'package:codecrefactos/views/dashboard/dashboard_provider.dart';
+import 'package:codecrefactos/views/dashboard/dashboard_model.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -24,11 +26,32 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<DashboardProvider>().fetchDashboardData();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final vm = context.watch<InventoryViewModel>();
     final salesProvider = context.watch<SalesProvider>();
     final purchasesProvider = context.watch<PurchasesProvider>();
     final employeesProvider = context.watch<EmployeesViewModel>();
+    final dashboardProvider = context.watch<DashboardProvider>();
+
+    List<MonthlySalesPurchase> chartData =
+        dashboardProvider.dashboardData?.monthlySalesPurchases ?? [];
+    if (chartData.isEmpty && dashboardProvider.dashboardData != null) {
+      chartData = [
+        MonthlySalesPurchase(
+          month: 'Total',
+          sales: dashboardProvider.dashboardData!.totalSalesAmount,
+          purchases: dashboardProvider.dashboardData!.totalPurchasesAmount,
+        ),
+      ];
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -76,7 +99,10 @@ class _HomeState extends State<Home> {
                   Expanded(
                     child: CustomCard(
                       toptext: 'Total Employees',
-                      number: employeesProvider.employeesList.length.toString(),
+                      number:
+                          dashboardProvider.dashboardData?.totalEmployees
+                              .toString() ??
+                          '0',
                       imagepath: 'assets/employyy.png',
                       bottomtext: "+12% from last month",
                     ),
@@ -86,7 +112,7 @@ class _HomeState extends State<Home> {
                     child: CustomCard(
                       toptext: 'Total Sales',
                       number:
-                          "\$${salesProvider.totalSalesAmount.toStringAsFixed(2)}",
+                          "\$${(dashboardProvider.dashboardData?.totalSalesAmount ?? 0).toStringAsFixed(2)}",
                       imagepath: 'assets/sales.png',
                       bottomtext: "+12% from last month",
                     ),
@@ -101,7 +127,7 @@ class _HomeState extends State<Home> {
                     child: CustomCard(
                       toptext: 'Total Purchases',
                       number:
-                          "\$${purchasesProvider.totalPurchasesAmount.toStringAsFixed(2)}",
+                          "\$${(dashboardProvider.dashboardData?.totalPurchasesAmount ?? 0).toStringAsFixed(2)}",
                       imagepath: 'assets/purchases.png',
                       bottomtext: "+12% from last month",
                     ),
@@ -110,7 +136,10 @@ class _HomeState extends State<Home> {
                   Expanded(
                     child: CustomCard(
                       toptext: 'Total Inventory',
-                      number: vm.totalItems.toString(),
+                      number:
+                          dashboardProvider.dashboardData?.totalProducts
+                              .toString() ??
+                          '0',
                       imagepath: 'assets/inventory.png',
                       bottomtext: "+12% from last month",
                     ),
@@ -149,56 +178,57 @@ class _HomeState extends State<Home> {
                       ),
                       Gap(10.h),
                       Expanded(
-                        child: SfCartesianChart(
-                          primaryXAxis: CategoryAxis(
-                            labelStyle: TextStyle(fontSize: 12.sp),
-                            majorGridLines: MajorGridLines(width: 0),
-                          ),
-                          primaryYAxis: NumericAxis(
-                            minimum: 0,
-                            maximum: 140000,
-                            interval: 35000,
-                            labelStyle: TextStyle(fontSize: 12.sp),
-                          ),
-                          legend: Legend(
-                            isVisible: true,
-                            position: LegendPosition.bottom,
-                            overflowMode: LegendItemOverflowMode.wrap,
-                          ),
-                          tooltipBehavior: TooltipBehavior(enable: true),
-                          series: <CartesianSeries>[
-                            ColumnSeries<SalesData, String>(
-                              name: 'Sales',
-                              width: 0.5.w,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(6.r),
+                        child: dashboardProvider.isLoading
+                            ? Center(child: CircularProgressIndicator())
+                            : dashboardProvider.errorMessage != null
+                            ? Center(
+                                child: Text(
+                                  dashboardProvider.errorMessage!,
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              )
+                            : SfCartesianChart(
+                                primaryXAxis: CategoryAxis(
+                                  labelStyle: TextStyle(fontSize: 12.sp),
+                                  majorGridLines: MajorGridLines(width: 0),
+                                ),
+                                primaryYAxis: NumericAxis(
+                                  minimum: 0,
+                                  labelStyle: TextStyle(fontSize: 12.sp),
+                                ),
+                                legend: Legend(
+                                  isVisible: true,
+                                  position: LegendPosition.bottom,
+                                  overflowMode: LegendItemOverflowMode.wrap,
+                                ),
+                                tooltipBehavior: TooltipBehavior(enable: true),
+                                series: <CartesianSeries>[
+                                  ColumnSeries<MonthlySalesPurchase, String>(
+                                    name: 'Sales',
+                                    width: 0.3,
+                                    spacing: 0.2,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(6.r),
+                                    ),
+                                    dataSource: chartData,
+                                    xValueMapper: (data, _) => data.month,
+                                    yValueMapper: (data, _) => data.sales,
+                                    color: Color(0xFF4285F4),
+                                  ),
+                                  ColumnSeries<MonthlySalesPurchase, String>(
+                                    name: 'Purchases',
+                                    width: 0.3,
+                                    spacing: 0.2,
+                                    borderRadius: BorderRadius.all(
+                                      Radius.circular(6.r),
+                                    ),
+                                    dataSource: chartData,
+                                    xValueMapper: (data, _) => data.month,
+                                    yValueMapper: (data, _) => data.purchases,
+                                    color: Color(0xFFFF9800),
+                                  ),
+                                ],
                               ),
-                              dataSource: [
-                                SalesData(month: 'January', value: 65000),
-                                SalesData(month: 'February', value: 78000),
-                                SalesData(month: 'March', value: 120000),
-                              ],
-                              xValueMapper: (data, _) => data.month,
-                              yValueMapper: (data, _) => data.value,
-                              color: Color(0xFF4285F4),
-                            ),
-                            ColumnSeries<SalesData, String>(
-                              name: 'Purchases',
-                              width: 0.5.w,
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(6.r),
-                              ),
-                              dataSource: [
-                                SalesData(month: 'January', value: 35000),
-                                SalesData(month: 'February', value: 48000),
-                                SalesData(month: 'March', value: 78000),
-                              ],
-                              xValueMapper: (data, _) => data.month,
-                              yValueMapper: (data, _) => data.value,
-                              color: Color(0xFFFF9800),
-                            ),
-                          ],
-                        ),
                       ),
                     ],
                   ),

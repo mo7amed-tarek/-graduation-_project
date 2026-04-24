@@ -10,6 +10,7 @@ import 'package:codecrefactos/login_screen/login_viewmodel.dart';
 import 'package:codecrefactos/register_screen/register_viewmodel.dart';
 import 'package:codecrefactos/views/Purchase/viewmodels/Purchase_Provider.dart';
 import 'package:codecrefactos/views/sales/viewmodels/sales_provider.dart';
+import 'package:codecrefactos/views/dashboard/dashboard_provider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => InventoryViewModel()),
         ChangeNotifierProvider(create: (_) => SalesProvider()),
         ChangeNotifierProvider(create: (_) => PurchasesProvider()),
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
 
         Provider<ApiService>(create: (_) => ApiService()),
 
