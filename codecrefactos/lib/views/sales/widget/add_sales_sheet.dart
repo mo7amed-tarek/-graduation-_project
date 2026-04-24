@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import '../../../Inventory Management/viewmodels/inventory_viewmodel.dart';
+import 'package:codecrefactos/product_repository.dart';
 import '../viewmodels/sale_model.dart';
 
 class AddSalesSheet extends StatefulWidget {
@@ -22,27 +23,23 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
   InventoryItem? _selectedProduct;
   Employee? _selectedEmployee;
 
+  List<InventoryItem> _products = [];
+  bool _isLoadingProducts = true;
+  String? _productsErrorMessage;
+  final ProductRepository _productRepo = ProductRepository();
+
   @override
   void initState() {
     super.initState();
-    Future.microtask(() {
-      context.read<InventoryViewModel>().loadItems(refresh: true);
+    Future.microtask(() async {
+      await _fetchProducts();
+      if (!mounted) return;
+      _setInitialEditValues();
     });
 
     if (widget.sale != null) {
       customerController.text = widget.sale!.customerName;
       quantityController.text = widget.sale!.quantity.toString();
-
-      final inventoryVm = context.read<InventoryViewModel>();
-      if (inventoryVm.items.isNotEmpty) {
-        try {
-          _selectedProduct = inventoryVm.items.firstWhere(
-            (p) =>
-                p.id == widget.sale!.productId ||
-                p.name == widget.sale!.productName,
-          );
-        } catch (_) {}
-      }
 
       final vm = context.read<EmployeesViewModel>();
       if (vm.employeesList.isNotEmpty) {
@@ -59,6 +56,59 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
         _selectedEmployee = null;
       }
     }
+  }
+
+  Future<void> _fetchProducts() async {
+    try {
+      List<InventoryItem> allProducts = [];
+      int currentPage = 1;
+      bool hasMore = true;
+
+      while (hasMore) {
+        final result = await _productRepo.getProducts(
+          pageIndex: currentPage,
+          pageSize: 50,
+          sort: 'NameAsc',
+        );
+
+        if (result.items.isEmpty) break;
+
+        allProducts.addAll(result.items);
+        hasMore = result.hasMore;
+        currentPage++;
+      }
+
+      if (mounted) {
+        setState(() {
+          _products = allProducts;
+          _isLoadingProducts = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _productsErrorMessage = "Failed to load products.";
+          _isLoadingProducts = false;
+        });
+      }
+    }
+  }
+
+  void _setInitialEditValues() {
+    if (widget.sale == null) return;
+
+    if (_products.isNotEmpty) {
+      try {
+        _selectedProduct = _products.firstWhere(
+          (p) =>
+              p.id == widget.sale!.productId ||
+              p.name == widget.sale!.productName,
+        );
+      } catch (_) {
+        _selectedProduct = null;
+      }
+    }
+    if (mounted) setState(() {});
   }
 
   @override
@@ -253,37 +303,60 @@ class _AddSalesSheetState extends State<AddSalesSheet> {
   }
 
   Widget _productDropdown() {
-    return Consumer<InventoryViewModel>(
-      builder: (context, vm, _) {
-        final products = vm.items;
+    if (_isLoadingProducts) {
+      return Container(
+        height: 50.h,
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(),
+      );
+    }
 
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(10.r),
-          ),
-          child: DropdownButton<InventoryItem>(
-            value: products.contains(_selectedProduct)
-                ? _selectedProduct
-                : null,
-            hint: const Text("Select Product"),
-            isExpanded: true,
-            underline: const SizedBox(),
-            items: products.map((prod) {
-              return DropdownMenuItem<InventoryItem>(
-                value: prod,
-                child: Text("\$${prod.price} - ${prod.name}"),
-              );
-            }).toList(),
-            onChanged: (value) {
-              setState(() {
-                _selectedProduct = value;
-              });
-            },
-          ),
-        );
-      },
+    if (_productsErrorMessage != null) {
+      return Container(
+        height: 50.h,
+        alignment: Alignment.center,
+        child: Text(_productsErrorMessage!, style: const TextStyle(color: Colors.red)),
+      );
+    }
+
+    if (_products.isEmpty) {
+      return Container(
+        height: 50.h,
+        alignment: Alignment.center,
+        child: const Text("No products available"),
+      );
+    }
+
+    if (widget.sale != null && _selectedProduct == null && _products.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _setInitialEditValues();
+      });
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: DropdownButtonFormField<InventoryItem>(
+        value: _products.contains(_selectedProduct) ? _selectedProduct : null,
+        hint: const Text("Select Product"),
+        isExpanded: true,
+        decoration: const InputDecoration(border: InputBorder.none),
+        items: _products.map((prod) {
+          return DropdownMenuItem<InventoryItem>(
+            value: prod,
+            child: Text("\$${prod.price} - ${prod.name}"),
+          );
+        }).toList(),
+        validator: (value) => value == null ? 'Please select a product' : null,
+        onChanged: (value) {
+          setState(() {
+            _selectedProduct = value;
+          });
+        },
+      ),
     );
   }
 }

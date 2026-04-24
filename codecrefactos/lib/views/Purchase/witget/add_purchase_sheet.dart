@@ -5,6 +5,7 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import '../viewmodels/purchase_model.dart';
 import '../../../Inventory Management/viewmodels/inventory_viewmodel.dart';
+import 'package:codecrefactos/product_repository.dart';
 
 class AddPurchaseSheet extends StatefulWidget {
   const AddPurchaseSheet({super.key, this.isEdit = false, this.purchase});
@@ -34,12 +35,17 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
 
   bool isFormValid = false;
 
+  List<InventoryItem> _products = [];
+  bool _isLoadingProducts = true;
+  String? _productsErrorMessage;
+  final ProductRepository _productRepo = ProductRepository();
+
   @override
   void initState() {
     super.initState();
 
     Future.microtask(() async {
-      await context.read<InventoryViewModel>().loadItems(refresh: true);
+      await _fetchProducts();
       if (!mounted) return;
       _setInitialEditValues();
       _updateFormValidity();
@@ -55,15 +61,50 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
     quantityController.addListener(_updateFormValidity);
   }
 
+  Future<void> _fetchProducts() async {
+    try {
+      List<InventoryItem> allProducts = [];
+      int currentPage = 1;
+      bool hasMore = true;
+
+      while (hasMore) {
+        final result = await _productRepo.getProducts(
+          pageIndex: currentPage,
+          pageSize: 50,
+          sort: 'NameAsc',
+        );
+
+        if (result.items.isEmpty) break;
+
+        allProducts.addAll(result.items);
+        hasMore = result.hasMore;
+        currentPage++;
+      }
+
+      if (mounted) {
+        setState(() {
+          _products = allProducts;
+          _isLoadingProducts = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _productsErrorMessage = "Failed to load products.";
+          _isLoadingProducts = false;
+        });
+      }
+    }
+  }
+
   void _setInitialEditValues() {
     if (widget.purchase == null) return;
 
-    final inventoryVm = context.read<InventoryViewModel>();
     final employeeVm = context.read<EmployeesViewModel>();
 
-    if (inventoryVm.items.isNotEmpty) {
+    if (_products.isNotEmpty) {
       try {
-        _selectedProduct = inventoryVm.items.firstWhere(
+        _selectedProduct = _products.firstWhere(
           (p) =>
               p.id == widget.purchase!.productId ||
               p.name == widget.purchase!.productName,
@@ -385,47 +426,67 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
   }
 
   Widget _productDropdown() {
-    return Consumer<InventoryViewModel>(
-      builder: (context, vm, _) {
-        final products = vm.items;
+    if (_isLoadingProducts) {
+      return Container(
+        height: 50.h,
+        alignment: Alignment.center,
+        child: const CircularProgressIndicator(),
+      );
+    }
 
-        if (widget.purchase != null &&
-            _selectedProduct == null &&
-            products.isNotEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _setInitialEditValues();
-            _updateFormValidity();
+    if (_productsErrorMessage != null) {
+      return Container(
+        height: 50.h,
+        alignment: Alignment.center,
+        child: Text(_productsErrorMessage!, style: const TextStyle(color: Colors.red)),
+      );
+    }
+
+    if (_products.isEmpty) {
+      return Container(
+        height: 50.h,
+        alignment: Alignment.center,
+        child: const Text("No products available"),
+      );
+    }
+
+    if (widget.purchase != null &&
+        _selectedProduct == null &&
+        _products.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _setInitialEditValues();
+        _updateFormValidity();
+      });
+    }
+
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: DropdownButtonFormField<InventoryItem>(
+        value: _products.contains(_selectedProduct)
+            ? _selectedProduct
+            : null,
+        decoration: const InputDecoration(border: InputBorder.none),
+        hint: const Text("Select Product"),
+        isExpanded: true,
+        items: _products.map((prod) {
+          return DropdownMenuItem<InventoryItem>(
+            value: prod,
+            child: Text("\$${prod.price} - ${prod.name}"),
+          );
+        }).toList(),
+        validator: (value) =>
+            value == null ? 'Please select a product' : null,
+        onChanged: (value) {
+          setState(() {
+            _selectedProduct = value;
           });
-        }
-
-        return Container(
-          padding: EdgeInsets.symmetric(horizontal: 12.w),
-          decoration: BoxDecoration(
-            color: Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(10.r),
-          ),
-          child: DropdownButtonFormField<InventoryItem>(
-            value: products.contains(_selectedProduct)
-                ? _selectedProduct
-                : null,
-            decoration: const InputDecoration(border: InputBorder.none),
-            hint: const Text("Select Product"),
-            isExpanded: true,
-            items: products.map((prod) {
-              return DropdownMenuItem<InventoryItem>(
-                value: prod,
-                child: Text("\$${prod.price} - ${prod.name}"),
-              );
-            }).toList(),
-            validator: (value) =>
-                value == null ? 'Please select a product' : null,
-            onChanged: (value) {
-              _selectedProduct = value;
-              _updateFormValidity();
-            },
-          ),
-        );
-      },
+          _updateFormValidity();
+        },
+      ),
     );
   }
 }

@@ -50,12 +50,15 @@ class CustomCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  number,
-                  style: TextStyle(
-                    fontSize: 20.sp,
-                    fontWeight: FontWeight.w400,
-                    color: Color(0xff0A0A0A),
+                Expanded(
+                  child: Text(
+                    number,
+                    style: TextStyle(
+                      overflow: TextOverflow.fade,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w400,
+                      color: Color(0xff0A0A0A),
+                    ),
                   ),
                 ),
 
