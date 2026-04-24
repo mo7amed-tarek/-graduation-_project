@@ -29,7 +29,8 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<InventoryViewModel>().loadItems();
+      // ✅ Fixed: always refresh on enter to show latest data
+      context.read<InventoryViewModel>().loadItems(refresh: true);
     });
 
     _scrollController.addListener(() {
@@ -56,19 +57,21 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen> {
       appBar: Appbar(
         showLogoutButton: false,
         bottonTitle: 'Add',
-        onAdd: () {
-          showModalBottomSheet(
+        onAdd: () async {
+          // ✅ Fixed: await the sheet so we know when it closes
+          await showModalBottomSheet(
             context: context,
             isScrollControlled: true,
             backgroundColor: Colors.transparent,
             builder: (_) => const AddProductSheet(),
           );
+          // No need to manually refresh — addItem() does it internally
         },
         onLogout: () {},
       ),
-      body: vm.isLoading
+      body: vm.isLoading && vm.items.isEmpty
           ? const Center(child: CircularProgressIndicator())
-          : vm.errorMessage != null
+          : vm.errorMessage != null && vm.items.isEmpty
           ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -96,7 +99,6 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   Gap(15.h),
 
                   CustomTotalCart(
@@ -105,7 +107,6 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen> {
                     imagePath: "assets/total_item.png",
                     cardColor: const Color(0xFFE6FDEE),
                   ),
-
                   Gap(10.h),
 
                   Row(
@@ -127,7 +128,6 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen> {
                       ),
                     ],
                   ),
-
                   Gap(16.h),
 
                   SearchFilter(
@@ -136,10 +136,16 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen> {
                       context.read<InventoryViewModel>().setSearchQuery(value);
                     },
                   ),
-
                   Gap(15.h),
 
-                  vm.items.isEmpty
+                  // ✅ Fixed: loading indicator while refreshing (not first load)
+                  if (vm.isLoading && vm.items.isNotEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+
+                  vm.items.isEmpty && !vm.isLoading
                       ? SizedBox(
                           height: 300.h,
                           child: const AppEmptyState(
@@ -155,22 +161,22 @@ class _InventoryManagementScreenState extends State<InventoryManagementScreen> {
                           itemCount: vm.items.length + 1,
                           itemBuilder: (context, index) {
                             if (index < vm.items.length) {
+                              final item = vm.items[index];
                               return InventoryItemCard(
-                                item: vm.items[index],
-                                onEdit: () {
-                                  showModalBottomSheet(
+                                item: item,
+                                onEdit: () async {
+                                  // ✅ Fixed: await edit sheet
+                                  await showModalBottomSheet(
                                     context: context,
                                     isScrollControlled: true,
                                     backgroundColor: Colors.transparent,
-                                    builder: (_) =>
-                                        AddProductSheet(item: vm.items[index]),
+                                    builder: (_) => AddProductSheet(item: item),
                                   );
                                 },
                                 onDelete: () {
                                   _showConfirmDelete(
                                     context,
-                                    onConfirm: () =>
-                                        vm.deleteItem(vm.items[index]),
+                                    onConfirm: () => vm.deleteItem(item),
                                   );
                                 },
                               );

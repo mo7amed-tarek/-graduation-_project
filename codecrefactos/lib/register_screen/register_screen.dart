@@ -16,6 +16,8 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+
       body: Consumer<RegisterViewModel>(
         builder: (context, vm, child) {
           return Padding(
@@ -197,40 +199,28 @@ class RegisterScreen extends StatelessWidget {
 
                   const SizedBox(height: 25),
 
-                  Row(
-                    children: const [
-                      Expanded(child: Divider()),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Text("or"),
-                      ),
-                      Expanded(child: Divider()),
-                    ],
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset("assets/google.png", height: 35),
-                      const SizedBox(width: 20),
-                      Image.asset("assets/facebook.png", height: 35),
-                    ],
-                  ),
-
-                  const SizedBox(height: 25),
-
                   Center(
-                    child: GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => LoginScreen()),
-                      ),
-                      child: Text(
-                        "Have an account? Sign In",
-                        style: TextStyle(color: ColorManager.primary),
-                      ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Have an account? ",
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (_) => LoginScreen()),
+                          ),
+                          child: Text(
+                            "Sign In",
+                            style: TextStyle(
+                              color: ColorManager.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],

@@ -19,6 +19,7 @@ class LoginScreen extends StatelessWidget {
     final vm = Provider.of<LoginViewModel>(context);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 55),
         child: SingleChildScrollView(
@@ -184,30 +185,6 @@ class LoginScreen extends StatelessWidget {
                     style: TextStyle(color: ColorManager.primary, fontSize: 15),
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 25),
-
-              Row(
-                children: const [
-                  Expanded(child: Divider()),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
-                    child: Text("or"),
-                  ),
-                  Expanded(child: Divider()),
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset("assets/google.png", height: 35),
-                  const SizedBox(width: 20),
-                  Image.asset("assets/facebook.png", height: 35),
-                ],
               ),
 
               const SizedBox(height: 25),

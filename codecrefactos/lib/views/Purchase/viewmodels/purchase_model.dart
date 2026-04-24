@@ -30,6 +30,8 @@ class Purchase {
       id: json['id'],
       supplierName: json['supplierName'] ?? '',
       employeeName: json['employeeName'],
+      employeeId: json['employeeId'],
+      productId: json['productId'],
       productName: json['productName'],
       categoryName: json['categoryName'],
       quantity: json['quantity'] ?? 0,
@@ -37,6 +39,20 @@ class Purchase {
       totalAmount: (json['totalAmount'] as num?)?.toDouble() ?? 0.0,
       status: json['status'] ?? 'PendingOrder',
     );
+  }
+
+  static int _statusToInt(String s) {
+    switch (s.toLowerCase()) {
+      case 'completed':
+      case 'completedorder':
+      case 'received':
+        return 1;
+      case 'cancelled':
+      case 'canceled':
+        return 2;
+      default:
+        return 0;
+    }
   }
 
   Map<String, dynamic> toJson() {
@@ -47,6 +63,19 @@ class Purchase {
       "quantity": quantity,
       "price": price,
       "status": status,
+    };
+  }
+
+  Map<String, dynamic> toUpdateJson() {
+    return {
+      "dto": {
+        "supplierName": supplierName,
+        "employeeId": employeeId,
+        "productId": productId,
+        "quantity": quantity,
+        "price": price,
+        "status": _statusToInt(status),
+      },
     };
   }
 

@@ -1,13 +1,12 @@
 import 'package:codecrefactos/resources/color_manager.dart';
 import 'package:flutter/material.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final String hint;
   final TextEditingController controller;
   final bool isPassword;
   final IconData icon;
   final String? Function(String?)? validator;
-
   final String? errorText;
 
   const CustomTextField({
@@ -21,17 +20,38 @@ class CustomTextField extends StatelessWidget {
   });
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  bool isObscure = true;
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
-      obscureText: isPassword,
-      validator: validator,
+      controller: widget.controller,
+      obscureText: widget.isPassword ? isObscure : false,
+      validator: widget.validator,
       decoration: InputDecoration(
-        hintText: hint,
-        prefixIcon: Icon(icon, color: Colors.grey),
+        hintText: widget.hint,
+        prefixIcon: Icon(widget.icon, color: Colors.grey),
 
-        errorText: errorText,
+        // 👇 أيقونة العين
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                icon: Icon(
+                  isObscure ? Icons.visibility_off : Icons.visibility,
+                  color: Colors.grey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    isObscure = !isObscure;
+                  });
+                },
+              )
+            : null,
 
+        errorText: widget.errorText,
         filled: true,
         fillColor: ColorManager.white,
 

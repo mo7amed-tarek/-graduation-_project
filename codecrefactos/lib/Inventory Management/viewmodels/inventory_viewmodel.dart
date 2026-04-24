@@ -84,12 +84,16 @@ class InventoryViewModel extends ChangeNotifier {
   bool isLoadingMore = false;
   bool hasMore = true;
 
+  // ✅ Track total from API separately
+  int _totalItemsCount = 0;
+
   String? errorMessage;
 
   List<InventoryItem> get items =>
       _searchQuery.isEmpty ? _items : _filteredItems;
 
-  int get totalItems => _items.length;
+  // ✅ Use API total count, fallback to local list length
+  int get totalItems => _totalItemsCount > 0 ? _totalItemsCount : _items.length;
   int get lowStockCount => _items.where((e) => e.isLowStock).length;
   int get categoriesCount => _items.map((e) => e.categoryName).toSet().length;
 
@@ -98,6 +102,7 @@ class InventoryViewModel extends ChangeNotifier {
       _pageIndex = 1;
       hasMore = true;
       _items.clear();
+      _totalItemsCount = 0;
     }
 
     isLoading = true;
@@ -110,8 +115,9 @@ class InventoryViewModel extends ChangeNotifier {
         pageSize: _pageSize,
       );
 
-      hasMore = result.hasMore; // ✅
+      hasMore = result.hasMore;
       _items.addAll(result.items);
+      _totalItemsCount = _items.length; // update as we load
       _applyFilter();
     } catch (e) {
       errorMessage = e.toString();
@@ -134,8 +140,9 @@ class InventoryViewModel extends ChangeNotifier {
         pageSize: _pageSize,
       );
 
-      hasMore = result.hasMore; // ✅
+      hasMore = result.hasMore;
       _items.addAll(result.items);
+      _totalItemsCount = _items.length;
       _applyFilter();
     } catch (e) {
       errorMessage = e.toString();
@@ -145,13 +152,18 @@ class InventoryViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  // ✅ Fixed: refresh list after add
   Future<int> addItem(InventoryItem item) async {
-    return await _repo.addProduct(item);
+    final newId = await _repo.addProduct(item);
+    await loadItems(refresh: true); // refresh to show new item
+    return newId;
   }
 
+  // ✅ Fixed: refresh list after update
   Future<void> updateItem(InventoryItem item) async {
     if (item.id == null) return;
     await _repo.updateProduct(item.id!, item);
+    await loadItems(refresh: true); // refresh to show updated item
   }
 
   Future<void> deleteItem(InventoryItem item) async {

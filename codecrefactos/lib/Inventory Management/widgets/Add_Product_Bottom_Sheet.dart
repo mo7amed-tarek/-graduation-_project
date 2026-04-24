@@ -30,6 +30,7 @@ class _AddProductSheetState extends State<AddProductSheet> {
 
   bool _isSubmitting = false;
 
+  // ✅ Categories with their correct IDs matching the API
   final List<Map<String, dynamic>> categories = [
     {"id": 1, "name": "Mobiles"},
     {"id": 2, "name": "Laptops"},
@@ -50,10 +51,22 @@ class _AddProductSheetState extends State<AddProductSheet> {
       priceCtrl.text = item.price.toString();
       quantityCtrl.text = item.quantity.toString();
 
-      selectedCategory = categories.firstWhere(
-        (c) => c["id"] == item.categoryId,
-        orElse: () => categories.first,
-      );
+      // ✅ Fixed: match by id first, then by name as fallback
+      try {
+        selectedCategory = categories.firstWhere(
+          (c) => c["id"] == item.categoryId,
+        );
+      } catch (_) {
+        try {
+          selectedCategory = categories.firstWhere(
+            (c) =>
+                c["name"].toString().toLowerCase() ==
+                item.categoryName.toLowerCase(),
+          );
+        } catch (_) {
+          selectedCategory = null;
+        }
+      }
     }
   }
 
@@ -94,7 +107,7 @@ class _AddProductSheetState extends State<AddProductSheet> {
       name: nameCtrl.text.trim(),
       description: descCtrl.text.trim(),
       color: colorCtrl.text.trim(),
-      pictureUrl: '',
+      pictureUrl: widget.item?.pictureUrl ?? '',
       price: double.tryParse(priceCtrl.text) ?? 0,
       categoryName: selectedCategory!["name"],
       categoryId: selectedCategory!["id"],
@@ -104,11 +117,13 @@ class _AddProductSheetState extends State<AddProductSheet> {
 
     try {
       if (widget.item != null) {
+        // ✅ updateItem now refreshes internally
         await inventoryVM.updateItem(item);
         if (_selectedImage != null) {
           await inventoryVM.uploadImage(widget.item!.id!, _selectedImage!.path);
         }
       } else {
+        // ✅ addItem now refreshes internally
         final newId = await inventoryVM.addItem(item);
         if (_selectedImage != null && newId != 0) {
           await inventoryVM.uploadImage(newId, _selectedImage!.path);
@@ -179,7 +194,6 @@ class _AddProductSheetState extends State<AddProductSheet> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Handle
               Center(
                 child: Container(
                   width: 50,
@@ -190,10 +204,8 @@ class _AddProductSheetState extends State<AddProductSheet> {
                   ),
                 ),
               ),
-
               Gap(15.h),
 
-              // Header
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -210,7 +222,6 @@ class _AddProductSheetState extends State<AddProductSheet> {
                   ),
                 ],
               ),
-
               Gap(20.h),
 
               // Image Picker
@@ -228,24 +239,18 @@ class _AddProductSheetState extends State<AddProductSheet> {
                           borderRadius: BorderRadius.circular(10.r),
                           child: Image.file(_selectedImage!, fit: BoxFit.cover),
                         )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.add_a_photo_outlined,
-                              size: 36.sp,
-                              color: Colors.grey,
-                            ),
-                            Gap(8.h),
-                            Text(
-                              "Tap to upload image",
-                              style: TextStyle(
-                                fontSize: 13.sp,
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
+                      // ✅ Show existing image from URL in edit mode
+                      : (widget.item?.pictureUrl.isNotEmpty == true &&
+                            widget.item!.pictureUrl != 'N/A')
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10.r),
+                          child: Image.network(
+                            widget.item!.pictureUrl,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => _imagePlaceholder(),
+                          ),
+                        )
+                      : _imagePlaceholder(),
                 ),
               ),
 
@@ -309,7 +314,6 @@ class _AddProductSheetState extends State<AddProductSheet> {
 
               Gap(25.h),
 
-              // Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -347,12 +351,25 @@ class _AddProductSheetState extends State<AddProductSheet> {
                   ),
                 ],
               ),
-
               Gap(20.h),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _imagePlaceholder() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.add_a_photo_outlined, size: 36.sp, color: Colors.grey),
+        Gap(8.h),
+        Text(
+          "Tap to upload image",
+          style: TextStyle(fontSize: 13.sp, color: Colors.grey),
+        ),
+      ],
     );
   }
 }

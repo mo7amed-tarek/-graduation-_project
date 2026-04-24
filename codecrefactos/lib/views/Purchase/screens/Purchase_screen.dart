@@ -11,7 +11,6 @@ import '../../sales/widget/custom_SummaryCard.dart';
 import '../viewmodels/Purchase_Provider.dart';
 import '../witget/Purchase_cart.dart';
 import '../witget/add_purchase_sheet.dart';
-
 import '../viewmodels/purchase_model.dart';
 
 class PurchaseScreen extends StatefulWidget {
@@ -21,22 +20,12 @@ class PurchaseScreen extends StatefulWidget {
   State<PurchaseScreen> createState() => _PurchaseScreenState();
 }
 
-List<String> Categories = [
-  'All',
-  'Electronics',
-  'Furniture',
-  'Office Supplies',
-  'Devices',
-  'Other',
-];
-int selectContainer = -1;
-
 class _PurchaseScreenState extends State<PurchaseScreen> {
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PurchasesProvider>().fetchPurchases();
+      context.read<PurchasesProvider>().init();
     });
   }
 
@@ -118,8 +107,6 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
               ),
               Gap(9.h),
 
-              /// Categories
-
               /// Search
               TextField(
                 onChanged: provider.setPurchaseSearchQuery,
@@ -178,7 +165,12 @@ class _PurchaseScreenState extends State<PurchaseScreen> {
                                 if (context.mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text(e.toString().replaceAll('Exception: ', '')),
+                                      content: Text(
+                                        e.toString().replaceAll(
+                                          'Exception: ',
+                                          '',
+                                        ),
+                                      ),
                                       backgroundColor: Colors.red,
                                     ),
                                   );

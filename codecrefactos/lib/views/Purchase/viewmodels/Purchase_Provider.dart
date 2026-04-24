@@ -10,29 +10,40 @@ class PurchasesProvider extends ChangeNotifier {
   String _purchaseSearchQuery = '';
 
   bool isLoading = false;
+  bool _initialized = false;
   String? errorMessage;
 
-  PurchasesProvider() {
-    fetchPurchases();
+  PurchasesProvider();
+
+  Future<void> init() async {
+    if (_initialized) return;
+    _initialized = true;
+    await fetchPurchases();
   }
 
   List<Purchase> get purchases => List.unmodifiable(_purchases);
 
-  List<Purchase> get filteredPurchases => List.unmodifiable(
-        _filteredPurchases.isEmpty && _purchaseSearchQuery.isEmpty
-            ? _purchases
-            : _filteredPurchases,
-      );
+  List<Purchase> get filteredPurchases => List.unmodifiable(_filteredPurchases);
 
   double get totalPurchasesAmount {
-    return _purchases.fold(0.0, (sum, purchase) => sum + (purchase.totalAmount ?? 0.0));
+    return _purchases.fold(
+      0.0,
+      (sum, purchase) => sum + (purchase.totalAmount ?? 0.0),
+    );
   }
 
-  int get completedPurchasesCount =>
-      _purchases.where((p) => p.status.toLowerCase().contains('completed') || p.status.toLowerCase() == 'received').length;
+  int get completedPurchasesCount => _purchases.where((p) {
+    final s = p.status.toLowerCase();
+    return s == 'completed' ||
+        s == 'completedorder' ||
+        s == 'received' ||
+        s.contains('complet');
+  }).length;
 
-  int get pendingPurchasesCount =>
-      _purchases.where((p) => p.status.toLowerCase().contains('pending')).length;
+  int get pendingPurchasesCount => _purchases.where((p) {
+    final s = p.status.toLowerCase();
+    return s == 'pending' || s == 'pendingorder' || s.contains('pending');
+  }).length;
 
   Future<void> fetchPurchases() async {
     isLoading = true;
@@ -54,17 +65,18 @@ class PurchasesProvider extends ChangeNotifier {
   }
 
   void _applyPurchaseFilter() {
+    _filteredPurchases.clear();
     if (_purchaseSearchQuery.isEmpty) {
-      _filteredPurchases
-        ..clear()
-        ..addAll(_purchases);
+      _filteredPurchases.addAll(_purchases);
     } else {
       final q = _purchaseSearchQuery.toLowerCase();
-      _filteredPurchases
-        ..clear()
-        ..addAll(_purchases.where((p) =>
-            p.supplierName.toLowerCase().contains(q) ||
-            (p.productName?.toLowerCase().contains(q) ?? false)));
+      _filteredPurchases.addAll(
+        _purchases.where(
+          (p) =>
+              p.supplierName.toLowerCase().contains(q) ||
+              (p.productName?.toLowerCase().contains(q) ?? false),
+        ),
+      );
     }
     notifyListeners();
   }
@@ -79,11 +91,29 @@ class PurchasesProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updatePurchaseByModel(Purchase oldPurchase, Purchase newPurchase) async {
+  Future<void> updatePurchaseByModel(
+    Purchase oldPurchase,
+    Purchase newPurchase,
+  ) async {
     if (oldPurchase.id == null) return;
     try {
-      await _api.updatePurchase(oldPurchase.id!, newPurchase.toJson());
-      await fetchPurchases();
+      await _api.updatePurchase(oldPurchase.id!, newPurchase.toUpdateJson());
+
+      final index = _purchases.indexWhere((p) => p.id == oldPurchase.id);
+      if (index != -1) {
+        _purchases[index] = _purchases[index].copyWith(
+          supplierName: newPurchase.supplierName,
+          employeeId: newPurchase.employeeId,
+          productId: newPurchase.productId,
+          quantity: newPurchase.quantity,
+          price: newPurchase.price,
+          status: newPurchase.status,
+          totalAmount: (newPurchase.price ?? 0) * newPurchase.quantity,
+        );
+        _applyPurchaseFilter();
+      } else {
+        await fetchPurchases();
+      }
     } catch (e) {
       errorMessage = e.toString();
       notifyListeners();
@@ -101,4 +131,4 @@ class PurchasesProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-}
+}

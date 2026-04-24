@@ -26,6 +26,12 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
   Employee? _selectedEmployee;
   String status = 'PendingOrder';
 
+  final List<String> _statusOptions = [
+    'PendingOrder',
+    'Completed',
+    'Cancelled',
+  ];
+
   bool isFormValid = false;
 
   @override
@@ -34,13 +40,6 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
 
     Future.microtask(() async {
       await context.read<InventoryViewModel>().loadItems(refresh: true);
-
-      if (!mounted) return;
-      _setInitialEditValues();
-      _updateFormValidity();
-    });
-
-    Future.microtask(() {
       if (!mounted) return;
       _setInitialEditValues();
       _updateFormValidity();
@@ -86,14 +85,11 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
       }
     }
 
-    if (mounted) {
-      setState(() {});
-    }
+    if (mounted) setState(() {});
   }
 
   void _updateFormValidity() {
     if (!mounted) return;
-
     final isValid =
         supplierController.text.trim().isNotEmpty &&
         int.tryParse(quantityController.text.trim()) != null &&
@@ -101,13 +97,7 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
         _selectedProduct != null &&
         _selectedEmployee != null;
 
-    if (isFormValid != isValid) {
-      setState(() {
-        isFormValid = isValid;
-      });
-    } else {
-      setState(() {});
-    }
+    setState(() => isFormValid = isValid);
   }
 
   @override
@@ -202,6 +192,11 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
 
                   _inputLabel("Employee"),
                   _employeeDropdown(),
+
+                  if (widget.isEdit) ...[
+                    _inputLabel("Status"),
+                    _statusDropdown(),
+                  ],
                 ],
               ),
             ),
@@ -253,6 +248,7 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
       productId: _selectedProduct!.id,
       quantity: quantity,
       price: _selectedProduct!.price,
+
       status: widget.isEdit ? status : 'PendingOrder',
     );
 
@@ -284,6 +280,58 @@ class _AddPurchaseSheetState extends State<AddPurchaseSheet> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.r),
           borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
+  // ✅ New: status dropdown with color indicators
+  Widget _statusDropdown() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 12.w),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(10.r),
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: status,
+          isExpanded: true,
+          onChanged: (value) {
+            if (value != null) {
+              setState(() => status = value);
+            }
+          },
+          items: _statusOptions.map((s) {
+            Color dotColor;
+            switch (s) {
+              case 'Completed':
+                dotColor = const Color(0xff00A63E);
+                break;
+              case 'Cancelled':
+                dotColor = Colors.red;
+                break;
+              default:
+                dotColor = const Color(0xffF54900);
+            }
+            return DropdownMenuItem<String>(
+              value: s,
+              child: Row(
+                children: [
+                  Container(
+                    width: 10.w,
+                    height: 10.h,
+                    decoration: BoxDecoration(
+                      color: dotColor,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  Gap(8.w),
+                  Text(s),
+                ],
+              ),
+            );
+          }).toList(),
         ),
       ),
     );
