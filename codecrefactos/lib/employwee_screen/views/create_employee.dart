@@ -67,8 +67,16 @@ class _CreateEmployeeScreenState extends State<CreateEmployeeScreen> {
                 decoration: const InputDecoration(labelText: 'Position'),
                 onSaved: (value) => _formData['position'] = value,
               ),
-              TextFormField(
+              DropdownButtonFormField<String>(
                 decoration: const InputDecoration(labelText: 'Department'),
+                items: ["Sales", "Purchasing", "Warehouse", "Technical", "Management"]
+                    .map((dept) => DropdownMenuItem(value: dept, child: Text(dept)))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _formData['department'] = value;
+                  });
+                },
                 onSaved: (value) => _formData['department'] = value,
               ),
               TextFormField(

@@ -243,7 +243,13 @@ class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
   }
 
   Widget _dropDown() {
-    List<String> departments = ["HR", "Sales", "IT"];
+    List<String> departments = [
+      "Sales",
+      "Purchasing",
+      "Warehouse",
+      "Technical",
+      "Management"
+    ];
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w),
       decoration: BoxDecoration(
