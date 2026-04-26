@@ -25,6 +25,7 @@ dependencies:
   cached_network_image: ^3.3.0
   shared_preferences: ^2.2.2
   url_launcher: ^6.3.0
+  flutter_credit_card: ^4.1.0
   
 
 
