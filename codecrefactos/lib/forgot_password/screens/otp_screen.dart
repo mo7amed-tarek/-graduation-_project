@@ -1,4 +1,5 @@
 import 'package:codecrefactos/forgot_password/view_model/forgotpassword_view_model.dart';
+import 'package:codecrefactos/resources/color_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
@@ -21,6 +22,7 @@ class _OtpScreenState extends State<OtpScreen> {
     final vm = Provider.of<ForgotPasswordViewModel>(context);
 
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(kPadding),
         child: Column(
@@ -31,22 +33,19 @@ class _OtpScreenState extends State<OtpScreen> {
               onPressed: () => Navigator.pop(context),
             ),
             const SizedBox(height: 40),
-
             const Text(
               "Enter OTP",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-
             const SizedBox(height: 8),
-            const Text(
-              "Please enter the OTP sent to your registered phone number: XXXXXXX987",
+            Text(
+              "Please enter the OTP sent to: ${vm.savedEmail}",
+              style: const TextStyle(color: Colors.grey),
             ),
-
             const SizedBox(height: 20),
-
             PinCodeTextField(
               appContext: context,
-              length: 4,
+              length: 6,
               keyboardType: TextInputType.number,
               animationType: AnimationType.fade,
               textStyle: const TextStyle(fontSize: 20),
@@ -63,27 +62,16 @@ class _OtpScreenState extends State<OtpScreen> {
                 inactiveColor: Colors.grey,
               ),
               enableActiveFill: true,
-              onChanged: (value) {
-                setState(() {
-                  currentOtp = value;
-                });
-              },
-              onCompleted: (value) {
-                setState(() {
-                  currentOtp = value;
-                });
-              },
+              onChanged: (value) => setState(() => currentOtp = value),
+              onCompleted: (value) => setState(() => currentOtp = value),
             ),
-
             const SizedBox(height: 20),
-
             vm.isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : CustomButton(
                     text: "Verify Code",
                     onPressed: () async {
                       bool valid = await vm.verifyOtp(currentOtp);
-
                       if (valid) {
                         Navigator.push(
                           context,
@@ -98,17 +86,18 @@ class _OtpScreenState extends State<OtpScreen> {
                       }
                     },
                   ),
-
             const SizedBox(height: 10),
-
             TextButton(
               onPressed: () async {
-                await vm.resetPassword("dummyUser");
+                await vm.resetPassword(vm.savedEmail);
                 ScaffoldMessenger.of(
                   context,
                 ).showSnackBar(SnackBar(content: Text(vm.message)));
               },
-              child: const Text("Resend OTP"),
+              child: const Text(
+                "Resend OTP",
+                style: TextStyle(color: ColorManager.primary),
+              ),
             ),
           ],
         ),

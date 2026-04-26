@@ -7,7 +7,7 @@ import '../utils/constants.dart';
 import 'otp_screen.dart';
 
 class ForgotPasswordScreen extends StatelessWidget {
-  final TextEditingController userIdController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
 
   ForgotPasswordScreen({super.key});
 
@@ -17,7 +17,6 @@ class ForgotPasswordScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Colors.white,
-
       body: Padding(
         padding: const EdgeInsets.all(kPadding),
         child: Column(
@@ -33,24 +32,25 @@ class ForgotPasswordScreen extends StatelessWidget {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text("Please enter your User ID to reset the password"),
+            const Text("Please enter your email to reset the password"),
             const SizedBox(height: 20),
             CustomTextField(
-              hint: "Enter your User ID",
-              controller: userIdController,
+              hint: "Enter your email",
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 20),
             vm.isLoading
-                ? Center(child: CircularProgressIndicator())
+                ? const Center(child: CircularProgressIndicator())
                 : CustomButton(
-                    text: "Reset Password",
+                    text: "Send OTP",
                     onPressed: () async {
-                      await vm.resetPassword(userIdController.text);
+                      await vm.resetPassword(emailController.text);
 
                       if (vm.message.contains('OTP sent')) {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (_) => OtpScreen()),
+                          MaterialPageRoute(builder: (_) => const OtpScreen()),
                         );
                       } else {
                         ScaffoldMessenger.of(

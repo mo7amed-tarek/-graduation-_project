@@ -1,8 +1,10 @@
+import 'package:codecrefactos/apiService.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 
-class Appbar extends StatelessWidget implements PreferredSizeWidget {
+class Appbar extends StatefulWidget implements PreferredSizeWidget {
   final VoidCallback? onAdd;
   final VoidCallback? onLogout;
   final bool showAddButton;
@@ -20,6 +22,56 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Size get preferredSize => Size.fromHeight(70.h);
+
+  @override
+  State<Appbar> createState() => _AppbarState();
+}
+
+class _AppbarState extends State<Appbar> {
+  final _api = ApiService();
+
+  bool _isLoading = false;
+  String _fullName = 'Admin User';
+  String _initials = 'AU';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfile();
+  }
+
+  Future<void> _fetchProfile() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await _api.get('User/profile');
+      final data = response.data;
+
+      final name = data['fullName'] ?? data['userName'] ?? 'Admin User';
+
+      final parts = name.trim().split(' ');
+      String initials;
+      if (parts.length >= 2) {
+        initials = '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+      } else if (parts.isNotEmpty && parts[0].isNotEmpty) {
+        initials = parts[0][0].toUpperCase();
+      } else {
+        initials = 'AU';
+      }
+
+      setState(() {
+        _fullName = name;
+        _initials = initials;
+      });
+    } on DioException catch (e) {
+      final errors = _api.handleError(e);
+      debugPrint('Profile error: ${errors['general']}');
+    } catch (e) {
+      debugPrint('Profile error: $e');
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,13 +96,21 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
                       color: Colors.grey.shade300,
                     ),
                     child: Center(
-                      child: Text(
-                        "AU",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16.sp,
-                        ),
-                      ),
+                      child: _isLoading
+                          ? SizedBox(
+                              height: 20.h,
+                              width: 20.w,
+                              child: const CircularProgressIndicator(
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : Text(
+                              _initials,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16.sp,
+                              ),
+                            ),
                     ),
                   ),
                   Gap(10.w),
@@ -66,7 +126,7 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
                         ),
                       ),
                       Text(
-                        'Admin User',
+                        _isLoading ? 'Loading...' : _fullName,
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w400,
@@ -77,12 +137,11 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                 ],
               ),
-
               Row(
                 children: [
-                  if (showAddButton)
+                  if (widget.showAddButton)
                     ElevatedButton.icon(
-                      onPressed: onAdd,
+                      onPressed: widget.onAdd,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         shape: RoundedRectangleBorder(
@@ -99,14 +158,14 @@ class Appbar extends StatelessWidget implements PreferredSizeWidget {
                         color: Colors.white,
                       ),
                       label: Text(
-                        bottonTitle,
+                        widget.bottonTitle,
                         style: TextStyle(fontSize: 14.sp, color: Colors.white),
                       ),
                     ),
-                  if (showAddButton) Gap(5.h),
-                  if (showLogoutButton)
+                  if (widget.showAddButton) Gap(5.h),
+                  if (widget.showLogoutButton)
                     TextButton.icon(
-                      onPressed: onLogout,
+                      onPressed: widget.onLogout,
                       icon: Icon(
                         Icons.logout,
                         color: Colors.black,

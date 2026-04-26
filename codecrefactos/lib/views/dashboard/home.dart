@@ -10,7 +10,6 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../sales/viewmodels/SalesData.dart';
 import '../../widgets/appbar.dart';
 import '../../widgets/employee_item.dart';
 import '../sales/viewmodels/sales_provider.dart';
