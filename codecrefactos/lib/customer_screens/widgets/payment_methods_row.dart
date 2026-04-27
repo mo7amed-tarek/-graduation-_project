@@ -20,7 +20,7 @@ class PaymentMethodsRow extends StatelessWidget {
         Row(
           children: [
             _PaymentOption(
-              image: 'assets/cash_icon.png',
+              image: 'assets/cash.jpeg',
               label: 'Cash',
               selected: vm.selectedPayment == PaymentMethod.cash,
               onTap: () => vm.selectPayment(PaymentMethod.cash),
@@ -82,7 +82,11 @@ class _PaymentOption extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.asset(image, height: 50, fit: BoxFit.contain),
+                child: Image.asset(
+                  image,
+                  height: 50,
+                  fit: BoxFit.contain,
+                ),
               ),
               const SizedBox(height: 8),
               Text(

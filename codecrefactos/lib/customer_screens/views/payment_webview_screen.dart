@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
+/// Full-screen WebView that loads the online payment gateway URL.
+/// When the user finishes (or presses back), it pops with `true`
+/// so the caller knows to proceed to the success screen.
 class PaymentWebViewScreen extends StatefulWidget {
   final String paymentUrl;
 
@@ -90,8 +93,8 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(ctx);
-              Navigator.pop(context, true);
+              Navigator.pop(ctx);       // close dialog
+              Navigator.pop(context, true); // pop webview, still go to success
             },
             child: const Text('Leave'),
           ),

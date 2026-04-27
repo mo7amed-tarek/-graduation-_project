@@ -12,6 +12,9 @@ import 'package:codecrefactos/customer_screens/view_models/confirm_order_view_mo
 import 'package:codecrefactos/customer_screens/views/payment_webview_screen.dart';
 import 'package:codecrefactos/apiService.dart';
 
+// ═══════════════════════════════════════════════════════════════════════════════
+//  Confirm Order Screen
+// ═══════════════════════════════════════════════════════════════════════════════
 class ConfirmOrderView extends StatelessWidget {
   const ConfirmOrderView({super.key});
 
@@ -190,6 +193,7 @@ class ConfirmOrderView extends StatelessWidget {
 
       await cartVM.clear();
 
+      // Navigate to success screen, clearing all routes except home
       navigator.pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const OrderConfirmedScreen()),
         (route) => route.isFirst,
