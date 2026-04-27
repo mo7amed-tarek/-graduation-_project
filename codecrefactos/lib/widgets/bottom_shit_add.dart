@@ -66,6 +66,8 @@ class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
       child: SingleChildScrollView(
         child: Form(
           key: _formKey,
+          autovalidateMode:
+              AutovalidateMode.onUserInteraction, // ✅ validation أثناء الكتابة
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -73,32 +75,62 @@ class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
               _header(context),
               Gap(20.h),
 
+              // ✅ Name — string مطلوب
               _inputLabel("Name"),
               _textField(
                 nameController,
-                validator: (v) =>
-                    v == null || v.isEmpty ? "Name is required" : null,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return "Name is required";
+                  if (v.trim().length < 3)
+                    return "Name must be at least 3 characters";
+                  return null;
+                },
               ),
 
+              // ✅ Email — لازم يكون فيه @
               _inputLabel("Email"),
               _textField(
                 emailController,
-                validator: (v) =>
-                    v == null || v.isEmpty ? "Email is required" : null,
+                keyboardType: TextInputType.emailAddress,
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                ],
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return "Email is required";
+                  final emailRegex = RegExp(r'^[\w\.-]+@[\w\.-]+\.\w{2,}$');
+                  if (!emailRegex.hasMatch(v.trim())) {
+                    return "Enter a valid email (e.g. user@example.com)";
+                  }
+                  return null;
+                },
               ),
 
+              // ✅ Phone — أرقام بس
               _inputLabel("Phone"),
               _textField(
                 phoneController,
-                validator: (v) =>
-                    v == null || v.isEmpty ? "Phone is required" : null,
+                keyboardType: TextInputType.phone,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(15),
+                ],
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return "Phone is required";
+                  if (v.length < 10) return "Phone must be at least 10 digits";
+                  return null;
+                },
               ),
 
+              // ✅ Position — string مطلوب
               _inputLabel("Position"),
               _textField(
                 positionController,
-                validator: (v) =>
-                    v == null || v.isEmpty ? "Position is required" : null,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty)
+                    return "Position is required";
+                  if (v.trim().length < 2) return "Enter a valid position";
+                  return null;
+                },
               ),
 
               _inputLabel("Department"),
@@ -106,6 +138,7 @@ class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
 
               _inputLabel("Salary"),
               _salaryField(),
+
               Gap(25.h),
               _actions(context),
               Gap(20.h),
@@ -138,22 +171,27 @@ class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
       children: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text("Cancel"),
+          child: const Text("Cancel", style: TextStyle(color: Colors.red)),
         ),
         Gap(10.w),
         ElevatedButton(
           onPressed: () {
             if (!_formKey.currentState!.validate() ||
                 selectedDepartment == null) {
+              if (selectedDepartment == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("Please select a department")),
+                );
+              }
               return;
             }
 
             final newEmployee = Employee(
-              name: nameController.text,
-              role: positionController.text,
-              email: emailController.text,
-              phone: phoneController.text,
-              salary: salaryController.text,
+              name: nameController.text.trim(),
+              role: positionController.text.trim(),
+              email: emailController.text.trim(),
+              phone: phoneController.text.trim(),
+              salary: salaryController.text.trim(),
               department: selectedDepartment!,
               isActive: widget.employee?.isActive ?? false,
             );
@@ -195,10 +233,14 @@ class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
   Widget _textField(
     TextEditingController controller, {
     String? Function(String?)? validator,
+    TextInputType? keyboardType,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return TextFormField(
       controller: controller,
       validator: validator,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.grey.shade100,
@@ -214,21 +256,12 @@ class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
     return TextFormField(
       controller: salaryController,
       keyboardType: TextInputType.number,
-      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*'))],
+      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
       validator: (value) {
-        if (value == null || value.isEmpty) {
-          return "Salary is required";
-        }
-
+        if (value == null || value.isEmpty) return "Salary is required";
         final salary = int.tryParse(value);
-        if (salary == null) {
-          return "Enter a valid number";
-        }
-
-        if (salary <= 0) {
-          return "Salary must be greater than 0";
-        }
-
+        if (salary == null) return "Enter a valid number";
+        if (salary <= 0) return "Salary must be greater than 0";
         return null;
       },
       decoration: InputDecoration(
@@ -248,7 +281,7 @@ class _AddEmployeeSheetState extends State<AddEmployeeSheet> {
       "Purchasing",
       "Warehouse",
       "Technical",
-      "Management"
+      "Management",
     ];
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w),

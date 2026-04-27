@@ -1,6 +1,7 @@
 import 'package:codecrefactos/customer_screens/view_models/confirm_order_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class PaymentMethodsRow extends StatelessWidget {
   const PaymentMethodsRow({super.key});
@@ -12,11 +13,11 @@ class PaymentMethodsRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Payment Method',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         Row(
           children: [
             _PaymentOption(
@@ -25,7 +26,7 @@ class PaymentMethodsRow extends StatelessWidget {
               selected: vm.selectedPayment == PaymentMethod.cash,
               onTap: () => vm.selectPayment(PaymentMethod.cash),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12.w),
             _PaymentOption(
               image: 'assets/Visa.png',
               label: 'Visa',
@@ -59,14 +60,14 @@ class _PaymentOption extends StatelessWidget {
         onTap: onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+          padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 12.w),
           decoration: BoxDecoration(
             color: selected ? Colors.blue.shade50 : Colors.white,
             border: Border.all(
               color: selected ? Colors.blue : Colors.grey.shade300,
-              width: selected ? 2 : 1,
+              width: selected ? 2 : 1.w,
             ),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(14.r),
             boxShadow: selected
                 ? [
                     BoxShadow(
@@ -81,14 +82,10 @@ class _PaymentOption extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  image,
-                  height: 50,
-                  fit: BoxFit.contain,
-                ),
+                borderRadius: BorderRadius.circular(8.r),
+                child: Image.asset(image, height: 50.h, fit: BoxFit.contain),
               ),
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Text(
                 label,
                 style: TextStyle(
@@ -97,8 +94,12 @@ class _PaymentOption extends StatelessWidget {
                 ),
               ),
               if (selected) ...[
-                const SizedBox(height: 4),
-                Icon(Icons.check_circle, size: 18, color: Colors.blue.shade600),
+                SizedBox(height: 4.h),
+                Icon(
+                  Icons.check_circle,
+                  size: 18.sp,
+                  color: Colors.blue.shade600,
+                ),
               ],
             ],
           ),

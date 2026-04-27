@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ColorSelector extends StatelessWidget {
   final List<int> colors;
@@ -21,14 +22,14 @@ class ColorSelector extends StatelessWidget {
           onTap: () => onSelect(i),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 300),
-            margin: const EdgeInsets.only(right: 8),
-            width: isActive ? 26 : 22,
-            height: isActive ? 26 : 22,
+            margin: EdgeInsets.only(right: 8.w),
+            width: isActive ? 26 : 22.w,
+            height: isActive ? 26 : 22.h,
             decoration: BoxDecoration(
               color: Color(colors[i]),
               shape: BoxShape.circle,
               border: isActive
-                  ? Border.all(color: Colors.blue, width: 2)
+                  ? Border.all(color: Colors.blue, width: 2.w)
                   : null,
             ),
           ),

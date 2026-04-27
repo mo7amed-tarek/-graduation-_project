@@ -2,6 +2,7 @@ import 'package:codecrefactos/customer_screens/view_models/confirm_order_view_mo
 import 'package:codecrefactos/customer_screens/models/delivery_method_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ShippingMethodSection extends StatelessWidget {
   const ShippingMethodSection({super.key});
@@ -13,11 +14,11 @@ class ShippingMethodSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Shipping Method',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         if (vm.isLoadingDelivery)
           const Center(child: CircularProgressIndicator())
         else if (vm.deliveryMethods.isEmpty)
@@ -60,10 +61,10 @@ class _ShippingOption extends StatelessWidget {
       onTap: onTap,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
         decoration: BoxDecoration(
           color: selected ? Colors.blue : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(14.r),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,15 +76,15 @@ class _ShippingOption extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             Text(
               method.deliveryTime,
               style: TextStyle(
                 color: selected ? Colors.white70 : Colors.black54,
-                fontSize: 12,
+                fontSize: 12.sp,
               ),
             ),
-            const SizedBox(height: 4),
+            SizedBox(height: 4.h),
             Text(
               '${method.price.toStringAsFixed(0)} EGP',
               style: TextStyle(

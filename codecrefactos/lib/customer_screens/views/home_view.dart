@@ -4,7 +4,9 @@ import 'package:codecrefactos/login_screen/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/home_view_model.dart';
+import '../view_models/cart_view_model.dart';
 import '../widgets/rating_stars.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -53,6 +55,19 @@ class _HomeViewState extends State<HomeView>
     return "$baseUrl${path.startsWith('/') ? '' : '/'}$path";
   }
 
+  Color _categoryColor(String category) {
+    switch (category.toLowerCase().trim()) {
+      case 'mobiles':
+        return const Color(0xFF1565C0);
+      case 'laptops':
+        return const Color(0xFF2E7D32);
+      case 'accessories':
+        return const Color(0xFF6A1B9A);
+      default:
+        return Colors.blueGrey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<HomeVM>();
@@ -67,9 +82,9 @@ class _HomeViewState extends State<HomeView>
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Home',
-          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20),
+          style: TextStyle(fontWeight: FontWeight.w700, fontSize: 20.sp),
         ),
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -77,9 +92,7 @@ class _HomeViewState extends State<HomeView>
         elevation: 0,
         shadowColor: Colors.black12,
         surfaceTintColor: Colors.white,
-
         actions: [
-          // Cart Button
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
             onPressed: () {
@@ -89,12 +102,10 @@ class _HomeViewState extends State<HomeView>
               );
             },
           ),
-
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
               context.read<HomeVM>().logout();
-
               Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(builder: (_) => LoginScreen()),
                 (route) => false,
@@ -102,9 +113,8 @@ class _HomeViewState extends State<HomeView>
             },
           ),
         ],
-
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
+          preferredSize: Size.fromHeight(48.h),
           child: TabBar(
             controller: _tabController,
             indicatorColor: Colors.blue,
@@ -118,36 +128,34 @@ class _HomeViewState extends State<HomeView>
       ),
       body: Column(
         children: [
-          // Search
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
             child: TextField(
               onChanged: (value) => setState(() => searchQuery = value),
-              style: const TextStyle(fontSize: 14, color: Colors.black87),
+              style: TextStyle(fontSize: 14.sp, color: Colors.black87),
               decoration: InputDecoration(
                 hintText: 'Search products...',
-                hintStyle: const TextStyle(color: Colors.black38, fontSize: 14),
-                prefixIcon: const Icon(
+                hintStyle: TextStyle(color: Colors.black38, fontSize: 14.sp),
+                prefixIcon: Icon(
                   Icons.search_rounded,
                   color: Colors.blue,
-                  size: 22,
+                  size: 22.sp,
                 ),
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                contentPadding: EdgeInsets.symmetric(vertical: 14.r),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(14.r),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: Colors.blue, width: 1.5),
+                  borderRadius: BorderRadius.circular(14.r),
+                  borderSide: BorderSide(color: Colors.blue, width: 1.5.w),
                 ),
               ),
             ),
           ),
 
-          // Grid
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -163,21 +171,21 @@ class _HomeViewState extends State<HomeView>
                 }).toList();
 
                 if (filteredProducts.isEmpty && !vm.isLoading) {
-                  return const Center(
+                  return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.search_off_rounded,
-                          size: 52,
+                          size: 52.sp,
                           color: Colors.black26,
                         ),
-                        SizedBox(height: 10),
+                        SizedBox(height: 10.h),
                         Text(
                           'No products found',
                           style: TextStyle(
                             color: Colors.black45,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -192,11 +200,11 @@ class _HomeViewState extends State<HomeView>
                   padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
                   itemCount:
                       filteredProducts.length + (vm.isLoadingMore ? 1 : 0),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.65,
-                    mainAxisSpacing: 14,
-                    crossAxisSpacing: 14,
+                    childAspectRatio: 0.68.h,
+                    mainAxisSpacing: 14.w,
+                    crossAxisSpacing: 14.w,
                   ),
                   itemBuilder: (_, i) {
                     if (i >= filteredProducts.length) {
@@ -206,6 +214,7 @@ class _HomeViewState extends State<HomeView>
                     }
 
                     final product = filteredProducts[i];
+                    final badgeColor = _categoryColor(product.categoryName);
 
                     return GestureDetector(
                       onTap: () => Navigator.push(
@@ -217,11 +226,11 @@ class _HomeViewState extends State<HomeView>
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
+                          borderRadius: BorderRadius.circular(18.r),
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.07),
-                              blurRadius: 10,
+                              blurRadius: 10.r,
                               offset: const Offset(0, 4),
                             ),
                           ],
@@ -229,71 +238,168 @@ class _HomeViewState extends State<HomeView>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Image
                             ClipRRect(
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(18),
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(18.r),
                               ),
                               child: Container(
-                                height: 130,
+                                height: 130.h,
                                 width: double.infinity,
-                                color: Colors.grey.shade100,
-                                padding: const EdgeInsets.all(10),
+                                color: Colors.white,
+                                padding: EdgeInsets.all(10.r),
                                 child: Image.network(
                                   imageUrl(product.image),
                                   fit: BoxFit.contain,
                                   loadingBuilder: (_, child, progress) {
                                     if (progress == null) return child;
-                                    return const Center(
+                                    return Center(
                                       child: CircularProgressIndicator(
                                         color: Colors.blue,
-                                        strokeWidth: 2,
+                                        strokeWidth: 2.w,
                                       ),
                                     );
                                   },
-                                  errorBuilder: (_, __, ___) => const Icon(
+                                  errorBuilder: (_, __, ___) => Icon(
                                     Icons.broken_image_outlined,
                                     color: Colors.black26,
-                                    size: 36,
+                                    size: 36.sp,
                                   ),
                                 ),
                               ),
                             ),
 
-                            // Info
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                10,
-                                10,
-                                10,
-                                10,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    product.name,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 13,
-                                      color: Colors.black87,
-                                      height: 1.3,
-                                    ),
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFEEEEEE),
+                                  borderRadius: BorderRadius.vertical(
+                                    bottom: Radius.circular(18.r),
                                   ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    'EGP ${product.price}',
-                                    style: const TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.w700,
-                                      fontSize: 14,
+                                ),
+                                padding: EdgeInsets.fromLTRB(
+                                  10.w,
+                                  8.h,
+                                  10.w,
+                                  8.h,
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 8.w,
+                                        vertical: 3.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: badgeColor.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(
+                                          6.r,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        product.categoryName,
+                                        style: TextStyle(
+                                          fontSize: 10.sp,
+                                          fontWeight: FontWeight.w600,
+                                          color: badgeColor,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  RatingStars(rating: product.rating),
-                                ],
+
+                                    SizedBox(height: 5.h),
+
+                                    Text(
+                                      product.name,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 12.sp,
+                                        color: Colors.black87,
+                                        height: 1.3,
+                                      ),
+                                    ),
+
+                                    SizedBox(height: 4.h),
+
+                                    Text(
+                                      'EGP ${product.price}',
+                                      style: TextStyle(
+                                        color: const Color(0xFF185FA5),
+                                        fontWeight: FontWeight.w700,
+                                        fontSize: 13.sp,
+                                      ),
+                                    ),
+
+                                    SizedBox(height: 4.h),
+
+                                    RatingStars(rating: product.rating),
+
+                                    const Spacer(),
+
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        // Color dots
+                                        if (product.colors.isNotEmpty)
+                                          Row(
+                                            children: product.colors
+                                                .take(4)
+                                                .map(
+                                                  (colorInt) => Container(
+                                                    width: 13.w,
+                                                    height: 13.w,
+                                                    margin: EdgeInsets.only(
+                                                      right: 4.w,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: Color(colorInt),
+                                                      shape: BoxShape.circle,
+                                                      border: Border.all(
+                                                        color: Colors.black12,
+                                                        width: 1,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                )
+                                                .toList(),
+                                          ),
+
+                                        GestureDetector(
+                                          onTap: () {
+                                            context.read<CartVM>().addItem(
+                                              product,
+                                            );
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('Added to cart'),
+                                                duration: Duration(seconds: 1),
+                                              ),
+                                            );
+                                          },
+                                          child: Container(
+                                            width: 30.w,
+                                            height: 30.w,
+                                            decoration: BoxDecoration(
+                                              color: Colors.blue,
+                                              borderRadius:
+                                                  BorderRadius.circular(8.r),
+                                            ),
+                                            child: Icon(
+                                              Icons.shopping_cart_outlined,
+                                              color: Colors.white,
+                                              size: 16.sp,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ],

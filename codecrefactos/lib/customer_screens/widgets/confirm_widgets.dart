@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:codecrefactos/forgot_password/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -15,18 +16,18 @@ class OrderConfirmedScreen extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Image.asset('assets/confirm.png', width: 120, height: 120),
-              const SizedBox(height: 24),
-              const Text(
+              Image.asset('assets/confirm.png', width: 120.w, height: 120.h),
+              SizedBox(height: 24.h),
+              Text(
                 'Congratulations',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 24.sp, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               const Text(
                 'Your order has been confirmed.\nTrack your order',
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 24),
+              SizedBox(height: 24.h),
               CustomButton(
                 text: 'Back to Home',
                 onPressed: () =>

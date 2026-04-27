@@ -1,6 +1,7 @@
 import 'package:codecrefactos/customer_screens/widgets/CustomButton.dart'
     show CustomButton;
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ActionButtons extends StatelessWidget {
   final VoidCallback add;
@@ -18,17 +19,17 @@ class ActionButtons extends StatelessWidget {
             onPressed: add,
             backgroundColor: Colors.blue,
             textColor: Colors.white,
-            height: 48,
+            height: 48.h,
           ),
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12.w),
         Expanded(
           child: CustomButton(
             text: 'Buy Now',
             onPressed: buy,
             backgroundColor: Colors.green,
             textColor: Colors.white,
-            height: 48,
+            height: 48.h,
           ),
         ),
       ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RatingStars extends StatelessWidget {
   final double rating;
@@ -24,19 +25,19 @@ class RatingStars extends StatelessWidget {
                 size: 16,
               );
             } else {
-              return const Icon(
+              return Icon(
                 Icons.star_outline_rounded,
                 color: Color(0xFFD1D5DB),
-                size: 16,
+                size: 16.sp,
               );
             }
           }),
         ),
-        const SizedBox(width: 4),
+        SizedBox(width: 4.w),
         Text(
           rating.toStringAsFixed(1),
-          style: const TextStyle(
-            fontSize: 11,
+          style: TextStyle(
+            fontSize: 11.sp,
             fontWeight: FontWeight.w600,
             color: Color(0xFF6B7280),
           ),

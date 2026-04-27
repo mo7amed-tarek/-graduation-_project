@@ -11,6 +11,7 @@ import 'package:codecrefactos/register_screen/register_viewmodel.dart';
 import 'package:codecrefactos/views/Purchase/viewmodels/Purchase_Provider.dart';
 import 'package:codecrefactos/views/dashboard/dashboard_provider.dart';
 import 'package:codecrefactos/views/sales/viewmodels/sales_provider.dart';
+import 'package:codecrefactos/widgets/chat_button.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -30,19 +31,15 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => LoginViewModel()),
         ChangeNotifierProvider(create: (_) => RegisterViewModel()),
         ChangeNotifierProvider(create: (_) => ForgotPasswordViewModel()),
-
         ChangeNotifierProvider(create: (_) => EmployeesViewModel()),
         ChangeNotifierProvider(create: (_) => InventoryViewModel()),
         ChangeNotifierProvider(create: (_) => SalesProvider()),
         ChangeNotifierProvider(create: (_) => PurchasesProvider()),
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
-
         Provider<ApiService>(create: (_) => ApiService()),
-
         ChangeNotifierProvider(
           create: (context) => HomeVM(context.read<ApiService>()),
         ),
-
         ChangeNotifierProvider(
           create: (context) => CartVM(context.read<ApiService>()),
         ),
@@ -51,10 +48,11 @@ class MyApp extends StatelessWidget {
 
       child: ScreenUtilInit(
         designSize: const Size(390, 844),
-        builder: (_, __) {
+        builder: (_, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-            home: AuthGate(),
+
+            home: Stack(children: const [AuthGate(), ChatFloatingButton()]),
           );
         },
       ),

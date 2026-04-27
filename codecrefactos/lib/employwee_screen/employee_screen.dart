@@ -1,10 +1,10 @@
 import 'package:codecrefactos/employwee_screen/employee_viewmodel.dart';
+import 'package:codecrefactos/widgets/bottom_shit_add.dart';
 import 'package:codecrefactos/widgets/empty_state.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../widgets/employee_card.dart';
+import 'employee_card.dart';
 import '../widgets/appbar.dart';
-import '../widgets/bottom_shit_add.dart';
 
 class EmployeesScreen extends StatefulWidget {
   const EmployeesScreen({super.key});

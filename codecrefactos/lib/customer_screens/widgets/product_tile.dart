@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product_model.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductTile extends StatelessWidget {
   const ProductTile({super.key, required this.product, required this.onTap});
@@ -10,16 +11,16 @@ class ProductTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(16.r),
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.08),
-              blurRadius: 10,
+              blurRadius: 10.r,
               offset: const Offset(0, 6),
             ),
           ],
@@ -30,9 +31,7 @@ class ProductTile extends StatelessWidget {
             /// IMAGE
             Expanded(
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(16),
-                ),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16.r)),
                 child: Image.asset(
                   product.image,
                   width: double.infinity,
@@ -52,13 +51,13 @@ class ProductTile extends StatelessWidget {
                     product.name,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      fontSize: 14.sp,
                     ),
                   ),
 
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6.h),
 
                   /// RATING
                   Row(
@@ -68,13 +67,13 @@ class ProductTile extends StatelessWidget {
                         i < product.rating.round()
                             ? Icons.star
                             : Icons.star_border,
-                        size: 14,
+                        size: 14.sp,
                         color: Colors.amber,
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6.h),
 
                   /// PRICE
                   Text(

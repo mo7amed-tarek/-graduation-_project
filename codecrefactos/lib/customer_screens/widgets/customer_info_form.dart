@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CustomerInfoForm extends StatefulWidget {
   final GlobalKey<FormState>? formKey;
@@ -7,7 +8,7 @@ class CustomerInfoForm extends StatefulWidget {
   final TextEditingController addressController;
 
   const CustomerInfoForm({
-    super.key, 
+    super.key,
     this.formKey,
     required this.nameController,
     required this.phoneController,
@@ -19,7 +20,6 @@ class CustomerInfoForm extends StatefulWidget {
 }
 
 class _CustomerInfoFormState extends State<CustomerInfoForm> {
-
   @override
   void dispose() {
     super.dispose();
@@ -32,11 +32,11 @@ class _CustomerInfoFormState extends State<CustomerInfoForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Customer Info',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 12.h),
           _InputField(
             controller: widget.nameController,
             hint: 'Name',
@@ -93,12 +93,12 @@ class _InputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      margin: EdgeInsets.only(bottom: 12.w),
+      padding: EdgeInsets.symmetric(horizontal: 16.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(30),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
+        borderRadius: BorderRadius.circular(30.r),
+        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6.r)],
       ),
       child: TextFormField(
         controller: controller,

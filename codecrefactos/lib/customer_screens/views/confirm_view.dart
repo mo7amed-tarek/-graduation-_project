@@ -11,10 +11,8 @@ import 'package:codecrefactos/customer_screens/view_models/cart_view_model.dart'
 import 'package:codecrefactos/customer_screens/view_models/confirm_order_view_model.dart';
 import 'package:codecrefactos/customer_screens/views/payment_webview_screen.dart';
 import 'package:codecrefactos/apiService.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-// ═══════════════════════════════════════════════════════════════════════════════
-//  Confirm Order Screen
-// ═══════════════════════════════════════════════════════════════════════════════
 class ConfirmOrderView extends StatelessWidget {
   const ConfirmOrderView({super.key});
 
@@ -43,25 +41,25 @@ class ConfirmOrderView extends StatelessWidget {
             body: Stack(
               children: [
                 SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
+                  padding: EdgeInsets.all(16.r),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       OrderSummaryList(items: cartVM.items),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24.h),
                       CustomerInfoForm(
                         formKey: _customerFormKey,
                         nameController: confirmVM.nameController,
                         phoneController: confirmVM.phoneController,
                         addressController: confirmVM.addressController,
                       ),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24.h),
                       const PaymentMethodsRow(),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24.h),
                       const ShippingMethodSection(),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24.h),
                       TotalSection(total: totalPrice),
-                      const SizedBox(height: 24),
+                      SizedBox(height: 24.h),
                       CustomButton(
                         text: cartVM.isLoading
                             ? 'Processing...'
@@ -128,16 +126,25 @@ class ConfirmOrderView extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Confirm Order?'),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.r),
+        ),
+        title: Text('Confirm Order?'),
         content: Text(
           'Payment: $paymentLabel\n'
           'Total: ${totalPrice.toStringAsFixed(0)} EGP\n\n'
           'Are you sure you want to confirm?',
+          style: TextStyle(
+            color: Colors.black54,
+            fontSize: 14.sp,
+            height: 1.6.h,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(dialogContext),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
@@ -145,7 +152,14 @@ class ConfirmOrderView extends StatelessWidget {
               Navigator.pop(dialogContext);
               await _placeOrder(context, cartVM, confirmVM);
             },
-            child: const Text('Confirm'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.r),
+              ),
+            ),
+            child: const Text('Confirm', style: TextStyle(color: Colors.white)),
           ),
         ],
       ),
@@ -193,7 +207,6 @@ class ConfirmOrderView extends StatelessWidget {
 
       await cartVM.clear();
 
-      // Navigate to success screen, clearing all routes except home
       navigator.pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const OrderConfirmedScreen()),
         (route) => route.isFirst,

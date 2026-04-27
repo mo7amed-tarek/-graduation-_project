@@ -81,21 +81,41 @@ class _PaymentWebViewScreenState extends State<PaymentWebViewScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Leave Payment?'),
+
+        title: const Text(
+          'Leave Payment?',
+          style: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.w700,
+            fontSize: 18,
+          ),
+        ),
+
         content: const Text(
           'Your order has been created. You can complete the payment later from your orders.',
+          style: TextStyle(color: Colors.black54, fontSize: 14, height: 1.6),
         ),
+
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
+            style: TextButton.styleFrom(foregroundColor: Colors.blue),
             child: const Text('Stay'),
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.pop(ctx);       // close dialog
-              Navigator.pop(context, true); // pop webview, still go to success
+              Navigator.pop(ctx);
+              Navigator.pop(context, true);
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
             child: const Text('Leave'),
           ),
         ],

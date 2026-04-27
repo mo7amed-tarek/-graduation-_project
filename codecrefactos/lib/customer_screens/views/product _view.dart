@@ -8,6 +8,7 @@ import '../widgets/rating_stars.dart';
 import '../widgets/color_selector.dart';
 import '../widgets/action_buttons.dart';
 import 'cart_view.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProductView extends StatelessWidget {
   final Product product;
@@ -50,75 +51,74 @@ class ProductView extends StatelessWidget {
                 .toList();
 
             return SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: EdgeInsets.all(16.r),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  /// Product Image
                   Hero(
                     tag: product.id,
                     child: Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(16.r),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(24.r),
                       ),
                       child: Image.network(
                         fixImageUrl(product.image),
-                        height: 180,
+                        height: 180.h,
                         fit: BoxFit.contain,
                         loadingBuilder: (context, child, progress) {
                           if (progress == null) return child;
-                          return const SizedBox(
-                            height: 180,
+                          return SizedBox(
+                            height: 180.h,
                             child: Center(child: CircularProgressIndicator()),
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
                           debugPrint("Image Error: ${product.image}");
-                          return const SizedBox(
-                            height: 180,
-                            child: Icon(Icons.broken_image, size: 50),
+                          return SizedBox(
+                            height: 180.h,
+                            child: Icon(Icons.broken_image, size: 50.sp),
                           );
                         },
                       ),
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
 
                   /// Rating
                   RatingStars(rating: product.rating),
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
 
                   /// Name
                   Text(
                     product.name,
-                    style: const TextStyle(
-                      fontSize: 18,
+                    style: TextStyle(
+                      fontSize: 18.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
 
-                  const SizedBox(height: 6),
+                  SizedBox(height: 6.h),
 
                   /// Price
                   Text(
                     '${product.price} EGP',
-                    style: const TextStyle(
-                      fontSize: 20,
+                    style: TextStyle(
+                      fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.green,
                     ),
                   ),
 
-                  const SizedBox(height: 12),
+                  SizedBox(height: 12.h),
 
                   /// Description
                   Text(product.description),
 
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16.h),
 
                   /// Colors
                   const Text(
@@ -126,7 +126,7 @@ class ProductView extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
 
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8.h),
 
                   ColorSelector(
                     colors: product.colors,
@@ -134,7 +134,7 @@ class ProductView extends StatelessWidget {
                     onSelect: vm.selectColor,
                   ),
 
-                  const SizedBox(height: 24),
+                  SizedBox(height: 24.h),
 
                   /// Buttons
                   ActionButtons(
@@ -155,21 +155,21 @@ class ProductView extends StatelessWidget {
                     },
                   ),
 
-                  const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
 
                   /// Similar Products
                   if (similarProducts.isNotEmpty) ...[
-                    const Text(
+                    Text(
                       'Similar Products',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 18.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
 
                     SizedBox(
-                      height: 180,
+                      height: 180.h,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
                         itemCount: similarProducts.length,
@@ -186,16 +186,16 @@ class ProductView extends StatelessWidget {
                               );
                             },
                             child: Container(
-                              width: 140,
-                              margin: const EdgeInsets.only(right: 12),
+                              width: 140.w,
+                              margin: EdgeInsets.only(right: 12.w),
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                boxShadow: const [
+                                borderRadius: BorderRadius.circular(16.r),
+                                boxShadow: [
                                   BoxShadow(
                                     color: Colors.black12,
-                                    blurRadius: 6,
+                                    blurRadius: 6.r,
                                   ),
                                 ],
                               ),
@@ -211,7 +211,7 @@ class ProductView extends StatelessWidget {
                                               const Icon(Icons.broken_image),
                                     ),
                                   ),
-                                  const SizedBox(height: 6),
+                                  SizedBox(height: 6.h),
                                   Text(
                                     simProd.name,
                                     maxLines: 1,

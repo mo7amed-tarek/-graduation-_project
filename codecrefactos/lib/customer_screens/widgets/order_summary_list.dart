@@ -1,5 +1,6 @@
 import 'package:codecrefactos/customer_screens/models/basket_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class OrderSummaryList extends StatelessWidget {
   final List<BasketItem> items;
@@ -20,34 +21,32 @@ class OrderSummaryList extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'Order Summary',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 18.sp, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
 
         ...items.map((item) {
           return Container(
-            margin: const EdgeInsets.only(bottom: 12),
+            margin: EdgeInsets.only(bottom: 12.h),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: const [
-                BoxShadow(color: Colors.black12, blurRadius: 6),
-              ],
+              borderRadius: BorderRadius.circular(16.r),
+              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6.r)],
             ),
             child: Row(
               children: [
                 Image.network(
                   fixImageUrl(item.pictureUrl),
-                  width: 60,
-                  height: 60,
+                  width: 60.w,
+                  height: 60.h,
                   fit: BoxFit.contain,
                   errorBuilder: (_, __, ___) => const Icon(Icons.broken_image),
                 ),
 
-                const SizedBox(width: 12),
+                SizedBox(width: 12.w),
 
                 Expanded(
                   child: Column(

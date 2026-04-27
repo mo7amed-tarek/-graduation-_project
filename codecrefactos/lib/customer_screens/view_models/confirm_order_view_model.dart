@@ -17,7 +17,6 @@ class ConfirmOrderVM extends ChangeNotifier {
     fetchDeliveryMethods();
   }
 
-  // ─── Shipping ───────────────────────────────────────────────────────────────
   List<DeliveryMethod> deliveryMethods = [];
   DeliveryMethod? selectedDeliveryMethod;
   bool isLoadingDelivery = false;
@@ -28,7 +27,6 @@ class ConfirmOrderVM extends ChangeNotifier {
 
     deliveryMethods = await _deliveryRepo.getDeliveryMethods();
 
-    // Default: pick the cheapest (first by price)
     if (deliveryMethods.isNotEmpty) {
       deliveryMethods.sort((a, b) => a.price.compareTo(b.price));
       selectedDeliveryMethod = deliveryMethods.first;
@@ -46,7 +44,6 @@ class ConfirmOrderVM extends ChangeNotifier {
   double get shippingCost => selectedDeliveryMethod?.price.toDouble() ?? 0.0;
   int get deliveryMethodId => selectedDeliveryMethod?.id ?? 1;
 
-  // ─── Payment ─────────────────────────────────────────────────────────────────
   PaymentMethod selectedPayment = PaymentMethod.cash;
 
   void selectPayment(PaymentMethod method) {
@@ -54,21 +51,17 @@ class ConfirmOrderVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Always send 'Visa' to the API — the server PaymentMethod enum only accepts
-  /// this value.
   String get paymentMethodString => 'Visa';
 
-  /// Calls POST /api/Orders/online/{orderId} and returns the payment gateway URL.
   Future<String?> getOnlinePaymentUrl(String orderId) async {
     try {
       final response = await apiService.post('Orders/online/$orderId', null);
       if (response.statusCode == 200 && response.data != null) {
-        // The response is a JSON map with a 'paymentUrl' field
         if (response.data is Map) {
           final url = response.data['paymentUrl'] ?? response.data['url'];
           if (url != null) return url.toString();
         }
-        // The response could be a plain string URL
+
         if (response.data is String) {
           return response.data as String;
         }
@@ -79,7 +72,6 @@ class ConfirmOrderVM extends ChangeNotifier {
     return null;
   }
 
-  // ─── Form controllers ────────────────────────────────────────────────────────
   final nameController = TextEditingController();
   final phoneController = TextEditingController();
   final addressController = TextEditingController();
