@@ -87,12 +87,10 @@ class ProductView extends StatelessWidget {
 
                   const SizedBox(height: 12),
 
-                  /// Rating
                   RatingStars(rating: product.rating),
 
                   const SizedBox(height: 8),
 
-                  /// Name
                   Text(
                     product.name,
                     style: const TextStyle(
@@ -103,7 +101,6 @@ class ProductView extends StatelessWidget {
 
                   const SizedBox(height: 6),
 
-                  /// Price
                   Text(
                     '${product.price} EGP',
                     style: const TextStyle(

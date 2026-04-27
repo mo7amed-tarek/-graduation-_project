@@ -1,5 +1,4 @@
 import 'package:codecrefactos/Inventory%20Management/viewmodels/inventory_viewmodel.dart';
-import 'package:codecrefactos/employwee_screen/EmployeeModel.dart';
 import 'package:codecrefactos/employwee_screen/employee_viewmodel.dart';
 import 'package:codecrefactos/login_screen/login_screen.dart';
 import 'package:codecrefactos/views/Purchase/viewmodels/Purchase_Provider.dart';
@@ -9,9 +8,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
+import 'package:percent_indicator/linear_percent_indicator.dart';
 
 import '../../widgets/appbar.dart';
-import '../../widgets/employee_item.dart';
 import '../sales/viewmodels/sales_provider.dart';
 import 'package:codecrefactos/views/dashboard/dashboard_provider.dart';
 import 'package:codecrefactos/views/dashboard/dashboard_model.dart';
@@ -236,7 +235,6 @@ class _HomeState extends State<Home> {
               Gap(10.h),
 
               Container(
-                height: 200.h,
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: Colors.white,
@@ -251,38 +249,138 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 child: Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: EdgeInsets.all(12.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Top Performing Employees',
+                        'Top Performing Employee',
                         style: TextStyle(
                           fontSize: 16.sp,
                           fontWeight: FontWeight.w400,
                           color: Color(0xff0A0A0A),
                         ),
                       ),
-                      Gap(6.h),
-                      EmployeeItem(
-                        employee: EmployeeModel(
-                          imagePath: "assets/rat1.png",
-                          name: "John Smith",
-                          salesText: "\$40,230 in sales",
-                          percent: 0.85,
-                          percentText: "85%",
-                        ),
-                      ),
-                      Gap(20.h),
-                      EmployeeItem(
-                        employee: EmployeeModel(
-                          imagePath: "assets/rat2.png",
-                          name: "Sarah Johnson",
-                          salesText: "\$38,540 in sales",
-                          percent: 0.58,
-                          percentText: "58%",
-                        ),
-                      ),
+                      Gap(12.h),
+                      dashboardProvider.isLoading
+                          ? Center(child: CircularProgressIndicator())
+                          : dashboardProvider
+                                    .dashboardData
+                                    ?.topSalesEmployee
+                                    .isNotEmpty ==
+                                true
+                          ? Row(
+                              children: [
+                                Container(
+                                  width: 50.w,
+                                  height: 50.h,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Color(0xff3c9df4),
+                                        Color(0xffa855f7),
+                                      ],
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                      (dashboardProvider
+                                                  .dashboardData!
+                                                  .topSalesEmployee
+                                                  .isNotEmpty
+                                              ? dashboardProvider
+                                                    .dashboardData!
+                                                    .topSalesEmployee[0]
+                                              : '?')
+                                          .toUpperCase(),
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 20.sp,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Gap(14.w),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        dashboardProvider
+                                            .dashboardData!
+                                            .topSalesEmployee,
+                                        style: TextStyle(
+                                          fontSize: 16.sp,
+                                          fontWeight: FontWeight.bold,
+                                          color: Color(0xff0A0A0A),
+                                        ),
+                                      ),
+                                      Gap(4.h),
+                                      Text(
+                                        'Top Sales Employee',
+                                        style: TextStyle(
+                                          fontSize: 13.sp,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                      Gap(8.h),
+                                      LinearPercentIndicator(
+                                        lineHeight: 10.h,
+                                        barRadius: Radius.circular(10.r),
+                                        percent: 1.0,
+                                        backgroundColor: Colors.grey.shade300,
+                                        linearGradient: LinearGradient(
+                                          colors: [
+                                            Color(0xff3c9df4),
+                                            Color(0xffa855f7),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Gap(10.w),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 10.w,
+                                    vertical: 4.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Color(0xff3c9df4),
+                                        Color(0xffa855f7),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(20.r),
+                                  ),
+                                  child: Text(
+                                    '#1',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14.sp,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            )
+                          : Center(
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16.h),
+                                child: Text(
+                                  'No top employee data available',
+                                  style: TextStyle(
+                                    color: Colors.grey.shade500,
+                                    fontSize: 14.sp,
+                                  ),
+                                ),
+                              ),
+                            ),
+                      Gap(12.h),
                     ],
                   ),
                 ),

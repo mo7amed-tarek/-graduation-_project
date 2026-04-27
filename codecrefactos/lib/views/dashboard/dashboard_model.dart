@@ -9,6 +9,7 @@ class DashboardModel {
   final int totalProducts;
   final int lowStockProducts;
   final List<MonthlySalesPurchase> monthlySalesPurchases;
+  final String topSalesEmployee;
 
   DashboardModel({
     required this.totalEmployees,
@@ -21,6 +22,7 @@ class DashboardModel {
     required this.totalProducts,
     required this.lowStockProducts,
     required this.monthlySalesPurchases,
+    required this.topSalesEmployee,
   });
 
   factory DashboardModel.fromJson(Map<String, dynamic> json) {
@@ -34,6 +36,7 @@ class DashboardModel {
       pendingOrdersCount: json['pendingOrdersCount'] ?? 0,
       totalProducts: json['totalProducts'] ?? 0,
       lowStockProducts: json['lowStockProducts'] ?? 0,
+      topSalesEmployee: json['topSalesEmployee'] ?? '',
       monthlySalesPurchases: (json['monthlySalesPurchases'] as List?)
               ?.map((e) => MonthlySalesPurchase.fromJson(e))
               .toList() ??

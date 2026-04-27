@@ -87,9 +87,17 @@ class _UpdateEmployeeScreenState extends State<UpdateEmployeeScreen> {
                 decoration: const InputDecoration(labelText: 'Position'),
                 onSaved: (value) => _formData['position'] = value,
               ),
-              TextFormField(
-                initialValue: _formData['department'],
+              DropdownButtonFormField<String>(
+                initialValue: ["Sales", "Purchasing", "Warehouse", "Technical", "Management"].contains(_formData['department']) ? _formData['department'] : null,
                 decoration: const InputDecoration(labelText: 'Department'),
+                items: ["Sales", "Purchasing", "Warehouse", "Technical", "Management"]
+                    .map((dept) => DropdownMenuItem(value: dept, child: Text(dept)))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _formData['department'] = value;
+                  });
+                },
                 onSaved: (value) => _formData['department'] = value,
               ),
               TextFormField(

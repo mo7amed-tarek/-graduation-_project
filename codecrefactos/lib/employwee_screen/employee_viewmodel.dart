@@ -35,7 +35,7 @@ class Employee {
       email: json['email'] ?? '',
       salary: json['salary']?.toString() ?? '0',
       isActive: _parseStatus(json['status']),
-      department: _intToDepartment(json['department']),
+      department: _parseDepartment(json['department']),
       phone: json['phone'],
       joinDate: json['joinDate'],
     );
@@ -47,25 +47,9 @@ class Employee {
     return true; // default fallback
   }
 
-  static String _intToDepartment(dynamic value) {
-    if (value is int) {
-      if (value == 1) return "Sales";
-      if (value == 2) return "IT";
-      return "HR";
-    }
-    return value?.toString() ?? "HR";
-  }
-
-  int get departmentInt {
-    switch (department) {
-      case "Sales":
-        return 1;
-      case "IT":
-        return 2;
-      case "HR":
-      default:
-        return 0;
-    }
+  static String _parseDepartment(dynamic value) {
+    if (value == null) return "Sales";
+    return value.toString();
   }
 
   Map<String, dynamic> toJson() {
@@ -76,7 +60,7 @@ class Employee {
       'email': email,
       'salary': double.tryParse(salary) ?? 0.0,
       'status': isActive ? "Active" : "Inactive",
-      'department': departmentInt,
+      'department': department,
       'phone': phone,
       'joinDate': joinDate ?? DateTime.now().toIso8601String(),
     };
