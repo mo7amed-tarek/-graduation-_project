@@ -217,7 +217,7 @@ class _HomeViewState extends State<HomeView>
                       filteredProducts.length + (vm.isLoadingMore ? 1 : 0),
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
-                    childAspectRatio: 0.68.h,
+                    childAspectRatio: 0.60.h,
                     mainAxisSpacing: 14.w,
                     crossAxisSpacing: 14.w,
                   ),
