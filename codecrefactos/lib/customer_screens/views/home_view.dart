@@ -1,6 +1,7 @@
 import 'package:codecrefactos/customer_screens/views/cart_view.dart';
 import 'package:codecrefactos/customer_screens/views/product%20_view.dart';
 import 'package:codecrefactos/login_screen/login_screen.dart';
+import 'package:codecrefactos/widgets/chat_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/home_view_model.dart';
@@ -68,6 +69,17 @@ class _HomeViewState extends State<HomeView>
     }
   }
 
+  void _showSnackbar(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red.shade700 : Colors.green.shade700,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final vm = context.watch<HomeVM>();
@@ -80,6 +92,7 @@ class _HomeViewState extends State<HomeView>
     }
 
     return Scaffold(
+      floatingActionButton: ChatFloatingButton(),
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
         title: Text(
@@ -99,7 +112,9 @@ class _HomeViewState extends State<HomeView>
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => CartView()),
-              );
+              ).then((_) {
+                context.read<HomeVM>().fetchProducts(refresh: true);
+              });
             },
           ),
           IconButton(
@@ -217,12 +232,15 @@ class _HomeViewState extends State<HomeView>
                     final badgeColor = _categoryColor(product.categoryName);
 
                     return GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ProductView(product: product),
-                        ),
-                      ),
+                      onTap: () =>
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ProductView(product: product),
+                            ),
+                          ).then((_) {
+                            context.read<HomeVM>().fetchProducts(refresh: true);
+                          }),
                       child: Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -238,34 +256,85 @@ class _HomeViewState extends State<HomeView>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.vertical(
-                                top: Radius.circular(18.r),
-                              ),
-                              child: Container(
-                                height: 130.h,
-                                width: double.infinity,
-                                color: Colors.white,
-                                padding: EdgeInsets.all(10.r),
-                                child: Image.network(
-                                  imageUrl(product.image),
-                                  fit: BoxFit.contain,
-                                  loadingBuilder: (_, child, progress) {
-                                    if (progress == null) return child;
-                                    return Center(
-                                      child: CircularProgressIndicator(
-                                        color: Colors.blue,
-                                        strokeWidth: 2.w,
+                            Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.vertical(
+                                    top: Radius.circular(18.r),
+                                  ),
+                                  child: Container(
+                                    height: 130.h,
+                                    width: double.infinity,
+                                    color: Colors.white,
+                                    padding: EdgeInsets.all(10.r),
+                                    child: Image.network(
+                                      imageUrl(product.image),
+                                      fit: BoxFit.contain,
+                                      loadingBuilder: (_, child, progress) {
+                                        if (progress == null) return child;
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            color: Colors.blue,
+                                            strokeWidth: 2.w,
+                                          ),
+                                        );
+                                      },
+                                      errorBuilder: (_, __, ___) => Icon(
+                                        Icons.broken_image_outlined,
+                                        color: Colors.black26,
+                                        size: 36.sp,
                                       ),
-                                    );
-                                  },
-                                  errorBuilder: (_, __, ___) => Icon(
-                                    Icons.broken_image_outlined,
-                                    color: Colors.black26,
-                                    size: 36.sp,
+                                    ),
                                   ),
                                 ),
-                              ),
+
+                                if (product.isOutOfStock)
+                                  Positioned.fill(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        borderRadius: BorderRadius.vertical(
+                                          top: Radius.circular(18.r),
+                                        ),
+                                      ),
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Out of Stock',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 13.sp,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+
+                                if (product.isLowStock)
+                                  Positioned(
+                                    top: 8.h,
+                                    left: 8.w,
+                                    child: Container(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 6.w,
+                                        vertical: 2.h,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.orange.shade700,
+                                        borderRadius: BorderRadius.circular(
+                                          6.r,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Only ${product.quantity} left!',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 9.sp,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
 
                             Expanded(
@@ -342,7 +411,6 @@ class _HomeViewState extends State<HomeView>
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        // Color dots
                                         if (product.colors.isNotEmpty)
                                           Row(
                                             children: product.colors
@@ -368,24 +436,39 @@ class _HomeViewState extends State<HomeView>
                                           ),
 
                                         GestureDetector(
-                                          onTap: () {
-                                            context.read<CartVM>().addItem(
-                                              product,
-                                            );
-                                            ScaffoldMessenger.of(
-                                              context,
-                                            ).showSnackBar(
-                                              const SnackBar(
-                                                content: Text('Added to cart'),
-                                                duration: Duration(seconds: 1),
-                                              ),
-                                            );
-                                          },
+                                          onTap: product.isOutOfStock
+                                              ? () => _showSnackbar(
+                                                  'Sorry, this product is out of stock',
+                                                  isError: true,
+                                                )
+                                              : () async {
+                                                  final error = await context
+                                                      .read<CartVM>()
+                                                      .addItem(product);
+                                                  if (error != null) {
+                                                    _showSnackbar(
+                                                      error,
+                                                      isError: true,
+                                                    );
+                                                  } else {
+                                                    _showSnackbar(
+                                                      'Added to cart ✓',
+                                                    );
+
+                                                    context
+                                                        .read<HomeVM>()
+                                                        .fetchProducts(
+                                                          refresh: true,
+                                                        );
+                                                  }
+                                                },
                                           child: Container(
                                             width: 30.w,
                                             height: 30.w,
                                             decoration: BoxDecoration(
-                                              color: Colors.blue,
+                                              color: product.isOutOfStock
+                                                  ? Colors.grey.shade400
+                                                  : Colors.blue,
                                               borderRadius:
                                                   BorderRadius.circular(8.r),
                                             ),

@@ -7,6 +7,7 @@ class Product {
   final String description;
   final List<int> colors;
   final String categoryName;
+  final int quantity;
 
   Product({
     required this.id,
@@ -17,7 +18,11 @@ class Product {
     required this.description,
     required this.colors,
     required this.categoryName,
+    required this.quantity,
   });
+
+  bool get isOutOfStock => quantity == 0;
+  bool get isLowStock => quantity > 0 && quantity <= 5;
 
   static int colorNameToInt(String name) {
     switch (name.trim().toLowerCase()) {
@@ -77,6 +82,7 @@ class Product {
       description: json['description'] ?? '',
       colors: colorList,
       categoryName: json['categoryName'] ?? 'unknown',
+      quantity: (json['quantity'] ?? 0) as int,
     );
   }
 
@@ -88,6 +94,7 @@ class Product {
       "price": price,
       "description": description,
       "categoryName": categoryName,
+      "quantity": quantity,
     };
   }
 }

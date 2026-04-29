@@ -20,18 +20,22 @@ class PaymentMethodsRow extends StatelessWidget {
         SizedBox(height: 12.h),
         Row(
           children: [
-            _PaymentOption(
-              image: 'assets/cash.jpeg',
-              label: 'Cash',
-              selected: vm.selectedPayment == PaymentMethod.cash,
-              onTap: () => vm.selectPayment(PaymentMethod.cash),
+            Expanded(
+              child: _PaymentOption(
+                image: 'assets/cash.jpeg',
+                label: 'Cash',
+                selected: vm.selectedPayment == PaymentMethod.cash,
+                onTap: () => vm.selectPayment(PaymentMethod.cash),
+              ),
             ),
             SizedBox(width: 12.w),
-            _PaymentOption(
-              image: 'assets/Visa.png',
-              label: 'Visa',
-              selected: vm.selectedPayment == PaymentMethod.visa,
-              onTap: () => vm.selectPayment(PaymentMethod.visa),
+            Expanded(
+              child: _PaymentOption(
+                image: 'assets/Visa.png',
+                label: 'Visa',
+                selected: vm.selectedPayment == PaymentMethod.visa,
+                onTap: () => vm.selectPayment(PaymentMethod.visa),
+              ),
             ),
           ],
         ),
@@ -55,54 +59,52 @@ class _PaymentOption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 12.w),
-          decoration: BoxDecoration(
-            color: selected ? Colors.blue.shade50 : Colors.white,
-            border: Border.all(
-              color: selected ? Colors.blue : Colors.grey.shade300,
-              width: selected ? 2 : 1.w,
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: EdgeInsets.symmetric(vertical: 14.h, horizontal: 12.w),
+        decoration: BoxDecoration(
+          color: selected ? Colors.blue.shade50 : Colors.white,
+          border: Border.all(
+            color: selected ? Colors.blue : Colors.grey.shade300,
+            width: selected ? 2 : 1.w,
+          ),
+          borderRadius: BorderRadius.circular(14.r),
+          boxShadow: selected
+              ? [
+                  BoxShadow(
+                    color: Colors.blue.withValues(alpha: 0.15),
+                    blurRadius: 8,
+                    offset: const Offset(0, 3),
+                  ),
+                ]
+              : [],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8.r),
+              child: Image.asset(image, height: 50.h, fit: BoxFit.contain),
             ),
-            borderRadius: BorderRadius.circular(14.r),
-            boxShadow: selected
-                ? [
-                    BoxShadow(
-                      color: Colors.blue.withValues(alpha: 0.15),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
-                    ),
-                  ]
-                : [],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.r),
-                child: Image.asset(image, height: 50.h, fit: BoxFit.contain),
+            SizedBox(height: 8.h),
+            Text(
+              label,
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: selected ? Colors.blue : Colors.black87,
               ),
-              SizedBox(height: 8.h),
-              Text(
-                label,
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  color: selected ? Colors.blue : Colors.black87,
-                ),
+            ),
+            if (selected) ...[
+              SizedBox(height: 4.h),
+              Icon(
+                Icons.check_circle,
+                size: 18.sp,
+                color: Colors.blue.shade600,
               ),
-              if (selected) ...[
-                SizedBox(height: 4.h),
-                Icon(
-                  Icons.check_circle,
-                  size: 18.sp,
-                  color: Colors.blue.shade600,
-                ),
-              ],
             ],
-          ),
+          ],
         ),
       ),
     );

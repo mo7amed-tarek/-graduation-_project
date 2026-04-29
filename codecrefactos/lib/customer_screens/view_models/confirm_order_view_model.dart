@@ -51,7 +51,8 @@ class ConfirmOrderVM extends ChangeNotifier {
     notifyListeners();
   }
 
-  String get paymentMethodString => 'Visa';
+  String get paymentMethodString =>
+      selectedPayment == PaymentMethod.visa ? 'Visa' : 'Cash';
 
   Future<String?> getOnlinePaymentUrl(String orderId) async {
     try {

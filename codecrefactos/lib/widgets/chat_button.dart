@@ -10,7 +10,8 @@ class ChatFloatingButton extends StatefulWidget {
 
 class _ChatFloatingButtonState extends State<ChatFloatingButton>
     with SingleTickerProviderStateMixin {
-  Offset position = const Offset(300, 600);
+  OverlayEntry? _overlayEntry;
+  Offset _position = const Offset(300, 600);
 
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -28,27 +29,36 @@ class _ChatFloatingButtonState extends State<ChatFloatingButton>
       begin: 1.0,
       end: 1.15,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _insertOverlay());
+  }
+
+  void _insertOverlay() {
+    _overlayEntry = OverlayEntry(builder: (_) => _buildOverlayContent());
+    Overlay.of(context).insert(_overlayEntry!);
+  }
+
+  void _updatePosition(Offset newOffset) {
+    _position = newOffset;
+    _overlayEntry?.markNeedsBuild();
   }
 
   @override
   void dispose() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
     _controller.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildOverlayContent() {
     return Positioned(
-      left: position.dx,
-      top: position.dy,
+      left: _position.dx,
+      top: _position.dy,
       child: Draggable(
         feedback: _buildButton(),
         childWhenDragging: const SizedBox(),
-        onDragEnd: (details) {
-          setState(() {
-            position = details.offset;
-          });
-        },
+        onDragEnd: (details) => _updatePosition(details.offset),
         child: GestureDetector(
           onTap: () {
             Navigator.of(context, rootNavigator: true).push(
@@ -85,4 +95,7 @@ class _ChatFloatingButtonState extends State<ChatFloatingButton>
       child: const Icon(Icons.support_agent, color: Colors.white, size: 30),
     );
   }
+
+  @override
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }

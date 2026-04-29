@@ -1,5 +1,6 @@
 import 'package:codecrefactos/customer_screens/views/product%20_view.dart';
 import 'package:codecrefactos/widgets/chat_boot.dart';
+import 'package:codecrefactos/widgets/chat_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/cart_view_model.dart';
@@ -13,11 +14,24 @@ class CartView extends StatelessWidget {
 
   String fixImageUrl(String url) {
     const baseUrl = "http://store2.runasp.net";
-
     if (url.isEmpty) return "";
     if (url.startsWith("http")) return url;
-
     return baseUrl + url;
+  }
+
+  void _showSnackbar(
+    BuildContext context,
+    String message, {
+    bool isError = false,
+  }) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red.shade700 : Colors.green.shade700,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
   }
 
   @override
@@ -26,6 +40,7 @@ class CartView extends StatelessWidget {
     final homeVM = context.watch<HomeVM>();
 
     return Scaffold(
+      floatingActionButton: ChatFloatingButton(),
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
         title: const Text('Cart'),
@@ -48,6 +63,13 @@ class CartView extends StatelessWidget {
                 ? const Center(child: Text('Cart is empty'))
                 : Column(
                     children: cartVM.items.map((item) {
+                      // جيب الـ stock quantity من الـ HomeVM
+                      final matchedProduct = homeVM.products
+                          .where((p) => int.tryParse(p.id) == item.productId)
+                          .firstOrNull;
+                      final int stockQty = matchedProduct?.quantity ?? 0;
+                      final bool isAtMax = item.quantity >= stockQty;
+
                       return Container(
                         margin: EdgeInsets.only(bottom: 12.h),
                         padding: EdgeInsets.all(12.r),
@@ -90,6 +112,16 @@ class CartView extends StatelessWidget {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
+                                  // Low stock warning داخل الكارت
+                                  if (isAtMax && stockQty > 0)
+                                    Text(
+                                      'Max quantity reached ($stockQty in stock)',
+                                      style: TextStyle(
+                                        color: Colors.orange.shade700,
+                                        fontSize: 10.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),
@@ -104,11 +136,36 @@ class CartView extends StatelessWidget {
                                           cartVM.decreaseQuantity(item),
                                     ),
                                     Text(item.quantity.toString()),
+                                    // ── زرار + مع validation ──────────────
                                     IconButton(
-                                      icon: const Icon(Icons.add),
-                                      onPressed: () =>
-                                          cartVM.increaseQuantity(item),
+                                      icon: Icon(
+                                        Icons.add,
+                                        color: isAtMax
+                                            ? Colors.grey.shade400
+                                            : Colors.black,
+                                      ),
+                                      onPressed: isAtMax
+                                          ? () => _showSnackbar(
+                                              context,
+                                              'Only $stockQty item(s) available in stock',
+                                              isError: true,
+                                            )
+                                          : () async {
+                                              final error = await cartVM
+                                                  .increaseQuantity(
+                                                    item,
+                                                    stockQuantity: stockQty,
+                                                  );
+                                              if (error != null) {
+                                                _showSnackbar(
+                                                  context,
+                                                  error,
+                                                  isError: true,
+                                                );
+                                              }
+                                            },
                                     ),
+                                    // ──────────────────────────────────────
                                   ],
                                 ),
                                 IconButton(
@@ -253,14 +310,33 @@ class CartView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
-                            child: Image.network(
-                              fixImageUrl(product.image),
-                              fit: BoxFit.contain,
-                              errorBuilder: (_, __, ___) =>
-                                  const Icon(Icons.broken_image),
+                            child: Stack(
+                              children: [
+                                Image.network(
+                                  fixImageUrl(product.image),
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (_, __, ___) =>
+                                      const Icon(Icons.broken_image),
+                                ),
+                                if (product.isOutOfStock)
+                                  Positioned.fill(
+                                    child: Container(
+                                      color: Colors.black45,
+                                      alignment: Alignment.center,
+                                      child: Text(
+                                        'Out of\nStock',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10.sp,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                           ),
-
                           SizedBox(height: 6.h),
                           Text(
                             product.name,
@@ -275,6 +351,15 @@ class CartView extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          if (product.isLowStock)
+                            Text(
+                              'Only ${product.quantity} left!',
+                              style: TextStyle(
+                                color: Colors.orange.shade700,
+                                fontSize: 9.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                         ],
                       ),
                     ),

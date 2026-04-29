@@ -36,34 +36,57 @@ class CartVM extends ChangeNotifier {
     }
   }
 
-  Future<void> addItem(Product product, {int quantity = 1}) async {
+  Future<String?> addItem(Product product, {int quantity = 1}) async {
     final productId = int.tryParse(product.id) ?? 0;
 
-    // Find existing item quantity
-    final existingItem = _basket?.items.where((i) => i.productId == productId).firstOrNull;
-    final int newQuantity = (existingItem?.quantity ?? 0) + quantity;
+    if (product.isOutOfStock) {
+      return 'Sorry, this product is out of stock';
+    }
 
+    final existingItem = _basket?.items
+        .where((i) => i.productId == productId)
+        .firstOrNull;
+    final int currentCartQty = existingItem?.quantity ?? 0;
+
+    if (currentCartQty + quantity > product.quantity) {
+      final int remaining = product.quantity - currentCartQty;
+      if (remaining <= 0) {
+        return 'You already have the maximum available quantity in your cart';
+      }
+      return 'Only $remaining more item(s) can be added (${product.quantity} in stock)';
+    }
+
+    final int newQuantity = currentCartQty + quantity;
     final requestBody = {
       "productId": productId,
       "productName": product.name,
       "pictureUrl": product.image,
       "price": product.price,
-      "quantity": newQuantity
+      "quantity": newQuantity,
     };
 
     await _addOrUpdate(requestBody);
+    return null;
   }
 
-  Future<void> increaseQuantity(BasketItem item) async {
+  Future<String?> increaseQuantity(
+    BasketItem item, {
+    required int stockQuantity,
+  }) async {
+    if (item.quantity >= stockQuantity) {
+      return 'Maximum available quantity is $stockQuantity';
+    }
+
     final requestBody = {
       "productId": item.productId,
       "productName": item.productName,
       "pictureUrl": item.pictureUrl,
       "price": item.price,
-      "quantity": item.quantity + 1 
+      "quantity": item.quantity + 1,
     };
 
     await _addOrUpdate(requestBody);
+    return null;
   }
 
   Future<void> decreaseQuantity(BasketItem item) async {
@@ -73,7 +96,7 @@ class CartVM extends ChangeNotifier {
         "productName": item.productName,
         "pictureUrl": item.pictureUrl,
         "price": item.price,
-        "quantity": item.quantity - 1 
+        "quantity": item.quantity - 1,
       };
       await _addOrUpdate(requestBody);
     } else {
@@ -107,7 +130,9 @@ class CartVM extends ChangeNotifier {
       isLoading = true;
       notifyListeners();
 
-      final response = await apiService.delete("Basket/Deleteitems/${item.productId}");
+      final response = await apiService.delete(
+        "Basket/Deleteitems/${item.productId}",
+      );
 
       if (response.data != null) {
         _basket = Basket.fromJson(response.data);
@@ -137,7 +162,7 @@ class CartVM extends ChangeNotifier {
     }
   }
 
-  Future<OrderModel?> createOrder({
+  Future<(OrderModel?, String?)> createOrder({
     required String address,
     required String phone,
     required int deliveryMethodId,
@@ -155,16 +180,40 @@ class CartVM extends ChangeNotifier {
       );
 
       if (response.statusCode == 200 && response.data != null) {
-        return OrderModel.fromJson(response.data);
+        return (OrderModel.fromJson(response.data), null);
       } else {
-        debugPrint("CREATE ORDER RETURNED: ${response.statusCode}");
+        return (null, 'Failed to create order, please try again.');
       }
     } catch (e) {
       debugPrint("CREATE ORDER ERROR: $e");
+      final errorMsg = _extractApiError(e);
+      return (null, errorMsg);
     } finally {
       isLoading = false;
       notifyListeners();
     }
-    return null;
+  }
+
+  String _extractApiError(dynamic error) {
+    try {
+      final dynamic response = (error as dynamic).response;
+      if (response != null) {
+        final data = response.data;
+        if (data is Map) {
+          // جرب errors map أولاً
+          final errors = data['errors'];
+          if (errors is Map && errors.isNotEmpty) {
+            final firstValue = errors.values.first;
+            if (firstValue is List && firstValue.isNotEmpty) {
+              return firstValue.first.toString();
+            }
+          }
+
+          final title = data['title'];
+          if (title != null) return title.toString();
+        }
+      }
+    } catch (_) {}
+    return 'Failed to create order, please try again.';
   }
 }

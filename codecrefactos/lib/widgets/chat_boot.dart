@@ -39,7 +39,6 @@ class _CustomerServiceChatViewState extends State<CustomerServiceChatView> {
     _scrollToBottom();
 
     try {
-      // ✅ history فاضية دايماً مؤقتاً لحد ما يتحدد الـ format الصح من الـ Backend
       final Map<String, dynamic> body = {"message": text, "history": []};
 
       final response = await http.post(
@@ -141,7 +140,6 @@ class _CustomerServiceChatViewState extends State<CustomerServiceChatView> {
       ),
       body: Column(
         children: [
-          // ── Messages List ──
           Expanded(
             child: _messages.isEmpty
                 ? Center(
@@ -178,7 +176,6 @@ class _CustomerServiceChatViewState extends State<CustomerServiceChatView> {
                   ),
           ),
 
-          // ── Loading indicator ──
           if (_isLoading)
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 6.h),
@@ -204,7 +201,6 @@ class _CustomerServiceChatViewState extends State<CustomerServiceChatView> {
               ),
             ),
 
-          // ── Input Bar ──
           Container(
             color: Colors.white,
             padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 10.h),

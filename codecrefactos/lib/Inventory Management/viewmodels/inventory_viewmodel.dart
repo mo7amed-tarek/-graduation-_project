@@ -162,21 +162,21 @@ class InventoryViewModel extends ChangeNotifier {
     await loadItems(refresh: true);
   }
 
-  // ✅ بيحذف من الـ API الأول، لو نجح بيحذف من الـ UI بدون loading
+  
   Future<void> deleteItem(InventoryItem item) async {
     if (item.id == null) return;
 
     try {
-      // ✅ الأول: حذف من الـ API
+    
       await _repo.deleteProduct(item.id!);
 
-      // ✅ لو نجح: احذف من الـ list محلياً بدون loading
+     
       _items.remove(item);
       _totalItemsCount = _items.length;
       _applyFilter();
       notifyListeners();
     } catch (e) {
-      // ✅ لو فشل: ارمي الـ error للـ UI يتعامل معاه
+      
       rethrow;
     }
   }

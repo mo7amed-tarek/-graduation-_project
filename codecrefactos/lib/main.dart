@@ -11,7 +11,6 @@ import 'package:codecrefactos/register_screen/register_viewmodel.dart';
 import 'package:codecrefactos/views/Purchase/viewmodels/Purchase_Provider.dart';
 import 'package:codecrefactos/views/dashboard/dashboard_provider.dart';
 import 'package:codecrefactos/views/sales/viewmodels/sales_provider.dart';
-import 'package:codecrefactos/widgets/chat_button.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -45,14 +44,12 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(create: (_) => OrderVM()),
       ],
-
       child: ScreenUtilInit(
         designSize: const Size(390, 844),
         builder: (_, child) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
-
-            home: Stack(children: const [AuthGate(), ChatFloatingButton()]),
+            home: const AuthGate(),
           );
         },
       ),

@@ -1,4 +1,5 @@
 import 'package:codecrefactos/customer_screens/widgets/confirm_widgets.dart';
+import 'package:codecrefactos/widgets/chat_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:codecrefactos/customer_screens/widgets/CustomButton.dart';
@@ -31,6 +32,7 @@ class ConfirmOrderView extends StatelessWidget {
           final double totalPrice = cartVM.total + confirmVM.shippingCost;
 
           return Scaffold(
+            floatingActionButton: ChatFloatingButton(),
             backgroundColor: Colors.grey.shade200,
             appBar: AppBar(
               title: const Text('Confirm Order'),
@@ -119,9 +121,7 @@ class ConfirmOrderView extends StatelessWidget {
     ConfirmOrderVM confirmVM,
     double totalPrice,
   ) {
-    final paymentLabel = confirmVM.selectedPayment == PaymentMethod.visa
-        ? 'Visa'
-        : 'Cash';
+    final paymentLabel = confirmVM.paymentMethodString;
 
     showDialog(
       context: context,
@@ -130,7 +130,7 @@ class ConfirmOrderView extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.r),
         ),
-        title: Text('Confirm Order?'),
+        title: const Text('Confirm Order?'),
         content: Text(
           'Payment: $paymentLabel\n'
           'Total: ${totalPrice.toStringAsFixed(0)} EGP\n\n'
@@ -174,12 +174,24 @@ class ConfirmOrderView extends StatelessWidget {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
 
-    final order = await cartVM.createOrder(
+    final (order, errorMessage) = await cartVM.createOrder(
       address: confirmVM.addressController.text.trim(),
       phone: confirmVM.phoneController.text.trim(),
       deliveryMethodId: confirmVM.deliveryMethodId,
       paymentMethod: confirmVM.paymentMethodString,
     );
+
+    if (errorMessage != null) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red.shade700,
+          behavior: SnackBarBehavior.floating,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
 
     if (order != null) {
       if (confirmVM.selectedPayment == PaymentMethod.visa) {
@@ -187,7 +199,6 @@ class ConfirmOrderView extends StatelessWidget {
 
         if (paymentUrl != null && paymentUrl.isNotEmpty) {
           debugPrint('💳 PAYMENT URL: $paymentUrl');
-
           await navigator.push(
             MaterialPageRoute(
               builder: (_) => PaymentWebViewScreen(paymentUrl: paymentUrl),
@@ -210,12 +221,6 @@ class ConfirmOrderView extends StatelessWidget {
       navigator.pushAndRemoveUntil(
         MaterialPageRoute(builder: (_) => const OrderConfirmedScreen()),
         (route) => route.isFirst,
-      );
-    } else {
-      messenger.showSnackBar(
-        const SnackBar(
-          content: Text('Failed to create order, please try again.'),
-        ),
       );
     }
   }
