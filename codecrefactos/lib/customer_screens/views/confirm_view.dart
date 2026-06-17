@@ -1,5 +1,4 @@
 import 'package:codecrefactos/customer_screens/widgets/confirm_widgets.dart';
-import 'package:codecrefactos/widgets/chat_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:codecrefactos/customer_screens/widgets/CustomButton.dart';
@@ -32,7 +31,6 @@ class ConfirmOrderView extends StatelessWidget {
           final double totalPrice = cartVM.total + confirmVM.shippingCost;
 
           return Scaffold(
-            floatingActionButton: ChatFloatingButton(),
             backgroundColor: Colors.grey.shade200,
             appBar: AppBar(
               title: const Text('Confirm Order'),

@@ -10,8 +10,8 @@ class ChatFloatingButton extends StatefulWidget {
 
 class _ChatFloatingButtonState extends State<ChatFloatingButton>
     with SingleTickerProviderStateMixin {
-  OverlayEntry? _overlayEntry;
-  Offset _position = const Offset(300, 600);
+  static OverlayEntry? _overlayEntry;
+  static Offset _position = const Offset(300, 600);
 
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -30,12 +30,17 @@ class _ChatFloatingButtonState extends State<ChatFloatingButton>
       end: 1.15,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _insertOverlay());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _insertOverlay();
+    });
   }
 
   void _insertOverlay() {
+    if (_overlayEntry != null) return;
+
+    final overlayState = Overlay.of(context);
     _overlayEntry = OverlayEntry(builder: (_) => _buildOverlayContent());
-    Overlay.of(context).insert(_overlayEntry!);
+    overlayState.insert(_overlayEntry!);
   }
 
   void _updatePosition(Offset newOffset) {
@@ -45,9 +50,10 @@ class _ChatFloatingButtonState extends State<ChatFloatingButton>
 
   @override
   void dispose() {
+    _controller.dispose();
+
     _overlayEntry?.remove();
     _overlayEntry = null;
-    _controller.dispose();
     super.dispose();
   }
 

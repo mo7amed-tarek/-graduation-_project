@@ -1,5 +1,4 @@
 import 'package:codecrefactos/customer_screens/view_models/product_view_model.dart';
-import 'package:codecrefactos/widgets/chat_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/product_model.dart';
@@ -83,7 +82,6 @@ class ProductView extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => ProductVM(product),
       child: Scaffold(
-        floatingActionButton: ChatFloatingButton(),
         backgroundColor: Colors.grey.shade200,
         appBar: AppBar(
           title: const Text('Product Detail'),
@@ -300,7 +298,7 @@ class ProductView extends StatelessWidget {
                                                     Icons.broken_image,
                                                   ),
                                         ),
-                                        // Out of stock overlay on similar product
+
                                         if (simProd.isOutOfStock)
                                           Positioned.fill(
                                             child: Container(
@@ -336,7 +334,7 @@ class ProductView extends StatelessWidget {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  // Low stock label on similar product
+
                                   if (simProd.isLowStock)
                                     Text(
                                       'Only ${simProd.quantity} left!',

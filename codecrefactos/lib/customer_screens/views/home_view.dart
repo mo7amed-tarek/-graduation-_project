@@ -21,31 +21,40 @@ class _HomeViewState extends State<HomeView>
   late TabController _tabController;
   final List<String> categories = ['Mobiles', 'Laptops', 'Accessories'];
   String searchQuery = '';
-  final ScrollController _scrollController = ScrollController();
+  late final List<ScrollController> _scrollControllers;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: categories.length, vsync: this);
 
+    _scrollControllers = List.generate(
+      categories.length,
+      (_) => ScrollController(),
+    );
+
+    for (final ctrl in _scrollControllers) {
+      ctrl.addListener(() {
+        final vm = context.read<HomeVM>();
+        if (ctrl.hasClients &&
+            ctrl.position.pixels >= ctrl.position.maxScrollExtent - 200) {
+          if (!vm.isLoadingMore && vm.hasMore) {
+            vm.fetchProducts();
+          }
+        }
+      });
+    }
+
     Future.microtask(() {
       context.read<HomeVM>().fetchProducts(refresh: true);
-    });
-
-    _scrollController.addListener(() {
-      final vm = context.read<HomeVM>();
-      if (_scrollController.position.pixels >=
-          _scrollController.position.maxScrollExtent - 200) {
-        if (!vm.isLoadingMore && vm.hasMore) {
-          vm.fetchProducts();
-        }
-      }
     });
   }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    for (final ctrl in _scrollControllers) {
+      ctrl.dispose();
+    }
     _tabController.dispose();
     super.dispose();
   }
@@ -92,7 +101,7 @@ class _HomeViewState extends State<HomeView>
     }
 
     return Scaffold(
-      floatingActionButton: ChatFloatingButton(),
+      floatingActionButton: const ChatFloatingButton(),
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
         title: Text(
@@ -113,7 +122,7 @@ class _HomeViewState extends State<HomeView>
                 context,
                 MaterialPageRoute(builder: (_) => CartView()),
               ).then((_) {
-                context.read<HomeVM>().fetchProducts(refresh: true);
+                context.read<HomeVM>().refreshStock();
               });
             },
           ),
@@ -209,8 +218,9 @@ class _HomeViewState extends State<HomeView>
                   );
                 }
 
+                final tabIndex = categories.indexOf(category);
                 return GridView.builder(
-                  controller: _scrollController,
+                  controller: _scrollControllers[tabIndex],
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
                   itemCount:
@@ -239,7 +249,7 @@ class _HomeViewState extends State<HomeView>
                               builder: (_) => ProductView(product: product),
                             ),
                           ).then((_) {
-                            context.read<HomeVM>().fetchProducts(refresh: true);
+                            context.read<HomeVM>().refreshStock();
                           }),
                       child: Container(
                         decoration: BoxDecoration(
@@ -457,9 +467,7 @@ class _HomeViewState extends State<HomeView>
 
                                                     context
                                                         .read<HomeVM>()
-                                                        .fetchProducts(
-                                                          refresh: true,
-                                                        );
+                                                        .refreshStock();
                                                   }
                                                 },
                                           child: Container(

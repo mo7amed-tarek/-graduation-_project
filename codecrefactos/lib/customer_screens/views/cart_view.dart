@@ -1,6 +1,5 @@
 import 'package:codecrefactos/customer_screens/views/product%20_view.dart';
 import 'package:codecrefactos/widgets/chat_boot.dart';
-import 'package:codecrefactos/widgets/chat_button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../view_models/cart_view_model.dart';
@@ -40,7 +39,6 @@ class CartView extends StatelessWidget {
     final homeVM = context.watch<HomeVM>();
 
     return Scaffold(
-      floatingActionButton: ChatFloatingButton(),
       backgroundColor: Colors.grey.shade200,
       appBar: AppBar(
         title: const Text('Cart'),
@@ -63,7 +61,6 @@ class CartView extends StatelessWidget {
                 ? const Center(child: Text('Cart is empty'))
                 : Column(
                     children: cartVM.items.map((item) {
-                      // جيب الـ stock quantity من الـ HomeVM
                       final matchedProduct = homeVM.products
                           .where((p) => int.tryParse(p.id) == item.productId)
                           .firstOrNull;
@@ -112,7 +109,6 @@ class CartView extends StatelessWidget {
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  // Low stock warning داخل الكارت
                                   if (isAtMax && stockQty > 0)
                                     Text(
                                       'Max quantity reached ($stockQty in stock)',
