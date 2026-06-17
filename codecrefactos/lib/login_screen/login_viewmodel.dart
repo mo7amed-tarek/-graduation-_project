@@ -109,6 +109,14 @@ class LoginViewModel with ChangeNotifier {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
+    clearFields();
+  }
+
+  void clearFields() {
+    emailCtrl.clear();
+    passwordCtrl.clear();
+    fieldErrors.clear();
+    notifyListeners();
   }
 
   void clearErrors() {
